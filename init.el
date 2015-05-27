@@ -19,7 +19,6 @@
 (el-get-bundle magit) (setq magit-last-seen-setup-instructions "1.4.0")
 (el-get-bundle markdown-mode)
 
-(require 'ascope)
 ;; local packages
 ;;(el-get-bundle zeph1e/ascope-ext)
 
