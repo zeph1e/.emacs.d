@@ -16,7 +16,7 @@
 
 ;; required packages to me
 (el-get-bundle! ascope)
-(el-get-bundle magit :after (setq magit-last-seen-setup-instructions "1.4.0"))
+(el-get-bundle magit) (setq magit-last-seen-setup-instructions "1.4.0")
 (el-get-bundle markdown-mode)
 
 (require 'ascope)
