@@ -17,14 +17,18 @@
 ;; required packages to me
 (el-get-bundle! ascope)
 (el-get-bundle! linum+)
-(el-get-bundle magit) (setq magit-last-seen-setup-instructions "1.4.0")
-(el-get-bundle markdown-mode)
+(el-get-bundle! redo+)
+(el-get-bundle  iman)
+(el-get-bundle  magit) (setq magit-last-seen-setup-instructions "1.4.0")
+(el-get-bundle  markdown-mode)
 (el-get-bundle! markdown-preview-mode)
-(el-get-bundle color-theme) (color-theme-initialize) (color-theme-dark-blue2) (color-theme-arjen)
+(el-get-bundle color-theme) (color-theme-initialize)
+(if (string-match "256" (getenv "TERM")) (color-theme-dark-blue2))
 
 
 ;; local packages
-;;(el-get-bundle zeph1e/ascope-ext)
+;; (el-get-bundle ascope-ext :url "https://github.com/zeph1e/ascope-ext.git" :features ascope-ext)
+(add-to-list 'load-path "~/.emacs.d/ascope-ext") (require 'ascope-ext)
 
 ;; basic options
 (setq make-backup-files nil) ;; no backup files
@@ -32,10 +36,13 @@
 ;; global keybindings
 (global-set-key (kbd "C-c l") 'linum-mode) ;; line-number
 
-(global-set-key (kbd "S-<left>")  'windmove-left) ;; wind-move keymap
+(global-set-key (kbd "S-<left>")  'windmove-left) ;; windmove keymap
 (global-set-key (kbd "S-<right>") 'windmove-right)
 (global-set-key (kbd "S-<up>")    'windmove-up)
 (global-set-key (kbd "S-<down>")  'windmove-down)
+
+(global-set-key (kbd "C-_") 'undo)
+(global-set-key (kbd "M-_") 'redo)
 
 ;; global (internal) minor modes
 (require 'ido) (ido-mode t) ;; ido
@@ -49,7 +56,7 @@
 
 ;; enable linum for code-editors
 (add-hook 'c-mode-hook 'linum-mode)
-(add-hook 'cc-mode-hook 'linum-mode)
+(add-hook 'c++-mode-hook 'linum-mode)
 (add-hook 'objc-mode-hook 'linum-mode)
 (add-hook 'java-mode-hook 'linum-mode)
 (add-hook 'idl-mode-hook 'linum-mode)
