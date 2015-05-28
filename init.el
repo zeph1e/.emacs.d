@@ -16,8 +16,12 @@
 
 ;; required packages to me
 (el-get-bundle! ascope)
+(el-get-bundle! linum+)
 (el-get-bundle magit) (setq magit-last-seen-setup-instructions "1.4.0")
 (el-get-bundle markdown-mode)
+(el-get-bundle! markdown-preview-mode)
+(el-get-bundle color-theme) (color-theme-initialize) (color-theme-dark-blue2) (color-theme-arjen)
+
 
 ;; local packages
 ;;(el-get-bundle zeph1e/ascope-ext)
@@ -26,7 +30,12 @@
 (setq make-backup-files nil) ;; no backup files
 
 ;; global keybindings
-(global-set-key (kbd "C-c l") 'linum-mode)
+(global-set-key (kbd "C-c l") 'linum-mode) ;; line-number
+
+(global-set-key (kbd "S-<left>")  'windmove-left) ;; wind-move keymap
+(global-set-key (kbd "S-<right>") 'windmove-right)
+(global-set-key (kbd "S-<up>")    'windmove-up)
+(global-set-key (kbd "S-<down>")  'windmove-down)
 
 ;; global (internal) minor modes
 (require 'ido) (ido-mode t) ;; ido
@@ -38,7 +47,12 @@
 (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
 
-(global-set-key (kbd "M-S-<left>")  'windmove-left) ;; wind-move keymap
-(global-set-key (kbd "M-S-<right>") 'windmove-right)
-(global-set-key (kbd "M-S-<up>")    'windmove-up)
-(global-set-key (kbd "M-S-<down>")  'windmove-down)
+;; enable linum for code-editors
+(add-hook 'c-mode-hook 'linum-mode)
+(add-hook 'cc-mode-hook 'linum-mode)
+(add-hook 'objc-mode-hook 'linum-mode)
+(add-hook 'java-mode-hook 'linum-mode)
+(add-hook 'idl-mode-hook 'linum-mode)
+(add-hook 'python-mode-hook 'linum-mode)
+(add-hook 'sh-mode-hook 'linum-mode)
+(add-hook 'emacs-lisp-mode-hook 'linum-mode)
