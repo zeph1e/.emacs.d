@@ -11,7 +11,7 @@
        "https://raw.githubusercontent.com/dimitri/el-get/master/el-get-install.el")
     (goto-char (point-max))
     (eval-print-last-sexp)))
-(add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-user/recipes")
+(add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-recipes")
 (el-get 'sync)
 
 ;; required packages to me
@@ -23,12 +23,11 @@
 (el-get-bundle  markdown-mode)
 (el-get-bundle! markdown-preview-mode)
 (el-get-bundle color-theme) (color-theme-initialize)
-(if (string-match "256" (getenv "TERM")) (color-theme-dark-blue2))
+(if (string-match "256color" (getenv "TERM")) (color-theme-dark-blue2))
 
 
 ;; local packages
-;; (el-get-bundle ascope-ext :url "https://github.com/zeph1e/ascope-ext.git" :features ascope-ext)
-(add-to-list 'load-path "~/.emacs.d/ascope-ext") (require 'ascope-ext)
+(el-get-bundle! ascope-ext)
 
 ;; basic options
 (setq make-backup-files nil) ;; no backup files
