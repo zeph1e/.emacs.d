@@ -4,5 +4,4 @@
        :type github
        :depends (ascope)
        :pkgname "zeph1e/ascope-ext"
-       :after (ascope-install-hooks))
-
+       :post-init (ascope-install-hooks))

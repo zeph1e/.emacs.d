@@ -3,6 +3,7 @@
 ;; Written by Yunsik Jang <doomsday@kldp.org>
 ;; You can use/modify/redistribute this freely.
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; el-get initialization
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 (unless (require 'el-get nil 'noerror)
@@ -16,40 +17,42 @@
 
 ;; required packages to me
 (el-get-bundle! ascope)
+(el-get-bundle! ascope-ext)
 (el-get-bundle! linum+)
 (el-get-bundle! redo+)
 (el-get-bundle  iman)
-(el-get-bundle  magit) (setq magit-last-seen-setup-instructions "1.4.0")
+(el-get-bundle  magit) ;(setq magit-last-seen-setup-instructions "1.4.0")
 (el-get-bundle  markdown-mode)
 (el-get-bundle! markdown-preview-mode)
 (el-get-bundle color-theme) (color-theme-initialize)
-(if (string-match "256color" (getenv "TERM")) (color-theme-dark-blue2))
+(el-get-bundle color-theme-tomorrow)
+(if (string-match "256color" (getenv "TERM")) (color-theme-tomorrow-night-eighties))
 
-
-;; local packages
-(el-get-bundle! ascope-ext)
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; basic options
-(setq make-backup-files nil) ;; no backup files
+(setq make-backup-files nil) ; no backup files
 
 ;; global keybindings
-(global-set-key (kbd "C-c l") 'linum-mode) ;; line-number
+(global-set-key (kbd "C-c l") 'linum-mode) ; line-number
 
-(global-set-key (kbd "S-<left>")  'windmove-left) ;; windmove keymap
+(global-set-key (kbd "S-<left>")  'windmove-left) ; windmove keymap
 (global-set-key (kbd "S-<right>") 'windmove-right)
 (global-set-key (kbd "S-<up>")    'windmove-up)
 (global-set-key (kbd "S-<down>")  'windmove-down)
 
-(global-set-key (kbd "C-_") 'undo)
+(global-set-key (kbd "C-_") 'undo) ; undo & redo
 (global-set-key (kbd "M-_") 'redo)
 
 ;; global (internal) minor modes
-(require 'ido) (ido-mode t) ;; ido
+(require 'ido) (ido-mode t) ; ido
 (column-number-mode)
 (show-paren-mode)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; other internal modes initialization
-(add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode) ;; el-doc
+
+;; el-doc
+(add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
 
