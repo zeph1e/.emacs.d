@@ -32,8 +32,9 @@
 (el-get-bundle  markdown-mode)
 (el-get-bundle! markdown-preview-mode)
 (el-get-bundle color-theme) (color-theme-initialize)
-(el-get-bundle color-theme-tomorrow)
-(if (string-match "256color" (getenv "TERM")) (color-theme-tomorrow-night-eighties))
+(el-get-bundle color-theme-tomorrow) (if (or (string-match "256color" (getenv "TERM"))
+                                             (display-graphic-p))
+					 (color-theme-tomorrow-night-eighties))
 
 ;; load files in utils/
 (add-to-list 'load-path "~/.emacs.d/utils")
