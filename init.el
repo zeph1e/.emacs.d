@@ -4,6 +4,13 @@
 ;; You can use/modify/redistribute this freely.
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; package initializations
+
+;; global (internal) minor modes
+(require 'ido) (ido-mode t) ; ido
+(column-number-mode)
+(show-paren-mode)
+
 ;; el-get initialization
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 (unless (require 'el-get nil 'noerror)
@@ -15,18 +22,25 @@
 (add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-recipes")
 (el-get 'sync)
 
-;; required packages to me
-(el-get-bundle! ascope)
-(el-get-bundle! ascope-ext)
+(el-get-bundle  ascope)
+(el-get-bundle  ascope-ext)
 (el-get-bundle! linum+)
 (el-get-bundle! redo+)
 (el-get-bundle  iman)
-(el-get-bundle  magit) ;(setq magit-last-seen-setup-instructions "1.4.0")
+(el-get-bundle  magit) (setq magit-last-seen-setup-instructions "1.4.0")
+                       (setq magit-auto-revert-mode nil)
 (el-get-bundle  markdown-mode)
 (el-get-bundle! markdown-preview-mode)
 (el-get-bundle color-theme) (color-theme-initialize)
 (el-get-bundle color-theme-tomorrow)
 (if (string-match "256color" (getenv "TERM")) (color-theme-tomorrow-night-eighties))
+
+;; load files in utils/
+(add-to-list 'load-path "~/.emacs.d/utils")
+(if (file-exists-p "~/.emacs.d/utils")
+  (dolist (filename (directory-files "~/.emacs.d/utils"))
+    (when (string-match "\\([^.]+\\).el\\'" filename)
+      (load-library (match-string 1 filename)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; basic options
@@ -43,10 +57,6 @@
 (global-set-key (kbd "C-_") 'undo) ; undo & redo
 (global-set-key (kbd "M-_") 'redo)
 
-;; global (internal) minor modes
-(require 'ido) (ido-mode t) ; ido
-(column-number-mode)
-(show-paren-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; other internal modes initialization
@@ -65,3 +75,6 @@
 (add-hook 'python-mode-hook 'linum-mode)
 (add-hook 'sh-mode-hook 'linum-mode)
 (add-hook 'emacs-lisp-mode-hook 'linum-mode)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; customized options
