@@ -48,6 +48,12 @@
     (when (string-match "\\([^.]+\\).el\\'" filename)
       (load-library (match-string 1 filename)))))
 
+
+;; temporary
+(if (file-exists-p "~/.emacs.d/slack.el/")
+  (add-to-list 'load-path "~/.emacs.d/slack.el/")
+  (require 'slack.el))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; basic options
 (setq make-backup-files nil) ; no backup files
