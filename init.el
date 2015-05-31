@@ -25,13 +25,15 @@
 (el-get-bundle  ascope)
 (el-get-bundle  ascope-ext)
 (el-get-bundle  iman)
+(el-get-bundle  json)
+(el-get-bundle  json-mode)
 (el-get-bundle! linum+)
 (el-get-bundle  magit) (setq magit-last-seen-setup-instructions "1.4.0")
                        (setq magit-auto-revert-mode nil)
 (el-get-bundle  markdown-mode)
 (el-get-bundle! markdown-preview-mode)
 (el-get-bundle! redo+)
-(el-get-bundle  redspace)
+(el-get-bundle  redspace) (redspace-mode)
 (el-get-bundle  smex)
 (el-get-bundle  windcycle)
 (el-get-bundle color-theme) (color-theme-initialize)
@@ -123,8 +125,8 @@ Key bindings:
 (add-hook 'text-mode-hook 'linum-mode)
 
 ;; enable redspace for editors
-(add-hook 'prog-mode-hook 'redspace-mode)
-(add-hook 'text-mode-hook 'redspace-mode)
+;;(add-hook 'prog-mode-hook 'redspace-mode)
+;;(add-hook 'text-mode-hook 'redspace-mode)
 ;;(define-globalized-minor-mode global-redspace-mode redspace-mode redspace-mode)
 ;;(global-redspace-mode t)
 
