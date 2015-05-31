@@ -19,18 +19,21 @@
        "https://raw.githubusercontent.com/dimitri/el-get/master/el-get-install.el")
     (goto-char (point-max))
     (eval-print-last-sexp)))
-(add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-recipes")
+(add-to-list 'el-get-recipe-path "~/.emacs.d/recipes")
 (el-get 'sync)
 
 (el-get-bundle  ascope)
 (el-get-bundle  ascope-ext)
-(el-get-bundle! linum+)
-(el-get-bundle! redo+)
 (el-get-bundle  iman)
+(el-get-bundle! linum+)
 (el-get-bundle  magit) (setq magit-last-seen-setup-instructions "1.4.0")
                        (setq magit-auto-revert-mode nil)
 (el-get-bundle  markdown-mode)
 (el-get-bundle! markdown-preview-mode)
+(el-get-bundle! redo+)
+(el-get-bundle  redspace)
+(el-get-bundle  smex)
+(el-get-bundle  windcycle)
 (el-get-bundle color-theme) (color-theme-initialize)
 (el-get-bundle color-theme-tomorrow) (if (or (string-match "256color" (getenv "TERM"))
                                              (display-graphic-p))
@@ -48,34 +51,83 @@
 (setq make-backup-files nil) ; no backup files
 
 ;; global keybindings
-(global-set-key (kbd "C-c l") 'linum-mode) ; line-number
+(defvar my-keys-mode-keymap
+  (let ((map (make-sparse-keymap)))
+    ;; windmove
+    (define-key map (kbd "S-<left>")  'windmove-left)
+    (define-key map (kbd "S-<right>") 'windmove-right)
+    (define-key map (kbd "S-<up>")    'windmove-up)
+    (define-key map (kbd "S-<down>")  'windmove-down)
 
-(global-set-key (kbd "S-<left>")  'windmove-left) ; windmove keymap
-(global-set-key (kbd "S-<right>") 'windmove-right)
-(global-set-key (kbd "S-<up>")    'windmove-up)
-(global-set-key (kbd "S-<down>")  'windmove-down)
+    ;; windcycle
+    (define-key map (kbd "M-<up>")    'buffer-up-swap) ; Switch window keybindings
+    (define-key map (kbd "M-<down>")  'buffer-down-swap)
+    (define-key map (kbd "M-<right>") 'buffer-right-swap)
+    (define-key map (kbd "M-<left>")  'buffer-left-swap)
 
-(global-set-key (kbd "C-_") 'undo) ; undo & redo
-(global-set-key (kbd "M-_") 'redo)
+    (define-key map (kbd "M-S-<left>")  'shrink-window-horizontally) ; Window Resizing keybindings
+    (define-key map (kbd "M-S-<right>") 'enlarge-window-horizontally)
+    (define-key map (kbd "M-S-<down>")  'shrink-window)
+    (define-key map (kbd "M-S-<up>")    'enlarge-window)
 
+    (define-key map (kbd "C-x -")     'split-window-vertically) ; Window Split keybindings
+    (define-key map (kbd "C-x |")     'split-window-horizontally)
+
+    (define-key map (kbd "C-x x")     'delete-window) ; Window Close keybindings
+
+    ;; frame
+    (define-key map (kbd "C-<left>")  (lambda (p) (interactive "p")(select-frame (next-frame))))
+    (define-key map (kbd "C-<right>") (lambda (p) (interactive "p")(select-frame (previous-frame))))
+    (define-key map (kbd "C-<up>")    (lambda (p) (interactive "p")
+					(if (yes-or-no-p "Create a new frame? ") (make-frame))))
+    (define-key map (kbd "C-<down>")  'iconify-frame)
+
+    ;; undo+
+    (define-key map (kbd "C-_") 'undo)
+    (define-key map (kbd "M-_") 'redo)
+
+    ;; smex
+    (define-key map (kbd "M-x") 'smex)
+    (define-key map (kbd "M-X") 'smex-major-mode-commands)
+    ;;(define-key map (kbd "C-c C-c M-x") 'execute-extended-command) ; old M-x
+
+    map)
+  "global key mode keymap")
+
+(define-minor-mode my-keys-mode
+"My global key map to prevent annoying overriding of major modes
+
+Key bindings:
+\\{my-keys-mode-keymap}"
+  t nil my-keys-mode-keymap)
+(my-keys-mode t)
+
+(defadvice load (after give-my-keybindings-priority)
+  "Try to ensure that my keybindings always have priority."
+  (if (not (eq (car (car minor-mode-map-alist)) 'my-keys-mode))
+      (let ((mykeys (assq 'my-keys-mode minor-mode-map-alist)))
+        (assq-delete-all 'my-keys-mode minor-mode-map-alist)
+        (add-to-list 'minor-mode-map-alist mykeys))))
+(ad-activate 'load)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; other internal modes initialization
+;; modes initialization
 
 ;; el-doc
 (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
 
-;; enable linum for code-editors
-(add-hook 'c-mode-hook 'linum-mode)
-(add-hook 'c++-mode-hook 'linum-mode)
-(add-hook 'objc-mode-hook 'linum-mode)
-(add-hook 'java-mode-hook 'linum-mode)
-(add-hook 'idl-mode-hook 'linum-mode)
-(add-hook 'python-mode-hook 'linum-mode)
-(add-hook 'sh-mode-hook 'linum-mode)
-(add-hook 'emacs-lisp-mode-hook 'linum-mode)
+;; enable linum for editors
+(add-hook 'prog-mode-hook 'linum-mode)
+(add-hook 'text-mode-hook 'linum-mode)
+
+;; enable redspace for editors
+(add-hook 'prog-mode-hook 'redspace-mode)
+(add-hook 'text-mode-hook 'redspace-mode)
+;;(define-globalized-minor-mode global-redspace-mode redspace-mode redspace-mode)
+;;(global-redspace-mode t)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; customized options
