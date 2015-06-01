@@ -33,13 +33,18 @@
 (el-get-bundle  markdown-mode)
 (el-get-bundle! markdown-preview-mode)
 (el-get-bundle! redo+)
-(el-get-bundle  redspace) (redspace-mode)
-(el-get-bundle  smex)
 (el-get-bundle  windcycle)
 (el-get-bundle color-theme) (color-theme-initialize)
 (el-get-bundle color-theme-tomorrow) (if (or (string-match "256color" (getenv "TERM"))
                                              (display-graphic-p))
-					 (color-theme-tomorrow-night-eighties))
+				       (if (and (stringp (getenv "EMACS_THEME"))
+					        (string-match "\\`color-theme-" (getenv "EMACS_THEME"))
+						(functionp (intern (getenv "EMACS_THEME"))))
+					 (funcall (intern (getenv "EMACS_THEME")))
+					 (color-theme-tomorrow-night-eighties)))
+(when (>= emacs-major-version 24) ;; >= 24
+    (el-get-bundle  smex)
+)
 
 ;; load files in utils/
 (add-to-list 'load-path "~/.emacs.d/utils")
@@ -95,10 +100,11 @@
     (define-key map (kbd "M-_") 'redo)
 
     ;; smex
-    (define-key map (kbd "M-x") 'smex)
-    (define-key map (kbd "M-X") 'smex-major-mode-commands)
+    (when (functionp 'smex)
+      (define-key map (kbd "M-x") 'smex)
+      (define-key map (kbd "M-X") 'smex-major-mode-commands)
     ;;(define-key map (kbd "C-c C-c M-x") 'execute-extended-command) ; old M-x
-
+    )
     map)
   "global key mode keymap")
 
@@ -126,9 +132,38 @@ Key bindings:
 (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
 
-;; enable linum for editors
-(add-hook 'prog-mode-hook 'linum-mode)
-(add-hook 'text-mode-hook 'linum-mode)
+;; simple minor modes
+(define-minor-mode trailing-whitespace-mode
+"Shows trailing whitespaces."
+  nil " TWS" nil
+ (setq show-trailing-whitespace t))
+
+
+;; Minor modes to apply
+(setq prog-minor-mode-list '(linum-mode trailing-whitespace-mode))
+(setq text-minor-mode-list '(linum-mode trailing-whitespace-mode))
+
+;; enable minor modes for prog-mode(there's a case of that prog-mode is nil)
+(let (value)
+  (dolist (mode prog-minor-mode-list value)
+    (if (functionp 'prog-mode) (add-hook 'prog-mode-hook mode)
+      (progn (add-hook 'c-mode-hook mode)
+	     (add-hook 'c++-mode-hook mode)
+	     (add-hook 'emacs-lisp-mode-hook mode)
+	     (add-hook 'python-mode-hook mode)
+	     (add-hook 'ruby-mode mode)
+	     (add-hook 'perl-mode mode)
+	     (add-hook 'idl-mode mode)
+	     (add-hook 'java-mode mode)
+	     (add-hook 'js-mode mode)
+))))
+;; enable minor modes for text-mode
+(let (value)
+  (dolist (mode text-minor-mode-list value)
+    (if (functionp 'text-mode) (add-hook 'text-mode-hook mode)
+      (progn (add-hook 'org-mode-hook mode)
+	     (add-hook 'markdown-mode-hook mode)
+))))
 
 ;; enable redspace for editors
 ;;(add-hook 'prog-mode-hook 'redspace-mode)
