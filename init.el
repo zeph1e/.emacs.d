@@ -50,9 +50,9 @@
 
 
 ;; temporary
-(if (file-exists-p "~/.emacs.d/slack.el/")
-  (add-to-list 'load-path "~/.emacs.d/slack.el/")
-  (require 'slack.el))
+(when (file-exists-p "~/.emacs.d/slack/")
+  (add-to-list 'load-path "~/.emacs.d/slack/")
+  (require 'slack))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; basic options
@@ -135,7 +135,6 @@ Key bindings:
 ;;(add-hook 'text-mode-hook 'redspace-mode)
 ;;(define-globalized-minor-mode global-redspace-mode redspace-mode redspace-mode)
 ;;(global-redspace-mode t)
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; customized options
