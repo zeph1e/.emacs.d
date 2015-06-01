@@ -69,7 +69,7 @@
     ;; windmove
     (define-key map (kbd "S-<left>")  'windmove-left)
     (define-key map (kbd "S-<right>") 'windmove-right)
-    (define-key map (kbd "<select">)  'windmove-up) ; sometime, shift-up is sent as <select> to remote
+    (define-key map (kbd "<select>")  'windmove-up) ; sometime, shift-up is sent as <select> to remote
     (define-key map (kbd "S-<up>")    'windmove-up)
     (define-key map (kbd "S-<down>")  'windmove-down)
 
@@ -136,7 +136,7 @@ Key bindings:
 ;; simple minor modes
 (define-minor-mode trailing-whitespace-mode
 "Shows trailing whitespaces."
-  nil " TWS" nil
+  nil nil nil
  (setq show-trailing-whitespace t))
 
 
@@ -157,6 +157,7 @@ Key bindings:
 	     (add-hook 'idl-mode-hook mode)
 	     (add-hook 'java-mode-hook mode)
 	     (add-hook 'js-mode-hook mode)
+	     (add-hook 'sh-mode-hook mode)
 ))))
 ;; enable minor modes for text-mode
 (let (value)
