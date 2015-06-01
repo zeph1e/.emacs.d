@@ -2,4 +2,5 @@
 *.elc
 *~
 el-get/*
-
+smex-items
+eshell/*

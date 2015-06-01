@@ -30,8 +30,13 @@
 (el-get-bundle! linum+)
 (el-get-bundle  magit) (setq magit-last-seen-setup-instructions "1.4.0")
                        (setq magit-auto-revert-mode nil)
+(el-get-bundle  magit-gerrit)
+(el-get-bundle  magit-gh-pulls)
 (el-get-bundle  markdown-mode)
 (el-get-bundle! markdown-preview-mode)
+(unless (functionp 'org-mode) (el-get-bundle org-mode)) ; can be installed with linux-dist-package
+(el-get-bundle  org-publish)
+(el-get-bundle  org-readme)
 (el-get-bundle! redo+)
 (el-get-bundle  windcycle)
 (el-get-bundle  color-theme) (color-theme-initialize)
@@ -57,7 +62,7 @@
 ;; temporary
 (when (file-exists-p "~/.emacs.d/slack/")
   (add-to-list 'load-path "~/.emacs.d/slack/")
-  (require 'slack))
+  (if (file-exists-p "~/.emacs.d/slack/slack.el") (require 'slack)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; basic options
