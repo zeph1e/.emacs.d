@@ -97,10 +97,8 @@
     ;; frame
     (define-key map (kbd "C-<left>")  (lambda (p) (interactive "p")(select-frame (next-frame))))
     (define-key map (kbd "C-<right>") (lambda (p) (interactive "p")(select-frame (previous-frame))))
-    (define-key map (kbd "C-<up>")    (lambda (p) (interactive "p")
+    (define-key map (kbd "C-x +")     (lambda (p) (interactive "p")
 					(if (yes-or-no-p "Create a new frame? ") (make-frame))))
-    (define-key map (kbd "C-<down>")  'iconify-frame)
-
     ;; undo+
     (define-key map (kbd "C-_") 'undo)
     (define-key map (kbd "M-_") 'redo)
