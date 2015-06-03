@@ -24,7 +24,6 @@
 
 (el-get-bundle  ascope)
 (el-get-bundle  ascope-ext)
-(el-get-bundle  http-post-simple)
 (el-get-bundle  iman)
 (el-get-bundle  json)
 (el-get-bundle  json-mode)
