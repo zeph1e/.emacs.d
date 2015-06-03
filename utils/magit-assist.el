@@ -5,6 +5,7 @@
 (defvar magit-assist-dired-mode-keymap
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "@ f")  'magit-assist-dired-file-log)
+    (define-key map (kbd "@ g")  'magit-git-command)
     (define-key map (kbd "@ i")  'magit-init)
     (define-key map (kbd "@ s")  'magit-status)
     map)
