@@ -8,6 +8,7 @@
     (define-key map (kbd "@ g")  'magit-git-command)
     (define-key map (kbd "@ i")  'magit-init)
     (define-key map (kbd "@ s")  'magit-status)
+    (define-key map (kbd "@ l")  'magit-log)
     map)
   "Magit-assist keymap for dired.")
 
