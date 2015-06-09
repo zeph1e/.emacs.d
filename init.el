@@ -41,6 +41,7 @@
 (unless (functionp 'org-mode) (el-get-bundle org-mode)) ; can be installed with linux-dist-package
 (el-get-bundle  org-publish)
 (el-get-bundle  org-readme)
+(el-get-bundle  plantuml-mode)
 (el-get-bundle! redo+)
 (el-get-bundle  windcycle)
 (el-get-bundle  color-theme) (color-theme-initialize)
