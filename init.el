@@ -10,10 +10,10 @@
 (require 'ido) (ido-mode t) ; ido
 (column-number-mode)
 (show-paren-mode)
-(setq inhibit-splash-screen t)
-(setq inhibit-startup-message t)
-(server-start) ; start server
-(if (display-graphic-p) (set-default-font "Lucida Console-10"))
+(global-hl-line-mode t) ; highlight current line
+(tool-bar-mode nil)
+(unless (display-graphic-p) (menu-bar-mode nil))
+
 
 ;; el-get initialization
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
@@ -28,6 +28,15 @@
 
 (el-get-bundle  ascope)
 (el-get-bundle  ascope-ext)
+(el-get-bundle  auto-complete)
+(el-get-bundle  auto-complete-emacs-lisp)
+(el-get-bundle! auto-complete-c-headers)
+(if (executable-find "qmake")           ; qt headers
+    (add-to-list 'achead:include-directories
+                 (substring (shell-command-to-string "qmake -query QT_INSTALL_HEADERS") 0 -1)))
+
+(el-get-bundle  google-c-style)
+(el-get-bundle  iedit)
 (el-get-bundle  iman)
 (el-get-bundle  json)
 (el-get-bundle  json-mode)
@@ -42,8 +51,11 @@
 (el-get-bundle  org-publish)
 (el-get-bundle  org-readme)
 (el-get-bundle  plantuml-mode)
+(el-get-bundle  qmake-mode)
+(el-get-bundle  qml-mode)
 (el-get-bundle! redo+)
 (el-get-bundle  windcycle)
+(el-get-bundle  yasnippet) (yas-global-mode t)
 (el-get-bundle  color-theme) (color-theme-initialize)
 (el-get-bundle  color-theme-tomorrow) (if (or (string-match "256color" (getenv "TERM"))
 					      (display-graphic-p))
@@ -71,10 +83,28 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; basic options
-(setq make-backup-files nil) ; no backup files
+(setq-default
+  c-default-style "linux"
+  c-basic-offset 4
+  tab-width 4 ; tab width 4
+  indent-tabs-mode nil ; don't insert tabs in indent
+  tab-always-indent t
+)
+
+(setq
+  truncate-partial-width-windows nil ; do not wrap
+  visible-bell t ; ring a visible bell
+  make-backup-files nil ; no backup files
+  inhibit-startup-screen t ; no startup screen
+  inhibit-startup-message t ; no startup message
+)
+
+(server-start) ; start server
+(set-default-font "Lucida Console-10") ; set font
+
 
 ;; global keybindings
-(defvar my-keys-mode-keymap
+(defvar my:keys-mode-keymap
   (let ((map (make-sparse-keymap)))
     ;; windmove
     (define-key map (kbd "S-<left>")  'windmove-left)
@@ -112,26 +142,29 @@
     (define-key map (kbd "C-_") 'undo)
     (define-key map (kbd "M-_") 'redo)
 
+    ;; iedit
+    (define-key map (kbd "M-#") 'iedit-mode)
+
     ;; smex
-    (when (functionp 'smex)
+    (when (boundp 'smex)
       (define-key map (kbd "M-x") 'smex)
       (define-key map (kbd "M-X") 'smex-major-mode-commands))
     map)
   "global key mode keymap")
 
-(define-minor-mode my-keys-mode
+(define-minor-mode my:keys-mode
 "My global key map to prevent annoying overriding of major modes
 
 Key bindings:
-\\{my-keys-mode-keymap}"
-  t nil my-keys-mode-keymap)
-(my-keys-mode t)
+\\{my:keys-mode-keymap}"
+  t nil my:keys-mode-keymap)
+(my:keys-mode t)
 
-(defadvice load (after give-my-keybindings-priority)
+(defadvice load (after my:keybindings-priority)
   "Try to ensure that my keybindings always have priority."
-  (if (not (eq (car (car minor-mode-map-alist)) 'my-keys-mode))
-      (let ((mykeys (assq 'my-keys-mode minor-mode-map-alist)))
-        (assq-delete-all 'my-keys-mode minor-mode-map-alist)
+  (if (not (eq (car (car minor-mode-map-alist)) 'my:keys-mode))
+      (let ((mykeys (assq 'my:keys-mode minor-mode-map-alist)))
+        (assq-delete-all 'my:keys-mode minor-mode-map-alist)
         (add-to-list 'minor-mode-map-alist mykeys))))
 (ad-activate 'load)
 
@@ -144,15 +177,15 @@ Key bindings:
 (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
 
 ;; simple minor modes
-(define-minor-mode trailing-whitespace-mode
+(define-minor-mode my:trailing-whitespace-mode
 "Shows trailing whitespaces."
   nil nil nil
  (setq show-trailing-whitespace t))
 
 
 ;; Minor modes to apply
-(setq prog-minor-mode-list '(linum-mode trailing-whitespace-mode))
-(setq text-minor-mode-list '(linum-mode trailing-whitespace-mode))
+(setq prog-minor-mode-list '(linum-mode my:trailing-whitespace-mode))
+(setq text-minor-mode-list '(linum-mode my:trailing-whitespace-mode))
 
 ;; enable minor modes for prog-mode(there's a case of that prog-mode is nil)
 (let (value)
