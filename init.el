@@ -10,6 +10,10 @@
 (require 'ido) (ido-mode t) ; ido
 (column-number-mode)
 (show-paren-mode)
+(setq inhibit-splash-screen t)
+(setq inhibit-startup-message t)
+(server-start) ; start server
+(if (display-graphic-p) (set-default-font "Lucida Console-10"))
 
 ;; el-get initialization
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
@@ -110,9 +114,7 @@
     ;; smex
     (when (functionp 'smex)
       (define-key map (kbd "M-x") 'smex)
-      (define-key map (kbd "M-X") 'smex-major-mode-commands)
-    ;;(define-key map (kbd "C-c C-c M-x") 'execute-extended-command) ; old M-x
-    )
+      (define-key map (kbd "M-X") 'smex-major-mode-commands))
     map)
   "global key mode keymap")
 
