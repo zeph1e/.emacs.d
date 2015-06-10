@@ -11,8 +11,8 @@
 (column-number-mode)
 (show-paren-mode)
 (global-hl-line-mode t) ; highlight current line
-(tool-bar-mode nil)
-(unless (display-graphic-p) (menu-bar-mode nil))
+(tool-bar-mode -1)
+(unless (display-graphic-p) (menu-bar-mode -1))
 
 
 ;; el-get initialization
