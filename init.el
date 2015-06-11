@@ -99,9 +99,10 @@
   inhibit-startup-message t ; no startup message
 )
 
-(server-start) ; start server
-(set-default-font "Lucida Console-10") ; set font
-
+(unless (server-running-p) (server-start)) ; start server
+(ignore-errors
+  (set-default-font "Lucida Console-10") ; set font
+  (error nil))
 
 ;; global keybindings
 (defvar my:keys-mode-keymap
