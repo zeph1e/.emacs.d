@@ -84,7 +84,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; basic options
 (setq-default
-  c-default-style "linux"
+  c-default-style '((java-mode . "java") (awk-mode . "awk") (python-mode . "python")
+                    (other . "linux"))
   c-basic-offset 4
   tab-width 4 ; tab width 4
   indent-tabs-mode nil ; don't insert tabs in indent
