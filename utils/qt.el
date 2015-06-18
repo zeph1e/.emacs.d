@@ -18,6 +18,9 @@
     ;; modify the colour of slots to match public, private, etc ...
     (font-lock-add-keywords 'c++-mode
                             '(("\\<\\(slots\\|signals\\)\\>" . font-lock-type-face)))
+    (font-lock-add-keywords 'c++-mode
+                            '(("\\<\\(uchar\\|ushort\\|uint\\|qlonglong\\|qulonglong\\|QString\\)\\>"
+                               . font-lock-type-face)))
     ;; make new font for rest of qt keywords
     (make-face 'qt-keywords-face)
     (set-face-foreground 'qt-keywords-face (face-foreground 'font-lock-keyword-face))
