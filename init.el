@@ -110,9 +110,9 @@
 
 ;; from http://emacswiki.org/emacs/DeletingWhitespace
 (defadvice kill-line (after kill-line-cleanup-whitespace activate compile)
-      "cleanup whitespace on kill-line"
-      (if (not (bolp))
-            (delete-region (point) (progn (skip-chars-forward " \t") (point)))))
+  "cleanup whitespace on kill-line"
+  (if (not (bolp))
+      (delete-region (point) (progn (skip-chars-forward " \t") (point)))))
 
 ;; global keybindings
 (defvar my:keys-mode-keymap
@@ -158,6 +158,10 @@
 
     ;; multiple-cursors
     (define-key map (kbd "M-+") 'mc/edit-lines)
+
+    ;; vi-like line insertion
+    (define-key map (kbd "C-o") (lambda (p) (interactive "p")(beginning-of-line)(open-line 1)))
+    (define-key map (kbd "M-o") (lambda (p) (interactive "p")(end-of-line)(newline)))
 
     ;; smex
     (when (boundp 'smex)
