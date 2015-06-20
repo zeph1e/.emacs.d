@@ -48,6 +48,7 @@
 (el-get-bundle  magit-gh-pulls)
 (el-get-bundle  markdown-mode)
 (el-get-bundle! markdown-preview-mode)
+(el-get-bundle  multiple-cursors)
 (unless (functionp 'org-mode) (el-get-bundle org-mode)) ; can be installed with linux-dist-package
 (el-get-bundle  org-publish)
 (el-get-bundle  org-readme)
@@ -91,7 +92,7 @@
   tab-width 4 ; tab width 4
   indent-tabs-mode nil ; don't insert tabs in indent
   tab-stop-list '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80)
-  tab-always-indent t
+  tab-always-indent nil
 )
 
 (setq
@@ -106,6 +107,12 @@
 (ignore-errors
   (set-default-font "Lucida Console-10") ; set font
   (error nil))
+
+;; from http://emacswiki.org/emacs/DeletingWhitespace
+(defadvice kill-line (after kill-line-cleanup-whitespace activate compile)
+      "cleanup whitespace on kill-line"
+      (if (not (bolp))
+            (delete-region (point) (progn (skip-chars-forward " \t") (point)))))
 
 ;; global keybindings
 (defvar my:keys-mode-keymap
@@ -148,6 +155,9 @@
 
     ;; iedit
     (define-key map (kbd "M-#") 'iedit-mode)
+
+    ;; multiple-cursors
+    (define-key map (kbd "M-+") 'mc/edit-lines)
 
     ;; smex
     (when (boundp 'smex)
