@@ -59,7 +59,7 @@
 (el-get-bundle  windcycle)
 (el-get-bundle  yasnippet) (yas-global-mode t)
 (el-get-bundle  color-theme) (color-theme-initialize)
-(el-get-bundle  color-theme-tomorrow) (if (or (string-match "256color" (getenv "TERM"))
+(el-get-bundle  color-theme-tomorrow) (if (or (string-match "256color" (concat "" (getenv "TERM")))
 					      (display-graphic-p))
 					  (if (and (stringp (getenv "EMACS_THEME"))
 						   (string-match "\\`color-theme-" (getenv "EMACS_THEME"))
