@@ -59,13 +59,7 @@
 (el-get-bundle  windcycle)
 (el-get-bundle  yasnippet) (yas-global-mode t)
 (el-get-bundle  color-theme) (color-theme-initialize)
-(el-get-bundle  color-theme-tomorrow) (if (or (string-match "256color" (concat "" (getenv "TERM")))
-					      (display-graphic-p))
-					  (if (and (stringp (getenv "EMACS_THEME"))
-						   (string-match "\\`color-theme-" (getenv "EMACS_THEME"))
-						   (functionp (intern (getenv "EMACS_THEME"))))
-					      (funcall (intern (getenv "EMACS_THEME")))
-					    (color-theme-tomorrow-night-eighties)))
+(el-get-bundle  color-theme-tomorrow)
 (when (>= emacs-major-version 24) ;; >= 24
     (el-get-bundle  smex)
 )
@@ -114,6 +108,45 @@
   (if (not (bolp))
       (delete-region (point) (progn (skip-chars-forward " \t") (point)))))
 
+(defvar my:use-theme nil)
+(when (or (string-match "256color" (concat "" (getenv "TERM")))
+        (display-graphic-p))
+    (setq my:use-theme t))
+
+(defvar my:themes-for-frames '(color-theme-tomorrow-night-eighties
+                               color-theme-kingsajz
+                               color-theme-gray30
+                               color-theme-arjen
+                               color-theme-tomorrow-night-blue
+                               color-theme-blue-sea
+                               color-theme-oswald
+                               color-theme-parus))
+
+(defun my:apply-color-theme (&optional frame)
+  "Apply color-themes for each frames."
+  ;; (setq color-theme-is-global nil)
+  (if (and (stringp (getenv "EMACS_THEME")) ; if emacs theme is set, apply that theme to all frames
+           (string-match "\\`color-theme-" (getenv "EMACS_THEME"))
+           (functionp (intern (getenv "EMACS_THEME"))))
+      (funcall (intern (getenv "EMACS_THEME")))
+    (let ((f (if (framep frame) frame (selected-frame)))
+          (thm (car my:themes-for-frames)))
+      (when (functionp thm)
+        (when (framep f)
+          (set-frame-parameter f 'selected-theme thm)
+          (setq my:themes-for-frames (cdr my:themes-for-frames)))
+        (funcall thm)))))
+;; (add-hook 'after-make-frame-functions 'my:apply-color-theme)
+
+(defun my:restore-color-theme (&optional frame)
+  "Restore color theme fcrom the frame being deleted."
+  (let* ((f (if (framep frame) frame (selected-frame)))
+         (thm (frame-parameter f 'selected-theme)))
+    (add-to-list 'my:themes-for-frames thm))) ; list head & no possible duplicate
+;; (add-hook 'delete-frame-functions 'my:restore-color-theme)
+
+(if my:use-theme (my:apply-color-theme))
+
 ;; global keybindings
 (defvar my:keys-mode-keymap
   (let ((map (make-sparse-keymap)))
@@ -141,14 +174,18 @@
     (define-key map (kbd "C-x x")     'delete-window) ; Window Close keybindings
 
     ;; frame
-    (define-key map (kbd "C-<left>")  (lambda (p) (interactive "p")(select-frame (next-frame))))
-    (define-key map (kbd "C-<right>") (lambda (p) (interactive "p")(select-frame (previous-frame))))
+    (define-key map (kbd "C-<left>")  (lambda (p) (interactive "p")
+                                        (select-frame (next-frame))))
+    (define-key map (kbd "C-<right>") (lambda (p) (interactive "p")
+                                        (select-frame (previous-frame))))
     (define-key map (kbd "C-x +")     (lambda (p) (interactive "p")
-					(if (yes-or-no-p "Create a new frame? ")
-					    (select-frame (make-frame)))))
+                                        (when (yes-or-no-p "Create a new frame? ")
+                                          (select-frame (make-frame)))))
+
     (define-key map (kbd "C-x _")     (lambda (p) (interactive "p")
-					(if (yes-or-no-p "Delete current frame? ")
-					    (delete-frame(selected-frame)))))
+                                        (when (yes-or-no-p "Delete current frame? ")
+                                          (delete-frame(selected-frame)))))
+
     ;; undo+
     (define-key map (kbd "C-_") 'undo)
     (define-key map (kbd "M-_") 'redo)
