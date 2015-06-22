@@ -145,7 +145,7 @@
     (add-to-list 'my:themes-for-frames thm))) ; list head & no possible duplicate
 ;; (add-hook 'delete-frame-functions 'my:restore-color-theme)
 
-(if my:use-theme (my:apply-color-theme))
+(if my:use-theme (my:apply-color-theme) (color-theme-standard))
 
 ;; global keybindings
 (defvar my:keys-mode-keymap
