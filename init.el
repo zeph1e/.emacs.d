@@ -157,7 +157,10 @@
     (define-key map (kbd "M-#") 'iedit-mode)
 
     ;; multiple-cursors
-    (define-key map (kbd "M-+") 'mc/edit-lines)
+    (define-key map (kbd "C-/") 'mc/edit-lines)
+    (define-key map (kbd "C-.") 'mc/mark-next-like-this)
+    (define-key map (kbd "C-,") 'mc/mark-previous-like-this)
+    (define-key map (kbd "M-/") 'mc/mark-all-like-this)
 
     ;; vi-like line insertion
     (define-key map (kbd "C-o") (lambda (p) (interactive "p")(beginning-of-line)(open-line 1)))
