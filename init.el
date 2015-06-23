@@ -41,7 +41,6 @@
 (el-get-bundle  iman)
 (el-get-bundle  json)
 (el-get-bundle  json-mode)
-(el-get-bundle! linum+)
 (el-get-bundle  magit) (setq magit-last-seen-setup-instructions "1.4.0")
                        (setq magit-auto-revert-mode nil)
 (el-get-bundle  magit-gerrit)
@@ -98,9 +97,13 @@
   make-backup-files nil ; no backup files
   inhibit-startup-screen t ; no startup screen
   inhibit-startup-message t ; no startup message
+  linum-format "%4d\u2502"
 )
 
 (unless (server-running-p) (server-start)) ; start server
+(ignore-errors
+  (set-frame-font "Lucida Console-10") ; set font
+  (error nil))
 
 ;; from http://emacswiki.org/emacs/DeletingWhitespace
 (defadvice kill-line (after kill-line-cleanup-whitespace activate compile)
@@ -201,6 +204,22 @@ Key bindings:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; modes initialization
+
+;; compile updated init files on exit
+(defconst my:byte-compile-path '( "~/.emacs.d" "~/.emacs.d/utils" ))
+(defun my:byte-compile-updated ()
+  "Compile updated init files."
+  (interactive)
+  (dolist (dir my:byte-compile-path)
+    (if (file-exists-p dir)
+        (dolist (file (directory-files dir))
+          (when (string-match "\\.el\\'" file)
+            (let* ((src (concat dir "/" file))
+                   (target (concat src "c")))
+              (unless (and (file-exists-p target)
+                           (file-newer-than-file-p target src))
+                (byte-compile-file src))))))))
+(add-hook 'kill-emacs-hook 'my:byte-compile-updated)
 
 ;; el-doc
 (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
