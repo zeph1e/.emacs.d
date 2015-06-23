@@ -156,8 +156,8 @@
 
     ;; multiple-cursors
     (define-key map (kbd "C-/") 'mc/edit-lines)
-    (define-key map (kbd "C-.") 'mc/mark-next-like-this)
-    (define-key map (kbd "C-,") 'mc/mark-previous-like-this)
+    (define-key map (kbd "M-.") 'mc/mark-next-like-this)
+    (define-key map (kbd "M-,") 'mc/mark-previous-like-this)
     (define-key map (kbd "M-/") 'mc/mark-all-like-this)
 
     ;; vi-like line insertion
