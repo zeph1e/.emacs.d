@@ -87,6 +87,9 @@
   indent-tabs-mode nil ; don't insert tabs in indent
   tab-stop-list '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80)
   tab-always-indent nil
+  show-paren-mode t
+  my:use-theme t
+  my:use-theme-per-frame nil
 )
 
 (setq
@@ -98,54 +101,12 @@
 )
 
 (unless (server-running-p) (server-start)) ; start server
-(ignore-errors
-  (set-default-font "Lucida Console-10") ; set font
-  (error nil))
 
 ;; from http://emacswiki.org/emacs/DeletingWhitespace
 (defadvice kill-line (after kill-line-cleanup-whitespace activate compile)
   "cleanup whitespace on kill-line"
   (if (not (bolp))
       (delete-region (point) (progn (skip-chars-forward " \t") (point)))))
-
-(defvar my:use-theme nil)
-(when (or (string-match "256color" (concat "" (getenv "TERM")))
-        (display-graphic-p))
-    (setq my:use-theme t))
-
-(defvar my:themes-for-frames '(color-theme-tomorrow-night-eighties
-                               color-theme-kingsajz
-                               color-theme-gray30
-                               color-theme-arjen
-                               color-theme-tomorrow-night-blue
-                               color-theme-blue-sea
-                               color-theme-oswald
-                               color-theme-parus))
-
-(defun my:apply-color-theme (&optional frame)
-  "Apply color-themes for each frames."
-  ;; (setq color-theme-is-global nil)
-  (if (and (stringp (getenv "EMACS_THEME")) ; if emacs theme is set, apply that theme to all frames
-           (string-match "\\`color-theme-" (getenv "EMACS_THEME"))
-           (functionp (intern (getenv "EMACS_THEME"))))
-      (funcall (intern (getenv "EMACS_THEME")))
-    (let ((f (if (framep frame) frame (selected-frame)))
-          (thm (car my:themes-for-frames)))
-      (when (functionp thm)
-        (when (framep f)
-          (set-frame-parameter f 'selected-theme thm)
-          (setq my:themes-for-frames (cdr my:themes-for-frames)))
-        (funcall thm)))))
-;; (add-hook 'after-make-frame-functions 'my:apply-color-theme)
-
-(defun my:restore-color-theme (&optional frame)
-  "Restore color theme fcrom the frame being deleted."
-  (let* ((f (if (framep frame) frame (selected-frame)))
-         (thm (frame-parameter f 'selected-theme)))
-    (add-to-list 'my:themes-for-frames thm))) ; list head & no possible duplicate
-;; (add-hook 'delete-frame-functions 'my:restore-color-theme)
-
-(if my:use-theme (my:apply-color-theme) (color-theme-standard))
 
 ;; global keybindings
 (defvar my:keys-mode-keymap
@@ -175,9 +136,9 @@
 
     ;; frame
     (define-key map (kbd "C-<left>")  (lambda (p) (interactive "p")
-                                        (select-frame (next-frame))))
+                                        (select-frame (next-frame)) (if my:use-theme-per-frame (my:apply-color-theme))))
     (define-key map (kbd "C-<right>") (lambda (p) (interactive "p")
-                                        (select-frame (previous-frame))))
+                                        (select-frame (previous-frame)) (if my:use-theme-per-frame (my:apply-color-theme))))
     (define-key map (kbd "C-x +")     (lambda (p) (interactive "p")
                                         (when (yes-or-no-p "Create a new frame? ")
                                           (select-frame (make-frame)))))
