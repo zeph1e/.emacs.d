@@ -87,7 +87,6 @@
   tab-stop-list '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80)
   tab-always-indent nil
   show-paren-mode t
-  show-trailing-whitespace t
   my:use-theme t
   my:use-theme-per-frame nil
 )
@@ -250,6 +249,12 @@ minibuffer), then split the current window horizontally."
     (split-window-sensibly window)))
 (setq split-window-preferred-function 'my:split-window-prefer-horizonally)
 
+;; I don't like to see red marks in unexpected buffers
+(define-minor-mode my:trailing-whitespace-mode
+"Shows trailing whitespaces."
+  nil nil nil
+ (setq show-trailing-whitespace t))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; modes initialization
 
@@ -259,8 +264,8 @@ minibuffer), then split the current window horizontally."
 (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
 
 ;; Minor modes to apply
-(setq prog-minor-mode-list '(linum-mode))
-(setq text-minor-mode-list '(linum-mode))
+(setq prog-minor-mode-list '(linum-mode my:trailing-whitespace-mode))
+(setq text-minor-mode-list '(linum-mode my:trailing-whitespace-mode))
 
 ;; enable minor modes for prog-mode(there's a case of that prog-mode is nil)
 (let (value)
