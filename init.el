@@ -87,6 +87,7 @@
   tab-stop-list '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80)
   tab-always-indent nil
   show-paren-mode t
+  show-trailing-whitespace t
   my:use-theme t
   my:use-theme-per-frame nil
 )
@@ -105,12 +106,7 @@
   (set-frame-font "Lucida Console-10") ; set font
   (error nil))
 
-;; from http://emacswiki.org/emacs/DeletingWhitespace
-(defadvice kill-line (after kill-line-cleanup-whitespace activate compile)
-  "cleanup whitespace on kill-line"
-  (if (not (bolp))
-      (delete-region (point) (progn (skip-chars-forward " \t") (point)))))
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; global keybindings
 (defvar my:keys-mode-keymap
   (let ((map (make-sparse-keymap)))
@@ -138,17 +134,10 @@
     (define-key map (kbd "C-x x")     'delete-window) ; Window Close keybindings
 
     ;; frame
-    (define-key map (kbd "C-<left>")  (lambda (p) (interactive "p")
-                                        (select-frame (next-frame)) (if my:use-theme-per-frame (my:apply-color-theme))))
-    (define-key map (kbd "C-<right>") (lambda (p) (interactive "p")
-                                        (select-frame (previous-frame)) (if my:use-theme-per-frame (my:apply-color-theme))))
-    (define-key map (kbd "C-x +")     (lambda (p) (interactive "p")
-                                        (when (yes-or-no-p "Create a new frame? ")
-                                          (select-frame (make-frame)))))
-
-    (define-key map (kbd "C-x _")     (lambda (p) (interactive "p")
-                                        (when (yes-or-no-p "Delete current frame? ")
-                                          (delete-frame(selected-frame)))))
+    (define-key map (kbd "C-<left>")  'my:switch-frame-next)
+    (define-key map (kbd "C-<right>") 'my:switch-frame-previous)
+    (define-key map (kbd "C-x +")     'my:make-new-frame)
+    (define-key map (kbd "C-x _")     'my:delete-selected-frame)
 
     ;; undo+
     (define-key map (kbd "C-_") 'undo)
@@ -203,7 +192,36 @@ Key bindings:
   (global-set-key k 'ignore))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; modes initialization
+;; custom functions
+(defvar my:switch-frame-hook nil
+  "Hook run after `switch-frame-previous' or `switch-frame-next'.")
+
+;; frame related
+(defun my:switch-frame-next (p)
+  (interactive "p")
+  (select-frame (next-frame))
+  (run-hooks 'my:switch-frame-hook))
+
+(defun my:switch-frame-previous (p)
+  (interactive "p")
+  (select-frame (previous-frame))
+  (run-hooks 'my:switch-frame-hook))
+
+(defun my:make-new-frame (p)
+  (interactive "p")
+  (when (yes-or-no-p "Create a new frame? ")
+    (select-frame (make-frame))))
+
+(defun my:delete-selected-frame (p)
+  (interactive "p")
+  (when (yes-or-no-p "Delete current frame? ")
+    (delete-frame (selected-frame))))
+
+;; kill heading spaces on kill-line : from http://emacswiki.org/emacs/DeletingWhitespace
+(defadvice kill-line (after kill-line-cleanup-whitespace activate compile)
+  "cleanup whitespace on kill-line"
+  (if (not (bolp))
+      (delete-region (point) (progn (skip-chars-forward " \t") (point)))))
 
 ;; compile updated init files on exit
 (defconst my:byte-compile-path '( "~/.emacs.d" "~/.emacs.d/utils" ))
@@ -221,21 +239,28 @@ Key bindings:
                 (byte-compile-file src))))))))
 (add-hook 'kill-emacs-hook 'my:byte-compile-updated)
 
+;; split horizontally first, from http://www.emacswiki.org/emacs/HorizontalSplitting
+(defun my:split-window-prefer-horizonally (window)
+  "If there's only one window (excluding any possibly active
+minibuffer), then split the current window horizontally."
+  (if (and (one-window-p t)
+           (not (active-minibuffer-window)))
+      (let ((split-height-threshold nil))
+        (split-window-sensibly window))
+    (split-window-sensibly window)))
+(setq split-window-preferred-function 'my:split-window-prefer-horizonally)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; modes initialization
+
 ;; el-doc
 (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
 
-;; simple minor modes
-(define-minor-mode my:trailing-whitespace-mode
-"Shows trailing whitespaces."
-  nil nil nil
- (setq show-trailing-whitespace t))
-
-
 ;; Minor modes to apply
-(setq prog-minor-mode-list '(linum-mode my:trailing-whitespace-mode))
-(setq text-minor-mode-list '(linum-mode my:trailing-whitespace-mode))
+(setq prog-minor-mode-list '(linum-mode))
+(setq text-minor-mode-list '(linum-mode))
 
 ;; enable minor modes for prog-mode(there's a case of that prog-mode is nil)
 (let (value)
@@ -268,12 +293,6 @@ Key bindings:
 ;; file assosiations
 (add-to-list 'auto-mode-alist '("\\.uml\\'" . plantuml-mode))
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode)) ; C++, rather than C
-
-;; enable redspace for editors
-;;(add-hook 'prog-mode-hook 'redspace-mode)
-;;(add-hook 'text-mode-hook 'redspace-mode)
-;;(define-globalized-minor-mode global-redspace-mode redspace-mode redspace-mode)
-;;(global-redspace-mode t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; customized options

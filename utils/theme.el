@@ -51,10 +51,10 @@ But it's too slow, doesn't work for minibar, and conflict with show-paren-mode."
     (add-to-list 'my:themes-for-frames thm))) ; put into list head & no possible duplicate
 
 (defun my:make-frame-function (frame)
-  (if my:use-theme-per-frame (my:apply-color-theme frame)))
+  (my:apply-color-theme frame))
 
 (defun my:delete-frame-function (frame)
-  (if my:use-theme-per-frame (my:restore-color-theme frame)))
+  (my:restore-color-theme frame))
 
 
 ;; (defun my:set-paren-face ()
@@ -65,8 +65,9 @@ But it's too slow, doesn't work for minibar, and conflict with show-paren-mode."
 ;;   (set-face-background 'show-paren-mismatch "#F33")
 ;;   (set-face-attribute 'show-paren-mismatch-face  nil :weight 'extra-bold))
 
-
-;; (add-hook 'after-make-frame-functions 'my:make-frame-function)
-;; (add-hook 'delete-frame-functions 'my:delete-frame-function)
+(when my:use-theme-per-frame
+  (add-hook 'my:switch-frame-hook 'my:apply-color-theme)
+  (add-hook 'after-make-frame-functions 'my:make-frame-function)
+  (add-hook 'delete-frame-functions 'my:delete-frame-function))
 
 (if my:can-theme (my:apply-color-theme) (color-theme-standard))
