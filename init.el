@@ -122,21 +122,21 @@
     (define-key map (kbd "M-<right>") 'buffer-right-swap)
     (define-key map (kbd "M-<left>")  'buffer-left-swap)
 
-    (define-key map (kbd "M-S-<left>")  'shrink-window-horizontally) ; Window Resizing keybindings
-    (define-key map (kbd "M-S-<right>") 'enlarge-window-horizontally)
-    (define-key map (kbd "M-S-<down>")  'shrink-window)
-    (define-key map (kbd "M-S-<up>")    'enlarge-window)
-
     (define-key map (kbd "C-x -")     'split-window-vertically) ; Window Split keybindings
     (define-key map (kbd "C-x |")     'split-window-horizontally)
 
     (define-key map (kbd "C-x x")     'delete-window) ; Window Close keybindings
+
+    (define-key map (kbd "C-x C-o") 'ff-find-other-file)
 
     ;; frame
     (define-key map (kbd "C-<left>")  'my:switch-frame-next)
     (define-key map (kbd "C-<right>") 'my:switch-frame-previous)
     (define-key map (kbd "C-x +")     'my:make-new-frame)
     (define-key map (kbd "C-x _")     'my:delete-selected-frame)
+
+    ;; revert files
+    (define-key map (kbd "<f5>") 'my:revert-all-buffers)
 
     ;; undo+
     (define-key map (kbd "C-_") 'undo)
@@ -215,6 +215,16 @@ Key bindings:
   (interactive "p")
   (when (yes-or-no-p "Delete current frame? ")
     (delete-frame (selected-frame))))
+
+;; revert all buffers that are visiting a file: from http://emacswiki.org/emacs/RevertBuffer
+(defun my:revert-all-buffers ()
+  "Refreshes all open buffers from their respective files."
+  (interactive)
+  (dolist (buf (buffer-list))
+    (with-current-buffer buf
+      (when (and (buffer-file-name) (file-exists-p (buffer-file-name)) (not (buffer-modified-p)))
+        (revert-buffer t t t) )))
+  (message "Refreshed open files.") )
 
 ;; kill heading spaces on kill-line : from http://emacswiki.org/emacs/DeletingWhitespace
 (defadvice kill-line (after kill-line-cleanup-whitespace activate compile)
@@ -301,3 +311,4 @@ minibuffer), then split the current window horizontally."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; customized options
+(put 'upcase-region 'disabled nil)
