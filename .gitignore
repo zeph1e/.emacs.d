@@ -4,3 +4,6 @@
 el-get/*
 smex-items
 eshell/*
+ac-comphist.dat
+ido.last
+server/*

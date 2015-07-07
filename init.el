@@ -100,7 +100,7 @@
   linum-format "%4d\u2502"
 )
 
-(unless (server-running-p) (server-start)) ; start server
+(unless (or (server-running-p) (deamonp)) (server-start)) ; start server
 (ignore-errors
   (set-frame-font "Lucida Console-10") ; set font
   (add-hook 'after-make-frame-functions

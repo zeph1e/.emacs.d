@@ -12,7 +12,8 @@
 But it's too slow, doesn't work for minibar, and conflict with show-paren-mode.")
 
 (when (or (string-match "256color" (concat "" (getenv "TERM")))
-        (display-graphic-p))
+          (display-graphic-p)
+          (daemonp))
     (setq my:can-theme my:use-theme))
 
 (defvar my:themes-for-frames '(color-theme-tomorrow-night-eighties
