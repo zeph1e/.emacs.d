@@ -54,13 +54,14 @@
 (el-get-bundle  qmake-mode)
 (el-get-bundle  qml-mode)
 (el-get-bundle! redo+)
+(el-get-bundle  smex)
 (el-get-bundle  windcycle)
 (el-get-bundle  yasnippet) (yas-global-mode t)
 (el-get-bundle  color-theme) (color-theme-initialize)
 (el-get-bundle  color-theme-tomorrow)
-(when (>= emacs-major-version 24) ;; >= 24
-    (el-get-bundle  smex)
-)
+(when (eq system-type 'windows-nt)
+  (el-get-bundle basic)
+  (add-to-list 'auto-mode-alist '("\\.vbs\\'" . basic-mode)))
 
 ;; load files in utils/
 (add-to-list 'load-path "~/.emacs.d/utils")
@@ -102,6 +103,9 @@
 (unless (server-running-p) (server-start)) ; start server
 (ignore-errors
   (set-frame-font "Lucida Console-10") ; set font
+  (add-hook 'after-make-frame-functions
+            (lambda (frame)
+              (set-frame-font "Lucida Console-10" nil (list frame))))
   (error nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -298,6 +302,8 @@ minibuffer), then split the current window horizontally."
       (add-hook 'js-mode-hook mode)
       (add-hook 'sh-mode-hook mode))
     (add-hook 'qmake-mode-hook mode) ; not in prog-mode
+    (if (fboundp 'basic-mode)
+        (add-hook 'basic-mode-hook mode))
 ))
 
 ;; enable minor modes for text-mode
