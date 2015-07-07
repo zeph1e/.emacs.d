@@ -109,6 +109,10 @@
 ;; global keybindings
 (defvar my:keys-mode-keymap
   (let ((map (make-sparse-keymap)))
+    ;; On windows, resolve key conflict with windows IME
+    (when (eq system-type 'windows-nt)
+      (define-key map (kbd "C-<kanji>") 'set-mark-command))
+
     ;; windmove
     (define-key map (kbd "S-<left>")  'windmove-left)
     (define-key map (kbd "S-<right>") 'windmove-right)
