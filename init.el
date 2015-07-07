@@ -43,7 +43,6 @@
 (el-get-bundle  json-mode)
 (el-get-bundle  magit) (setq magit-last-seen-setup-instructions "1.4.0")
                        (setq magit-auto-revert-mode nil)
-(el-get-bundle  magit-gerrit)
 (el-get-bundle  magit-gh-pulls)
 (el-get-bundle  markdown-mode)
 (el-get-bundle! markdown-preview-mode)
