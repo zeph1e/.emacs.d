@@ -118,6 +118,10 @@
     (when (eq system-type 'windows-nt)
       (define-key map (kbd "C-<kanji>") 'set-mark-command))
 
+    ;; scroll to buffer beginning/end
+    (define-key map (kbd "C-v") 'my:scroll-up-command)
+    (define-key map (kbd "M-v") 'my:scroll-down-command)
+
     ;; windmove
     (define-key map (kbd "S-<left>")  'windmove-left)
     (define-key map (kbd "S-<right>") 'windmove-right)
@@ -234,6 +238,22 @@ Key bindings:
       (when (and (buffer-file-name) (file-exists-p (buffer-file-name)) (not (buffer-modified-p)))
         (revert-buffer t t t) )))
   (message "Refreshed open files.") )
+
+(defun my:scroll-up-command (&optional arg)
+  (interactive "P")
+  (if (eq (point)(point-max))
+      (signal 'end-of-buffer '())
+    (condition-case e
+        (scroll-up-command arg)
+      (end-of-buffer (goto-char (point-max))))))
+
+(defun my:scroll-down-command (&optional arg)
+  (interactive "P")
+  (if (eq (point)(point-min))
+      (signal 'beginning-of-buffer '())
+    (condition-case e
+        (scroll-down-command arg)
+      (beginning-of-buffer (goto-char (point-min))))))
 
 ;; kill heading spaces on kill-line : from http://emacswiki.org/emacs/DeletingWhitespace
 (defadvice kill-line (after kill-line-cleanup-whitespace activate compile)
