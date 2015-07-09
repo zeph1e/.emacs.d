@@ -1,7 +1,5 @@
 ;;; magit-assist.el
 
-(require 'magit)
-
 (defvar magit-assist-dired-mode-keymap
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "@ f")  'magit-assist-dired-file-log)
@@ -13,18 +11,20 @@
   "Magit-assist keymap for dired.")
 
 (defun magit-assist-dired-file-log (file &optional use-graph)
-  (interactive
-   (list (magit-read-file-from-rev (magit-get-current-branch)
-                                   (magit-file-relative-name(dired-file-name-at-point)))
-         current-prefix-arg))
-  (magit-file-log file use-graph))
+  (with-eval-after-load 'magit
+    (interactive
+     (list (magit-read-file-from-rev (magit-get-current-branch)
+                                     (magit-file-relative-name(dired-file-name-at-point)))
+           current-prefix-arg))
+    (magit-file-log file use-graph)))
 
 (define-minor-mode magit-assist-dired-mode
   "Add some keybindings into dired mode.
 
 Key bindings:
 \\{magit-assist-dired-mode-keymap}"
-  nil nil magit-assist-dired-mode-keymap)
+  nil nil magit-assist-dired-mode-keymap
+  (require 'magit))
 (add-hook 'dired-mode-hook 'magit-assist-dired-mode)
 
 ;; (define-minor-mode magit-assist-dired-branch-mode
