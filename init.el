@@ -78,6 +78,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; basic options
+(set-language-environment "Korean")
 (setq-default
   c-default-style '((java-mode . "java") (awk-mode . "awk") (python-mode . "python")
                     (other . "linux"))
@@ -98,6 +99,7 @@
   inhibit-startup-screen t ; no startup screen
   inhibit-startup-message t ; no startup message
   linum-format "%4d\u2502"
+  default-input-method "korean-hangul390"
 )
 
 (unless (or (if (boundp 'server-running-p) (server-running-p))
