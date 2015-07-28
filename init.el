@@ -35,6 +35,7 @@
     (add-to-list 'achead:include-directories
                  (substring (shell-command-to-string "qmake -query QT_INSTALL_HEADERS") 0 -1)))
 
+(el-get-bundle  erc)
 (el-get-bundle  franca-idl)
 (el-get-bundle  google-c-style)
 (el-get-bundle  iedit)
