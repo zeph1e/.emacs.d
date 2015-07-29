@@ -34,8 +34,7 @@
 (if (executable-find "qmake")           ; qt headers
     (add-to-list 'achead:include-directories
                  (substring (shell-command-to-string "qmake -query QT_INSTALL_HEADERS") 0 -1)))
-
-(el-get-bundle  erc)
+(unless (or (eq system-type 'windows-nt) (fboundp 'erc)) (el-get-bundle  erc))
 (el-get-bundle  franca-idl)
 (el-get-bundle  google-c-style)
 (el-get-bundle  iedit)
