@@ -345,3 +345,4 @@ minibuffer), then split the current window horizontally."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; customized options
 (put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
