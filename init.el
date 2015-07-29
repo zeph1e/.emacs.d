@@ -103,10 +103,8 @@
   default-input-method "korean-hangul390"
 )
 
-(unless (or (if (boundp 'server-running-p) (server-running-p))
-            (daemonp))
-  (server-start)) ; start server
 (ignore-errors
+  (server-start) ; start server
   (set-frame-font "Lucida Console-10") ; set font
   (add-hook 'after-make-frame-functions
             (lambda (frame)
