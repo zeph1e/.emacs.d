@@ -272,7 +272,7 @@ Key bindings:
   (dolist (dir my:byte-compile-path)
     (if (file-exists-p dir)
         (dolist (file (directory-files dir))
-          (when (string-match "\\.el\\'" file)
+          (when (string-match "^[^\\.]+\\.el\\'" file)
             (let* ((src (concat dir "/" file))
                    (target (concat src "c")))
               (unless (and (file-exists-p target)
