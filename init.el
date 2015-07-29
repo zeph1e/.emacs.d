@@ -104,11 +104,13 @@
 )
 
 (ignore-errors
-  (server-start) ; start server
-  (set-frame-font "Lucida Console-10") ; set font
-  (add-hook 'after-make-frame-functions
-            (lambda (frame)
-              (set-frame-font "Lucida Console-10" nil (list frame))))
+  (let ((warning-minimum-level :emergency)) ; a kinda tricky way to suppress warning
+    (server-start)) ; start server
+  (when (display-graphic-p)
+    (let ((korean-font (if (eq system-type 'windows-nt) "맑은 고딕-10" "NanumGothicCoding-10")))
+      (set-face-font 'default "Lucida Console-10")
+      (set-fontset-font "fontset-default" '(#x1100 . #xffdc) korean-font)
+      (set-fontset-font "fontset-default" '(#xe0bc . #xf66e) korean-font)))
   (error nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -1,4 +1,5 @@
 (defun my:erc-setup ()
+  (setq erc-nick "zeph1e")
   (setq erc-autojoin-channels-alist '(("freenode.net" "#emacs"))
 	erc-autojoin-mode t)
   (set-face-foreground 'erc-input-face "ivory"))
