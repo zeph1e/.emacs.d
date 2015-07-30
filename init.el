@@ -54,6 +54,7 @@
 (el-get-bundle  qmake-mode)
 (el-get-bundle  qml-mode)
 (el-get-bundle! redo+)
+(if (executable-find "convert") (el-get-bundle  screenshot))
 (el-get-bundle  smex)
 (el-get-bundle  windcycle)
 (el-get-bundle  yasnippet) (yas-global-mode t)
