@@ -100,6 +100,7 @@
   inhibit-startup-message t ; no startup message
   linum-format "%4d\u2502"
   default-input-method "korean-hangul390"
+  coding-system-for-read 'utf-8
 )
 
 (ignore-errors
