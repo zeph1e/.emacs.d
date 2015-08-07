@@ -120,7 +120,8 @@
   (let ((map (make-sparse-keymap)))
     ;; On windows, resolve key conflict with windows IME
     (when (eq system-type 'windows-nt)
-      (define-key map (kbd "C-<kanji>") 'set-mark-command))
+      (define-key map (kbd "C-<kanji>") 'set-mark-command)
+      (define-key map (kbd "<kana>")    'toggle-input-method)) ; windows 10, S-<space> as <kana>
 
     ;; scroll to buffer beginning/end
     (define-key map (kbd "C-v") 'my:scroll-up-command)
@@ -348,3 +349,4 @@ minibuffer), then split the current window horizontally."
 ;; customized options
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
+(put 'narrow-to-region 'disabled nil)
