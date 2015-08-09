@@ -1,5 +1,8 @@
 ;;; magit-assist.el
 
+(when (eq system-type 'windows-nt) ; to resolve push problems in windows
+  (setenv "GIT_ASKPASS" "git-gui--askpass"))
+
 (defvar magit-assist-dired-mode-keymap
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "@ f")  'magit-assist-dired-file-log)
