@@ -10,13 +10,20 @@
     map)
   "Magit-assist keymap for dired.")
 
-(defun magit-assist-dired-file-log (file &optional use-graph)
-  (with-eval-after-load 'magit
+(with-eval-after-load "magit"
+  (defun magit-assist-dired-file-log (file &optional use-graph)
     (interactive
-     (list (magit-read-file-from-rev (magit-get-current-branch)
-                                     (magit-file-relative-name(dired-file-name-at-point)))
-           current-prefix-arg))
-    (magit-file-log file use-graph)))
+     (if (< 2 (length (help-function-arglist 'magit-read-file-from-rev)))
+         (list (magit-read-file-from-rev (magit-get-current-branch)
+                                         "Filename: "
+                                         (magit-file-relative-name (dired-file-name-at-point)))
+               current-prefix-arg)
+       (list (magit-read-file-from-rev (magit-get-current-branch)
+                                       (magit-file-relative-name (dired-file-name-at-point)))
+             current-prefix-arg)))
+    (if (fboundp 'magit-file-log)
+        (magit-file-log file use-graph)
+      (magit-log-head '("--decorate") (list file)))))
 
 (define-minor-mode magit-assist-dired-mode
   "Add some keybindings into dired mode.
