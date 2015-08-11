@@ -106,7 +106,8 @@
 
 (ignore-errors
   (let ((warning-minimum-level :emergency)) ; a kinda tricky way to suppress warning
-    (server-start)) ; start server
+    (require 'server)
+    (if (not (server-running-p)(server-start)))) ; start server
   (when (display-graphic-p)
     (let ((korean-font (if (eq system-type 'windows-nt) "맑은 고딕-10" "NanumGothicCoding-10")))
       (set-face-font 'default "Lucida Console-10")
@@ -265,6 +266,15 @@ Key bindings:
   "cleanup whitespace on kill-line"
   (if (not (bolp))
       (delete-region (point) (progn (skip-chars-forward " \t") (point)))))
+
+;; To resolve encoding conflict of shell on windows
+(defadvice shell (around shell-w32-encoding (&optional buffer))
+  (interactive)
+  (let ((coding-system-for-read 'korean-cp949))
+    ad-do-it))
+(eval-after-load "shell"
+  (if (eq system-type 'windows-nt)
+     (ad-activate 'shell)))
 
 ;; compile updated init files on exit
 (defconst my:byte-compile-path '( "~/.emacs.d" "~/.emacs.d/utils" ))
