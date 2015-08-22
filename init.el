@@ -268,13 +268,13 @@ Key bindings:
       (delete-region (point) (progn (skip-chars-forward " \t") (point)))))
 
 ;; To resolve encoding conflict of shell on windows
-(defadvice shell (around shell-w32-encoding (&optional buffer))
-  (interactive)
-  (let ((coding-system-for-read 'korean-cp949))
-    ad-do-it))
 (eval-after-load "shell"
-  (if (eq system-type 'windows-nt)
-     (ad-activate 'shell)))
+  (when (eq system-type 'windows-nt)
+    (defadvice shell (around shell-w32-encoding (&optional buffer))
+      (interactive)
+      (let ((coding-system-for-read 'korean-cp949))
+        ad-do-it))
+      (ad-activate 'shell)))
 
 ;; compile updated init files on exit
 (defconst my:byte-compile-path '( "~/.emacs.d" "~/.emacs.d/utils" ))
