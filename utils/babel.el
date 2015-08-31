@@ -23,5 +23,6 @@
   (require 'ob-python)
   (require 'ob-plantuml) (setq org-plantuml-jar-path "~/.emacs.d/el-get/plantuml-mode/plantuml.jar")
   (require 'ob-sh)
-  (org-babel-do-load-languages 'org-babel-do-load-languages babel-language-alist))
+  (org-babel-do-load-languages 'org-babel-do-load-languages babel-language-alist)
+  (org-confirm-babel-evaluate nil))
 (add-hook 'org-mode-hook 'babel-language-mode)
