@@ -269,7 +269,7 @@ Key bindings:
 
 ;; To resolve encoding conflict of shell on windows
 (eval-after-load "shell"
-  (when (eq system-type 'windows-nt)
+  '(when (eq system-type 'windows-nt)
     (defadvice shell (around shell-w32-encoding (&optional buffer))
       (interactive)
       (let ((coding-system-for-read 'korean-cp949))
