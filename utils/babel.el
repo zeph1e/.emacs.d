@@ -1,5 +1,8 @@
 ;;; babel.el -- org-babel configuration
 
+;; Written by Yunsik Jang <doomsday@kldp.org>
+;; You can use/modify/redistribute this freely
+
 (defconst babel-language-alist '((:lang awk :req ob-awk :mode awk)
                                  (:lang C :req ob-C :mode c)
                                  (:lang cpp :req ob-C :mode c++)
@@ -7,6 +10,7 @@
                                  (:lang emacs-lisp :req ob-emacs-lisp :mode emacs-lisp)
                                  (:lang gnuplot :req ob-gnuplot :mode gnuplot)
                                  (:lang java :req ob-java :mode java)
+                                 (:lang org :req ob-org :mode org)
                                  (:lang python :req ob-python :mode python)
                                  (:lang plantuml
                                         :req ob-plantuml
