@@ -36,7 +36,7 @@
                  (substring (shell-command-to-string "qmake -query QT_INSTALL_HEADERS") 0 -1)))
 (unless (or (eq system-type 'windows-nt) (fboundp 'erc)) (el-get-bundle  erc))
 (el-get-bundle  franca-idl)
-(el-get-bundle  gnuplot-mode)
+(if (executable-find "gnuplot") (el-get-bundle  gnuplot-mode))
 (el-get-bundle  google-c-style)
 (el-get-bundle  iedit)
 (el-get-bundle  iman)
