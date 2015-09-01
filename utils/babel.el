@@ -1,29 +1,32 @@
 ;;; babel.el -- org-babel configuration
 
-(defconst babel-language-alist '((awk . ob-awk)
-                                 (C . ob-C)
-                                 (cpp . ob-C)
-                                 (css . ob-css)
-                                 (emacs-lisp . ob-emacs-lisp)
-                                 (gnuplot . ob-gnuplot)
-                                 (java . ob-java)
-                                 (python . ob-python)
-                                 (plantuml . ob-plantuml)
-                                 (sh . ob-sh)))
+(defconst babel-language-alist '((:lang awk :req ob-awk :mode awk)
+                                 (:lang C :req ob-C :mode c)
+                                 (:lang cpp :req ob-C :mode c++)
+                                 (:lang css :req ob-css :mode css)
+                                 (:lang emacs-lisp :req ob-emacs-lisp :mode emacs-lisp)
+                                 (:lang gnuplot :req ob-gnuplot :mode gnuplot)
+                                 (:lang java :req ob-java :mode java)
+                                 (:lang python :req ob-python :mode python)
+                                 (:lang plantuml
+                                        :req ob-plantuml
+                                        :mode plantuml
+                                        :settings (setq org-plantuml-jar-path
+                                                        "~/.emacs.d/el-get/plantuml-mode/plantuml.jar"))
+                                 (:lang ruby :req ob-ruby :mode ruby)
+                                 (:lang sh :req ob-sh :mode shell-script)))
 
 (eval-after-load 'org
   '(progn
-     (let (load-languages require-list)
+     (let (load-languages)
        (dolist (lang babel-language-alist)
-         (push (cons (car lang) t) load-languages)
-         (add-to-list 'require-list (cdr lang)))
-       (dolist (req require-list)
-         (require req))
+         (when lang
+           (push (cons (plist-get lang ':lang) t) load-languages)
+           (require (plist-get lang ':req))
+           (add-to-list 'org-src-lang-modes
+                        (cons (symbol-name (plist-get lang ':lang)) (plist-get lang ':mode)))
+           (eval (plist-get lang ':settings))))
        (org-babel-do-load-languages 'org-babel-do-load-languages load-languages))
-     (org-babel-do-load-languages 'org-babel-do-load-languages babel-language-alist)
-
-     ;; additional settings for each languages
-     (setq org-plantuml-jar-path "~/.emacs.d/el-get/plantuml-mode/plantuml.jar")
 
      ;; other settings
      (setq org-confirm-babel-evaluate nil) ; turn off annoying prompt
