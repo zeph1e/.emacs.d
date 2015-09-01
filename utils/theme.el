@@ -42,7 +42,8 @@ But it's too slow, doesn't work for minibar, and conflict with show-paren-mode."
           (unless sthm
             (set-frame-parameter f 'selected-theme thm)
             (setq my:themes-for-frames (cdr my:themes-for-frames)))
-        (funcall thm))
+          (funcall thm)
+          (set-face-attribute 'mode-line nil :background "tomato"))
         (select-frame sf)))))
 
 (defun my:restore-color-theme (&optional frame)
