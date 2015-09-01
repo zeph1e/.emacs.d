@@ -36,6 +36,7 @@
                  (substring (shell-command-to-string "qmake -query QT_INSTALL_HEADERS") 0 -1)))
 (unless (or (eq system-type 'windows-nt) (fboundp 'erc)) (el-get-bundle  erc))
 (el-get-bundle  franca-idl)
+(el-get-bundle  gnuplot-mode)
 (el-get-bundle  google-c-style)
 (el-get-bundle  iedit)
 (el-get-bundle  iman)
@@ -354,7 +355,7 @@ minibuffer), then split the current window horizontally."
 ;; file assosiations
 (add-to-list 'auto-mode-alist '("\\.uml\\'" . plantuml-mode))
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode)) ; C++, rather than C
-
+(add-to-list 'auto-mode-alist '("\\.\\(gp\\(i\\)?\\|plt\\)\\'" . gnuplot-mode))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; customized options
 (put 'upcase-region 'disabled nil)
