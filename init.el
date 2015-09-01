@@ -137,10 +137,10 @@
     (define-key map (kbd "S-<down>")  'windmove-down)
 
     ;; windcycle
-    (define-key map (kbd "M-<up>")    'buffer-up-swap) ; Switch window keybindings
-    (define-key map (kbd "M-<down>")  'buffer-down-swap)
-    (define-key map (kbd "M-<right>") 'buffer-right-swap)
-    (define-key map (kbd "M-<left>")  'buffer-left-swap)
+    (define-key map (kbd "C-<up>")    'buffer-up-swap) ; Switch window keybindings
+    (define-key map (kbd "C-<down>")  'buffer-down-swap)
+    (define-key map (kbd "C-<right>") 'buffer-right-swap)
+    (define-key map (kbd "C-<left>")  'buffer-left-swap)
 
     (define-key map (kbd "C-x -")     'split-window-vertically) ; Window Split keybindings
     (define-key map (kbd "C-x |")     'split-window-horizontally)
@@ -148,12 +148,6 @@
     (define-key map (kbd "C-x x")     'delete-window) ; Window Close keybindings
 
     (define-key map (kbd "C-x C-o") 'ff-find-other-file)
-
-    ;; frame
-    (define-key map (kbd "C-<left>")  'my:switch-frame-next)
-    (define-key map (kbd "C-<right>") 'my:switch-frame-previous)
-    (define-key map (kbd "C-x +")     'my:make-new-frame)
-    (define-key map (kbd "C-x _")     'my:delete-selected-frame)
 
     ;; revert files
     (define-key map (kbd "<f5>") 'my:revert-all-buffers)
@@ -214,27 +208,6 @@ Key bindings:
 ;; custom functions
 (defvar my:switch-frame-hook nil
   "Hook run after `switch-frame-previous' or `switch-frame-next'.")
-
-;; frame related
-(defun my:switch-frame-next (p)
-  (interactive "p")
-  (select-frame (next-frame))
-  (run-hooks 'my:switch-frame-hook))
-
-(defun my:switch-frame-previous (p)
-  (interactive "p")
-  (select-frame (previous-frame))
-  (run-hooks 'my:switch-frame-hook))
-
-(defun my:make-new-frame (p)
-  (interactive "p")
-  (when (yes-or-no-p "Create a new frame? ")
-    (select-frame (make-frame))))
-
-(defun my:delete-selected-frame (p)
-  (interactive "p")
-  (when (yes-or-no-p "Delete current frame? ")
-    (delete-frame (selected-frame))))
 
 ;; revert all buffers that are visiting a file: from http://emacswiki.org/emacs/RevertBuffer
 (defun my:revert-all-buffers ()
