@@ -1,0 +1,13 @@
+#!/bin/sh
+EMACSCLIENT="emacsclient"
+RUNNING_AS=`$EMACSCLIENT -e "(process-get server-process ':as)"`
+OPT=
+if [ -z "$EMACS" ]; then
+    if [ "$RUNNING_AS" = "gui" -a -z "`echo $TERM | grep xterm`" ]; then
+        OPT="-c"
+    else
+        OPT="-t"
+    fi
+fi
+
+exec $EMACSCLIENT $OPT --alternate-editor="emacs" "$@" 2> /dev/null

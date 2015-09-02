@@ -48,9 +48,11 @@
 (el-get-bundle  markdown-mode)
 (el-get-bundle! markdown-preview-mode)
 (el-get-bundle  multiple-cursors)
-(unless (functionp 'org-mode) (el-get-bundle org-mode)) ; can be installed with linux-dist-package
+(unless (fboundp 'org-mode) (el-get-bundle org-mode)) ; can be installed with linux-dist-package
+(el-get-bundle  org-present)
 (el-get-bundle  org-publish)
 (el-get-bundle  org-readme)
+(el-get-bundle  org-reveal)
 (el-get-bundle  plantuml-mode)
 (el-get-bundle  qmake-mode)
 (el-get-bundle  qml-mode)
@@ -108,7 +110,11 @@
 (ignore-errors
   (let ((warning-minimum-level :emergency)) ; a kinda tricky way to suppress warning
     (require 'server)
-    (if (not (server-running-p)(server-start)))) ; start server
+    (if (not (server-running-p)(server-start))) ; start server
+    (if (processp server-process)
+        (process-put server-process ':as (cond ((daemonp) 'daemon)
+                                                      ((display-graphic-p) 'gui)
+                                                      (t 'tty)))))
   (when (display-graphic-p)
     (let ((korean-font (if (eq system-type 'windows-nt) "맑은 고딕-10" "NanumGothicCoding-10")))
       (set-face-font 'default "Lucida Console-10")

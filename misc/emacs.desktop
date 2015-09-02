@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Name=emacs@ladybug
+Icon=emacs
+Path=/home/ysjang/.emacs.d/el-get
+Exec=emacs -mm --no-splash -mm
+StartupNotify=false
+StartupWMClass=Emacs
+OnlyShowIn=Unity;
+X-UnityGenerated=true
