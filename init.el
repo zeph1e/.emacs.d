@@ -107,6 +107,10 @@
   ;; coding-system-for-read 'utf-8
 )
 
+(when (string-match "UTF-8" (concat (getenv "LANG")))
+  (setq coding-system-for-read 'utf-8)
+  (setq coding-system-for-write 'utf-8))
+
 (ignore-errors
   (let ((warning-minimum-level :emergency)) ; a kinda tricky way to suppress warning
     (require 'server)
@@ -301,11 +305,11 @@ minibuffer), then split the current window horizontally."
 (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
 
 ;; dired-mode
-(if (string-match "UTF-8" (concat (getenv "LANG")))
-    (add-hook 'dired-mode-hook
-              (lambda ()
-                (setq-local coding-system-for-read 'utf-8)
-                (setq-local coding-system-for-write 'utf-8))))
+;; (if (string-match "UTF-8" (concat (getenv "LANG")))
+;;     (add-hook 'dired-mode-hook
+;;               (lambda ()
+;;                 (setq-local coding-system-for-read 'utf-8)
+;;                 (setq-local coding-system-for-write 'utf-8))))
 
 ;; Minor modes to apply
 (setq prog-minor-mode-list '(linum-mode my:trailing-whitespace-mode))
