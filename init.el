@@ -104,7 +104,7 @@
   inhibit-startup-message t ; no startup message
   linum-format "%4d\u2502"
   default-input-method "korean-hangul390"
-  coding-system-for-read 'utf-8
+  ;; coding-system-for-read 'utf-8
 )
 
 (ignore-errors
@@ -113,8 +113,8 @@
     (if (not (server-running-p)(server-start))) ; start server
     (if (processp server-process)
         (process-put server-process ':as (cond ((daemonp) 'daemon)
-                                                      ((display-graphic-p) 'gui)
-                                                      (t 'tty)))))
+                                               ((display-graphic-p) 'gui)
+                                               (t 'tty)))))
   (when (display-graphic-p)
     (let ((korean-font (if (eq system-type 'windows-nt) "맑은 고딕-10" "NanumGothicCoding-10")))
       (set-face-font 'default "Lucida Console-10")
@@ -299,6 +299,13 @@ minibuffer), then split the current window horizontally."
 (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
+
+;; dired-mode
+(if (string-match "UTF-8" (concat (getenv "LANG")))
+    (add-hook 'dired-mode-hook
+              (lambda ()
+                (setq-local coding-system-for-read 'utf-8)
+                (setq-local coding-system-for-write 'utf-8))))
 
 ;; Minor modes to apply
 (setq prog-minor-mode-list '(linum-mode my:trailing-whitespace-mode))
