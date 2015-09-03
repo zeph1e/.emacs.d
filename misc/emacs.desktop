@@ -2,10 +2,9 @@
 Encoding=UTF-8
 Version=1.0
 Type=Application
-Name=emacs@ladybug
+Name=emacs
 Icon=emacs
-Path=/home/ysjang/.emacs.d/el-get
-Exec=emacs -mm --no-splash -mm
+Exec=/home/ysjang/bin/edit
 StartupNotify=false
 StartupWMClass=Emacs
 OnlyShowIn=Unity;
