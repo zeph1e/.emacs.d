@@ -68,11 +68,13 @@
 (el-get-bundle  markdown-mode)
 (el-get-bundle! markdown-preview-mode)
 (el-get-bundle  multiple-cursors)
-(el-get-bundle  builtin:org-mode) ; just use builtin
+(if (eq system-type 'windows-nt)
+    (el-get-bundle builtin:org-mode) (el-get-bundle org-mode)) ; just use builtin
+;;(el-get-bundle builtin:org-mode)
 (el-get-bundle  org-present)
 (el-get-bundle  org-publish)
 (el-get-bundle  org-readme)
-(el-get-bundle  org-reveal)
+(or (eq (plist-get (el-get-package-def 'org-mode) :type) 'builtin) (el-get-bundle org-reveal))
 (el-get-bundle  plantuml-mode)
 (el-get-bundle  qmake-mode)
 (el-get-bundle  qml-mode)
@@ -204,6 +206,10 @@
     (when (boundp 'smex)
       (define-key map (kbd "M-x") 'smex)
       (define-key map (kbd "M-X") 'smex-major-mode-commands))
+
+    ;; magit
+    (define-key map (kbd "C-x RET C-s") 'magit-status)
+
     map)
   "global key mode keymap")
 
