@@ -44,7 +44,7 @@
 (el-get-bundle  iman)
 (el-get-bundle  json)
 (el-get-bundle  json-mode)
-(if (version< emacs-version (plist-get (el-get-bundle-package-def 'magit) :minimum-emacs-version))
+(if (version< emacs-version "24.4")
     (progn
       (el-get-bundle  magit/git-modes
         :description "GNU Emacs modes for various Git-related files"
