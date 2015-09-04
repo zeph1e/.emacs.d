@@ -93,7 +93,6 @@
   :type github
   :compile "web-beautify*\\.el\\'"
   :build `(("npm" "install" "js-beautify"))
-  :build/windows-nt (progn nil)
   :post-init (let* ((js-beautify-module-dir
                      (concat (el-get-package-directory 'web-beautify) "node_modules/js-beautify/js/bin/"))
                     (html-program "html-beautify")
