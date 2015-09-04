@@ -33,5 +33,9 @@
            (unless (file-exists-p reveal-dir-name)
              (message "Copying reveal.js to target directory...")
              (copy-directory reveal-local-repository reveal-dir-name))
-           file-name))))
+           file-name))
 
+     (defun org-reveal-update-reveal-js ()
+       (interactive)
+       (let* ((default-directory "~/.emacs.d"))
+         (magit-submodule-update t)))))
