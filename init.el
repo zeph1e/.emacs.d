@@ -33,6 +33,9 @@
 (if (executable-find "qmake")           ; qt headers
     (add-to-list 'achead:include-directories
                  (substring (shell-command-to-string "qmake -query QT_INSTALL_HEADERS") 0 -1)))
+(when (eq system-type 'windows-nt)
+  (el-get-bundle basic)
+  (add-to-list 'auto-mode-alist '("\\.vbs\\'" . basic-mode)))
 (unless (or (eq system-type 'windows-nt) (fboundp 'erc)) (el-get-bundle  erc))
 (el-get-bundle  franca-idl)
 (if (executable-find "gnuplot") (el-get-bundle  gnuplot-mode))
@@ -85,9 +88,26 @@
 (el-get-bundle  yasnippet) (yas-global-mode t)
 (el-get-bundle  color-theme) (color-theme-initialize)
 (el-get-bundle  color-theme-tomorrow)
-(when (eq system-type 'windows-nt)
-  (el-get-bundle basic)
-  (add-to-list 'auto-mode-alist '("\\.vbs\\'" . basic-mode)))
+(el-get-bundle  yasuyk/web-beautify
+  :description "Web-beautify is a formatting package of HTML, CSS and JavaScript/JSON for Emacs"
+  :type github
+  :compile "web-beautify*\\.el\\'"
+  :build `(("npm" "install" "js-beautify"))
+  :build/windows-nt (progn nil)
+  :post-init (let* ((js-beautify-module-dir
+                     (concat (el-get-package-directory 'web-beautify) "node_modules/js-beautify/js/bin/"))
+                    (html-program "html-beautify")
+                    (js-program "js-beautify")
+                    (css-program "css-beautify"))
+               (cond ((executable-find html-program) nil) ; already installed globally
+                     ((file-exists-p js-beautify-module-dir)
+                      (setq web-beautify-html-program
+                            (car (file-expand-wildcards (concat js-beautify-module-dir html-program "*")))
+                            web-beautify-css-program
+                            (car (file-expand-wildcards (concat js-beautify-module-dir css-program "*")))
+                            web-beautify-js-program
+                            (car (file-expand-wildcards (concat js-beautify-module-dir js-program "*")))))
+                     (t (warn "js-beautify is not being installed properly")))))
 
 (el-get 'sync)
 
