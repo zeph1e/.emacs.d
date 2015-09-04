@@ -45,28 +45,29 @@
 (el-get-bundle  json)
 (el-get-bundle  json-mode)
 (if (version< emacs-version (plist-get (el-get-bundle-package-def 'magit) :minimum-emacs-version))
-    (el-get-bundle  magit/git-modes
-       :description "GNU Emacs modes for various Git-related files"
-       :type github
-       :branch "1.0.0" ; default to master, like magit.rcp
-       :pkgname "magit/git-modes")
-    (el-get-bundle  magit/magit
-      :website "https://github.com/magit/magit#readme"
-      :description "It's Magit! An Emacs mode for Git."
-      :type github
-      :pkgname "magit/magit"
-      :branch "1.4.0"
-      :depends (cl-lib git-modes)
-      :info "."
-      ;; use the Makefile to produce the info manual, el-get can
-      ;; handle compilation and autoloads on its own.
-      :compile "magit.*\\.el\\'"
-      :build `(("make" ,(format "EMACSBIN=%s" el-get-emacs) "docs"))
-      :build/berkeley-unix (("gmake" ,(format "EMACSBIN=%s" el-get-emacs) "docs"))
-      ;; assume windows lacks make and makeinfo
-      :build/windows-nt (progn nil))
-  (el-get-bundle magit)) (setq magit-last-seen-setup-instructions "1.4.0")
-                         (setq magit-auto-revert-mode nil)
+    (progn
+      (el-get-bundle  magit/git-modes
+        :description "GNU Emacs modes for various Git-related files"
+        :type github
+        :branch "1.0.0" ; default to master, like magit.rcp
+        :pkgname "magit/git-modes")
+      (el-get-bundle  magit/magit
+        :website "https://github.com/magit/magit#readme"
+        :description "It's Magit! An Emacs mode for Git."
+        :type github
+        :pkgname "magit/magit"
+        :branch "1.4.0"
+        :depends (cl-lib git-modes)
+        :info "."
+        ;; use the Makefile to produce the info manual, el-get can
+        ;; handle compilation and autoloads on its own.
+        :compile "magit.*\\.el\\'"
+        :build `(("make" ,(format "EMACSBIN=%s" el-get-emacs) "docs"))
+        :build/berkeley-unix (("gmake" ,(format "EMACSBIN=%s" el-get-emacs) "docs"))
+        ;; assume windows lacks make and makeinfo
+        :build/windows-nt (progn nil)
+        :post-init (setq magit-last-seen-setup-instructions "1.4.0")))
+  (el-get-bundle magit)) (setq magit-auto-revert-mode nil)
 (el-get-bundle  magit-gh-pulls)
 (el-get-bundle  markdown-mode)
 (el-get-bundle! markdown-preview-mode)
