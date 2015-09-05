@@ -94,12 +94,14 @@
   :type github
   :compile "web-beautify*\\.el\\'"
   :build `(("npm" "install" "js-beautify"))
+  :build/windows-nt (progn nil)
   :post-init (let* ((js-beautify-module-dir
                      (concat (el-get-package-directory 'web-beautify) "node_modules/js-beautify/js/bin/"))
                     (html-program "html-beautify")
                     (js-program "js-beautify")
                     (css-program "css-beautify"))
                (cond ((executable-find html-program) nil) ; already installed globally
+                     ((not (executable-find "npm")) nil)
                      ((file-exists-p js-beautify-module-dir)
                       (setq web-beautify-html-program
                             (car (file-expand-wildcards (concat js-beautify-module-dir html-program "*")))
