@@ -1,4 +1,4 @@
-;;; ansi.el -- set ansi color
+;;; utils-ansi.el -- set ansi color
 
 ;; Written by Yunsik Jang <doomsday@kldp.org>
 ;; You can use/modify/redistribute this freely

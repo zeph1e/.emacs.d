@@ -1,4 +1,4 @@
-;; 24compat.el
+;; utils-24compat.el
 
 ;; Written by Yunsik Jang <doomsday@kldp.org>
 ;; You can use/modify/redistribute this freely.

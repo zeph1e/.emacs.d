@@ -1,19 +1,19 @@
-;;; magit-assist.el
+;;; utils-magit.el
 
 (when (eq system-type 'windows-nt) ; to resolve push problems in windows
   (setenv "GIT_ASKPASS" "git-gui--askpass"))
 
-(defvar magit-assist-dired-mode-keymap
+(defvar my:magit-mode-keymap
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "@ f")  'magit-assist-dired-file-log)
+    (define-key map (kbd "@ f")  'my:magit-file-log)
     (define-key map (kbd "@ g")  'magit-git-command)
     (define-key map (kbd "@ i")  'magit-init)
     (define-key map (kbd "@ s")  'magit-status)
     (define-key map (kbd "@ l")  'magit-log)
     map)
-  "Magit-assist keymap for dired.")
+  "my:magit keymap for dired.")
 
-(defun magit-assist-dired-file-log (file &optional use-graph)
+(defun my:magit-file-log (file &optional use-graph)
   (interactive
    (progn
      (unless (fboundp 'magit-get-current-branch)
@@ -30,15 +30,15 @@
       (magit-file-log file use-graph)
     (magit-log-head '("--decorate") (list file))))
 
-(define-minor-mode magit-assist-dired-mode
+(define-minor-mode my:magit-mode
   "Add some keybindings into dired mode.
 
 Key bindings:
-\\{magit-assist-dired-mode-keymap}"
-  nil nil magit-assist-dired-mode-keymap)
-(add-hook 'dired-mode-hook 'magit-assist-dired-mode)
+\\{my:magit-mode-keymap}"
+  nil nil my:magit-mode-keymap)
+(add-hook 'dired-mode-hook 'my:magit-mode)
 
-;; (define-minor-mode magit-assist-dired-branch-mode
+;; (define-minor-mode my:magit-branch-mode
 ;; "Show git branch if it's in git controlled directory."
 ;;   nil nil nil
 ;;   (add-to-list 'mode-line-position '(:eval
@@ -49,7 +49,7 @@ Key bindings:
 ;; 	    (goto-char (point-min))
 ;; 	    (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))))
 ;;       (if branch (format "GIT[%s]" branch)))) 'append))
-;; (add-hook 'dired-after-readin-hook 'magit-assist-dired-branch-mode)
+;; (add-hook 'dired-after-readin-hook 'my:magit-branch-mode)
 
 
 
