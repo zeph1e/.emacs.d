@@ -36,7 +36,7 @@
      (setq org-confirm-babel-evaluate nil) ; turn off annoying prompt
      (setq org-html-head
            (concat "<style type=\"text/css\">"
-                   "pre { background-color: " (face-attribute 'default :background) "; "
+                   "pre, pre.src { background-color: " (face-attribute 'default :background) "; "
                    "color: " (face-attribute 'default :foreground) "; }</style>"))
 
      ;; inline images setting
