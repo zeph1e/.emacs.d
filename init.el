@@ -197,6 +197,12 @@
     (define-key map (kbd "C-<right>") 'buffer-right-swap)
     (define-key map (kbd "C-<left>")  'buffer-left-swap)
 
+    ;; util-window
+    (define-key map (kbd "C-S-<up>")    'my:buffer-up-copy)
+    (define-key map (kbd "C-S-<down>")  'my:buffer-down-copy)
+    (define-key map (kbd "C-S-<left>")  'my:buffer-left-copy)
+    (define-key map (kbd "C-S-<right>") 'my:buffer-right-copy)
+
     (define-key map (kbd "C-x -")     'split-window-vertically) ; Window Split keybindings
     (define-key map (kbd "C-x |")     'split-window-horizontally)
 
