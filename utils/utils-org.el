@@ -38,6 +38,8 @@
            (concat "<style type=\"text/css\">"
                    "pre, pre.src { background-color: " (face-attribute 'default :background) "; "
                    "color: " (face-attribute 'default :foreground) "; }</style>"))
+     (setq org-startup-truncated nil)
+     (setq org-startup-folded nil)
 
      ;; inline images setting
      (when (display-graphic-p)
