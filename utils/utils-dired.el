@@ -17,8 +17,8 @@
     (or (executable-find "explorer.exe") (executable-find "xdg-open"))))
 
 (defun my:view-file-external (file)
-  (interactive (list (dired-file-name-at-point)))
-  (call-process-shell-command (concat my:view-file-opener " " (shell-quote-argument (expand-file-name file)))))
+  (interactive (list (convert-standard-filename (expand-file-name (dired-file-name-at-point)))))
+  (and my:view-file-opener (call-process my:view-file-opener nil 0 nil file)))
 
 (defun my:git-stage-file (file)
   (interactive
