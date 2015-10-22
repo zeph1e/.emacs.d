@@ -64,4 +64,5 @@
   (dolist (path (append (my:achead-find-std-headers "c")
                         (my:achead-find-std-headers "c++")
                         (my:achead-find-subdirs)))
-    (add-to-list 'achead:include-directories path)))
+    (add-to-list 'achead:include-directories path))
+  (setq my:achead-expanded t))
