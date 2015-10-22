@@ -237,6 +237,7 @@
 
     ;; magit
     (define-key map (kbd "C-x RET C-s") 'magit-status)
+    (define-key map (kbd "C-x RET C-b") 'magit-blame-mode)
 
     map)
   "global key mode keymap")
@@ -267,10 +268,12 @@ Key bindings:
              [mouse-7] [down-mouse-7] [drag-mouse-7] [double-mouse-7] [triple-mouse-7] ; wheel-tilt-right
              [mouse-8] [down-mouse-8] [drag-mouse-8] [double-mouse-8] [triple-mouse-8] ; back
              [mouse-9] [down-mouse-9] [drag-mouse-9] [double-mouse-9] [triple-mouse-9] ; forward
-             [M-left] [M-right] [M-up] [M-down]
-             [M-S-left] [M-S-right] [M-S-up] [M-S-down]
              ))
   (global-set-key k 'ignore))
+;; unbind windcycle default
+(dolist (k '([M-left] [M-right] [M-up] [M-down]
+             [M-S-left] [M-S-right] [M-S-up] [M-S-down]))
+  (global-unset-key k))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; custom functions
