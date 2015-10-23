@@ -241,7 +241,7 @@
                                           (or (and (boundp 'magit-blame-mode)
                                                    magit-blame-mode
                                                    (message "Use q to quit blame mode"))
-                                              (and (boundp 'magit-blame) (magit-blame))
+                                              (and (fboundp 'magit-blame) (magit-blame nil (buffer-file-name)))
                                               (magit-blame-mode)))) ;; magit 1.x compat
 
     map)
