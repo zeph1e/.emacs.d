@@ -123,8 +123,8 @@
 
 ;; temporary
 (when (file-exists-p "~/.emacs.d/slack/")
-  (add-to-list 'load-path "~/.emacs.d/slack/")
-  (if (file-exists-p "~/.emacs.d/slack/slack.el") (require 'slack)))
+  (add-to-list 'load-path "~/.emacs.d/slack/"))
+;;   (if (file-exists-p "~/.emacs.d/slack/slack.el") (require 'slack)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; basic options
