@@ -30,9 +30,6 @@
 (el-get-bundle  auto-complete)
 (el-get-bundle  auto-complete-emacs-lisp)
 (el-get-bundle! auto-complete-c-headers)
-(if (executable-find "qmake")           ; qt headers
-    (add-to-list 'achead:include-directories
-                 (substring (shell-command-to-string "qmake -query QT_INSTALL_HEADERS") 0 -1)))
 (when (eq system-type 'windows-nt)
   (el-get-bundle basic)
   (add-to-list 'auto-mode-alist '("\\.vbs\\'" . basic-mode)))

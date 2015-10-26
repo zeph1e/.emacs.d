@@ -7,6 +7,10 @@
 (defconst my:achead-std-end-exp "^End of search list.$")
 (defvar my:achead-std-begin-exp-found nil)
 
+(defun my:achead-find-qt-headers ()
+  (if (executable-find "qmake")           ; qt headers
+      (split-string (shell-command-to-string "qmake -query QT_INSTALL_HEADERS"))))
+
 ;; grap some include paths from compiler
 (defun my:achead-find-std-headers (lang)
   (interactive "sLang:")
@@ -57,6 +61,7 @@
 (when (not my:achead-expanded)
   (dolist (path (append (my:achead-find-std-headers "c")
                         (my:achead-find-std-headers "c++")
+                        (my:achead-find-qt-headers)
                         (my:achead-find-subdirs)))
     (add-to-list 'achead:include-directories path))
   (setq my:achead-expanded t))
