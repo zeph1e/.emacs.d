@@ -110,7 +110,6 @@
                             web-beautify-js-program
                             (car (file-expand-wildcards (concat js-beautify-module-dir js-program "*")))))
                      (t (warn "js-beautify is not being installed properly")))))
-
 (el-get 'sync)
 
 ;; load files in utils/
@@ -359,6 +358,14 @@ minibuffer), then split the current window horizontally."
   nil nil nil
  (setq show-trailing-whitespace t))
 
+;; Show tabs in modes, from http://www.emacswiki.org/emacs/ShowWhiteSpace
+(defface my:tab-face '((t (:background "orchid")))
+  "Used for tab highlighting.")
+(define-minor-mode my:highlight-tab-mode
+  "Shows tabs as highlighted color."
+  nil nil nil
+  (font-lock-add-keywords nil '(("\t" . 'my:tab-face))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; modes initialization
 
@@ -375,8 +382,8 @@ minibuffer), then split the current window horizontally."
 ;;                 (setq-local coding-system-for-write 'utf-8))))
 
 ;; Minor modes to apply
-(setq prog-minor-mode-list '(linum-mode my:trailing-whitespace-mode))
-(setq text-minor-mode-list '(linum-mode my:trailing-whitespace-mode))
+(setq prog-minor-mode-list '(linum-mode my:trailing-whitespace-mode my:highlight-tab-mode))
+(setq text-minor-mode-list '(linum-mode my:trailing-whitespace-mode my:highlight-tab-mode))
 
 ;; enable minor modes for prog-mode(there's a case of that prog-mode is nil)
 (let (value)
