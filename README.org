@@ -5,10 +5,13 @@ This repository contains the emacs configuration currently I'm using. It is bein
 ** Prerequisite
 
  - git / mercurial to download packages
+ - cscope for ascope and ascope-ext
  - gnuplot, the graphing utility
  - nodejs / npm for web-beautify
  - markdown for markdown-preview
- - ImageMagick for plantuml-mode and screenshot
+ - JRE for plantuml
+ - texlive-latex-extra(on Ubuntu) for PDF export from org-mode
+ - ImageMagick for screenshot
 
 *** Emacs and Git version
 
@@ -90,4 +93,4 @@ I use [[https://github.com/dimitri/el-get][el-get]] as package manager. This is 
 
 ** License
 
-Completely free. You may copy whole or part of codes freely to use, modify, or redistribute at your own risk.
+Completely free. You may copy whole or part of codes freely to use, to modify, or to redistribute at your own risk.
