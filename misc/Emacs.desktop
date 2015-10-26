@@ -1,9 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=EmacsClient
-MimeType=text/plane
-Exec=/home/ysjang/bin/edit %F
-NoDisplay=true
-StartupNotify=false
-Icon=/usr/local/share/icons/hicolor/scalable/apps/emacs.svg
-Name[en_US]=Emacs

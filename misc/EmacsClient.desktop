@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=EmacsClient
+MimeType=text/plane
+Exec=/home/ysjang/.local/bin/edit %F
+NoDisplay=true
+StartupNotify=false
+Icon=emacs
+Name[en_US]=EmacsClient
