@@ -47,9 +47,9 @@
 
 ;; include subdirectories like gtk+-2.0 or QtCore for auto-complete-c-headers
 (defconst my:achead-subdir-regexp "[A-Za-z0-9-_]+\\-[0-9.]+\\|Qt[A-Za-z]+")
-(defun my:achead-find-subdirs ()
+(defun my:achead-find-subdirs (search-paths)
   (let* (includedirs)
-    (dolist (d achead:include-directories)
+    (dolist (d search-paths)
       (and (file-directory-p d)
            (string-prefix-p "/" d)
            (dolist (subd (directory-files d nil my:achead-subdir-regexp))
@@ -58,8 +58,8 @@
     includedirs))
 
 (eval-after-load 'auto-complete-c-headers
-  (dolist (path (append (my:achead-find-std-headers "c")
-                        (my:achead-find-std-headers "c++")
-                        (my:achead-find-qt-headers)
-                        (my:achead-find-subdirs)))
-    (add-to-list 'achead:include-directories path)))
+  (let ((paths (append (my:achead-find-std-headers "c")
+                       (my:achead-find-std-headers "c++")
+                       (my:achead-find-qt-headers))))
+    (dolist (path (append paths (my:achead-find-subdirs paths)))
+      (add-to-list 'achead:include-directories path))))
