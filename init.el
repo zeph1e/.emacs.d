@@ -344,6 +344,13 @@ minibuffer), then split the current window horizontally."
   nil nil nil
   (font-lock-add-keywords nil '(("\t" . 'my:tab-face))))
 
+;; check ac-ispell is available
+(define-minor-mode my:ac-ispell-ac-setup
+  "Check availability before ac-ispell-ac-setup call."
+  nil nil nil
+  (require 'ispell)
+  (and (executable-find ispell-program-name) (ac-ispell-ac-setup)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; modes initialization
 
@@ -361,7 +368,7 @@ minibuffer), then split the current window horizontally."
 
 ;; Minor modes to apply
 (setq prog-minor-mode-list '(linum-mode my:trailing-whitespace-mode my:highlight-tab-mode))
-(setq text-minor-mode-list '(linum-mode my:trailing-whitespace-mode my:highlight-tab-mode ac-ispell-ac-setup))
+(setq text-minor-mode-list '(linum-mode my:trailing-whitespace-mode my:highlight-tab-mode my:ac-ispell-ac-setup))
 
 ;; enable minor modes for prog-mode(there's a case of that prog-mode is nil)
 (let (value)
