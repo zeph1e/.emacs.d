@@ -57,11 +57,9 @@
                   (push (expand-file-name subd d) includedirs)))))
     includedirs))
 
-(defvar my:achead-expanded nil)
-(when (not my:achead-expanded)
+(eval-after-load 'auto-complete-c-headers
   (dolist (path (append (my:achead-find-std-headers "c")
                         (my:achead-find-std-headers "c++")
                         (my:achead-find-qt-headers)
                         (my:achead-find-subdirs)))
-    (add-to-list 'achead:include-directories path))
-  (setq my:achead-expanded t))
+    (add-to-list 'achead:include-directories path)))

@@ -30,6 +30,7 @@
 (el-get-bundle  auto-complete)
 (el-get-bundle  auto-complete-emacs-lisp)
 (el-get-bundle! auto-complete-c-headers)
+(el-get-bundle  ac-ispell)
 (when (eq system-type 'windows-nt)
   (el-get-bundle basic)
   (add-to-list 'auto-mode-alist '("\\.vbs\\'" . basic-mode)))
@@ -86,27 +87,7 @@
 (el-get-bundle  yasnippet) (yas-global-mode t)
 (el-get-bundle  color-theme) (color-theme-initialize)
 (el-get-bundle  color-theme-tomorrow)
-(el-get-bundle  yasuyk/web-beautify
-  :description "Web-beautify is a formatting package of HTML, CSS and JavaScript/JSON for Emacs"
-  :type github
-  :compile "web-beautify*\\.el\\'"
-  :build `(("npm" "install" "js-beautify"))
-  :build/windows-nt (progn nil)
-  :post-init (let* ((js-beautify-module-dir
-                     (concat (el-get-package-directory 'web-beautify) "node_modules/js-beautify/js/bin/"))
-                    (html-program "html-beautify")
-                    (js-program "js-beautify")
-                    (css-program "css-beautify"))
-               (cond ((executable-find html-program) nil) ; already installed globally
-                     ((not (executable-find "npm")) nil)
-                     ((file-exists-p js-beautify-module-dir)
-                      (setq web-beautify-html-program
-                            (car (file-expand-wildcards (concat js-beautify-module-dir html-program "*")))
-                            web-beautify-css-program
-                            (car (file-expand-wildcards (concat js-beautify-module-dir css-program "*")))
-                            web-beautify-js-program
-                            (car (file-expand-wildcards (concat js-beautify-module-dir js-program "*")))))
-                     (t (warn "js-beautify is not being installed properly")))))
+(el-get-bundle  web-beautify)
 (el-get 'sync)
 
 ;; load files in utils/
@@ -380,7 +361,7 @@ minibuffer), then split the current window horizontally."
 
 ;; Minor modes to apply
 (setq prog-minor-mode-list '(linum-mode my:trailing-whitespace-mode my:highlight-tab-mode))
-(setq text-minor-mode-list '(linum-mode my:trailing-whitespace-mode my:highlight-tab-mode))
+(setq text-minor-mode-list '(linum-mode my:trailing-whitespace-mode my:highlight-tab-mode ac-ispell-ac-setup))
 
 ;; enable minor modes for prog-mode(there's a case of that prog-mode is nil)
 (let (value)

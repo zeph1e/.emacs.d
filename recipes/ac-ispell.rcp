@@ -1,0 +1,7 @@
+(:name ac-ispell
+       :description "An ispell/aspell completion source for auto-complete."
+       :website "https://github.com/syohex/emacs-ac-ispell"
+       :type github
+       :pkgname "syohex/emacs-ac-ispell"
+       :post-init (eval-after-load "auto-complete"
+		    '(ac-ispell-setup)))

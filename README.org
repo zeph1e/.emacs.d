@@ -45,7 +45,8 @@ I use [[https://github.com/dimitri/el-get][el-get]] as package manager. This is 
  - [[http://emacswiki.org/emacs/ascope.el][ascope]] : A cscope integration (lighter than xcscope)
  - [[https://github.com/zeph1e/ascope-ext][ascope-ext]] : An ascope extension
  - [[https://github.com/auto-complete/auto-complete][auto-complete]] : Typing auto-completion extension
- - auto-complete-* : The language specific auto-complete extensions
+ - [[http://www.cx4a.org/pub/auto-complete-emacs-lisp.el][auto-complete-emacs-lisp]] : Auto-complete sources for emacs lisp
+ - [[https://github.com/mooz/auto-complete-c-headers][auto-complete-c-headers]] : An auto-complete source for C/C++ header files
  - [[http://www.emacswiki.org/emacs/basic.el][basic]] : major mode for editing basic and visual basic code
  - [[https://github.com/zeph1e/franca-idl.el][franca-idl]] : A major mode for franca idl
  - [[http://google-styleguide.googlecode.com/svn/trunk/google-c-style.el][google-c-style]] : Google's C/C++ style for c-mode
@@ -76,6 +77,7 @@ I use [[https://github.com/dimitri/el-get][el-get]] as package manager. This is 
 
 *** Editing Tools
 
+ - [[https://github.com/syohex/emacs-ac-ispell][ac-ispell]] : ispell/aspell completion source for auto-complete
  - [[http://www.emacswiki.org/emacs/iedit.el][iedit]] : Edit multiple regions with the same content simulaneously
  - [[https://github.com/magnars/multiple-cursors.el.git][multiple-cursors]] : An experiment in adding multiple cursors to emacs
  - [[http://www.emacswiki.org/emacs/redo+.el][redo+]] : Redo/undo system for Emacs
