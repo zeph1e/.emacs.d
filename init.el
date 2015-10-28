@@ -136,7 +136,7 @@
 (ignore-errors
   (let ((warning-minimum-level :emergency)) ; a kinda tricky way to suppress warning
     (require 'server)
-    (if (not (server-running-p)(server-start))) ; start server
+    (if (not (server-running-p)) (server-start)) ; start server
     (if (processp server-process)
         (process-put server-process ':as (cond ((daemonp) 'daemon)
                                                ((display-graphic-p) 'gui)
@@ -219,7 +219,8 @@
                                                    magit-blame-mode
                                                    (message "Use q to quit blame mode"))
                                               (and (fboundp 'magit-blame) (magit-blame nil (buffer-file-name)))
-                                              (magit-blame-mode)))) ;; magit 1.x compat
+                                              (and (fboundp 'magit-blame-mode)
+                                                   (magit-blame-mode))))) ;; magit 1.x compat
 
     map)
   "global key mode keymap")
@@ -330,18 +331,16 @@ minibuffer), then split the current window horizontally."
     (split-window-sensibly window)))
 (setq split-window-preferred-function 'my:split-window-prefer-horizonally)
 
-;; I don't like to see red marks in unexpected buffers
-(define-minor-mode my:trailing-whitespace-mode
+;; My white space mode:
+;;  - highlight trailing spaces
+;:  - highlight tabs: http://www.emacswiki.org/emacs/ShowWhiteSpace
+(defface my:tab-face '((t :background "orchid"))
+  "Used for tab highlighting."
+  :group 'basic-faces)
+(define-minor-mode my:whitespace-mode
 "Shows trailing whitespaces."
   nil nil nil
- (setq show-trailing-whitespace t))
-
-;; Show tabs in modes, from http://www.emacswiki.org/emacs/ShowWhiteSpace
-(defface my:tab-face '((t (:background "orchid")))
-  "Used for tab highlighting.")
-(define-minor-mode my:highlight-tab-mode
-  "Shows tabs as highlighted color."
-  nil nil nil
+  (setq show-trailing-whitespace t)
   (font-lock-add-keywords nil '(("\t" . 'my:tab-face))))
 
 ;; check ac-ispell is available
@@ -359,16 +358,9 @@ minibuffer), then split the current window horizontally."
 (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
 
-;; dired-mode
-;; (if (string-match "UTF-8" (concat (getenv "LANG")))
-;;     (add-hook 'dired-mode-hook
-;;               (lambda ()
-;;                 (setq-local coding-system-for-read 'utf-8)
-;;                 (setq-local coding-system-for-write 'utf-8))))
-
 ;; Minor modes to apply
-(setq prog-minor-mode-list '(linum-mode my:trailing-whitespace-mode my:highlight-tab-mode))
-(setq text-minor-mode-list '(linum-mode my:trailing-whitespace-mode my:highlight-tab-mode my:ac-ispell-ac-setup))
+(setq prog-minor-mode-list '(linum-mode my:whitespace-mode))
+(setq text-minor-mode-list '(linum-mode my:whitespace-mode my:ac-ispell-ac-setup))
 
 ;; enable minor modes for prog-mode(there's a case of that prog-mode is nil)
 (let (value)
