@@ -4,4 +4,4 @@
        :type github
        :pkgname "syohex/emacs-ac-ispell"
        :post-init (eval-after-load "auto-complete"
-		    '(ac-ispell-setup)))
+                    '(ac-ispell-setup)))

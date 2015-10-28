@@ -6,17 +6,17 @@
        :build `(("npm" "install" "js-beautify"))
        :build/windows-nt (progn nil)
        :post-init (let* ((js-beautify-module-dir
-			  (concat (el-get-package-directory 'web-beautify) "node_modules/js-beautify/js/bin/"))
-			 (html-program "html-beautify")
-			 (js-program "js-beautify")
-			 (css-program "css-beautify"))
-		    (cond ((executable-find html-program) nil) ; already installed globally
-			  ((not (executable-find "npm")) nil)
-			  ((file-exists-p js-beautify-module-dir)
-			   (setq web-beautify-html-program
-				 (car (file-expand-wildcards (concat js-beautify-module-dir html-program "*")))
-				 web-beautify-css-program
-				 (car (file-expand-wildcards (concat js-beautify-module-dir css-program "*")))
-				 web-beautify-js-program
-				 (car (file-expand-wildcards (concat js-beautify-module-dir js-program "*")))))
-			  (t (warn "js-beautify is not being installed properly")))))
+                          (concat (el-get-package-directory 'web-beautify) "node_modules/js-beautify/js/bin/"))
+                         (html-program "html-beautify")
+                         (js-program "js-beautify")
+                         (css-program "css-beautify"))
+                    (or (executable-find html-program) ; already installed globally
+                        (not (executable-find "npm"))
+                        (and (file-exists-p js-beautify-module-dir)
+                           (setq web-beautify-html-program
+                                 (car (file-expand-wildcards (concat js-beautify-module-dir html-program "*")))
+                                 web-beautify-css-program
+                                 (car (file-expand-wildcards (concat js-beautify-module-dir css-program "*")))
+                                 web-beautify-js-program
+                                 (car (file-expand-wildcards (concat js-beautify-module-dir js-program "*")))))
+                          (warn "js-beautify is not being installed properly"))))
