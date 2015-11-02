@@ -58,8 +58,8 @@
     includedirs))
 
 (eval-after-load 'auto-complete-c-headers
-  (let ((paths (append (my:achead-find-std-headers "c")
-                       (my:achead-find-std-headers "c++")
-                       (my:achead-find-qt-headers))))
-    (dolist (path (append paths (my:achead-find-subdirs paths)))
-      (add-to-list 'achead:include-directories path))))
+  '(let ((paths (append (my:achead-find-std-headers "c")
+                        (my:achead-find-std-headers "c++")
+                        (my:achead-find-qt-headers))))
+     (dolist (path (append paths (my:achead-find-subdirs paths)))
+       (add-to-list 'achead:include-directories path))))
