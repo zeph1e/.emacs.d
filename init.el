@@ -1,4 +1,4 @@
-;; init.el
+;;; init.el
 
 ;; Written by Yunsik Jang <doomsday@kldp.org>
 ;; You can use/modify/redistribute this freely.
@@ -7,7 +7,7 @@
 ;; package initialization
 
 ;; global (internal) minor modes
-(require 'ido) (ido-mode t) ; ido
+(ido-mode t) ; ido
 (column-number-mode)
 (show-paren-mode)
 (global-hl-line-mode t) ; highlight current line
@@ -31,13 +31,11 @@
 (el-get-bundle  auto-complete-emacs-lisp)
 (el-get-bundle! auto-complete-c-headers)
 (el-get-bundle  ac-ispell)
-(when (eq system-type 'windows-nt)
-  (el-get-bundle basic)
-  (add-to-list 'auto-mode-alist '("\\.vbs\\'" . basic-mode)))
-(unless (or (eq system-type 'windows-nt) (fboundp 'erc)) (el-get-bundle  erc))
+(el-get-bundle  basic)
+(or (fboundp 'erc) (el-get-bundle  erc))
 (el-get-bundle  flyspell-popup)
 (el-get-bundle  franca-idl)
-(if (executable-find "gnuplot") (el-get-bundle  gnuplot-mode))
+(el-get-bundle  gnuplot-mode) (or (executable-find "gnuplot") (warn "GNUPlot is not installed"))
 (el-get-bundle  google-c-style)
 (el-get-bundle  iedit)
 (el-get-bundle  iman)
@@ -75,8 +73,7 @@
 (el-get-bundle! markdown-preview-mode)
 (el-get-bundle  multiple-cursors)
 (if (eq system-type 'windows-nt)
-    (el-get-bundle builtin:org-mode) (el-get-bundle org-mode)) ; just use builtin
-;;(el-get-bundle builtin:org-mode)
+    (el-get-bundle builtin:org-mode) (el-get-bundle org-mode)) ; just use builtin on windows
 (el-get-bundle  org-present)
 (el-get-bundle  org-publish)
 (el-get-bundle  org-readme)
@@ -85,7 +82,7 @@
 (el-get-bundle  qmake-mode)
 (el-get-bundle  qml-mode)
 (el-get-bundle! redo+)
-(if (executable-find "convert") (el-get-bundle  screenshot))
+(el-get-bundle  screenshot) (or (executable-find "convert") (warn "ImageMagick is not installed"))
 (el-get-bundle  smex)
 (el-get-bundle  windcycle)
 (el-get-bundle  yasnippet) (yas-global-mode t)
@@ -153,7 +150,7 @@
   (error nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; global keybindings
+;; global key-bindings
 (defvar my:keys-mode-keymap
   (let ((map (make-sparse-keymap)))
     ;; On windows, resolve key conflict with windows IME
@@ -173,7 +170,7 @@
     (define-key map (kbd "S-<down>")  'windmove-down)
 
     ;; windcycle
-    (define-key map (kbd "C-<up>")    'buffer-up-swap) ; Switch window keybindings
+    (define-key map (kbd "C-<up>")    'buffer-up-swap) ; Switch window key-bindings
     (define-key map (kbd "C-<down>")  'buffer-down-swap)
     (define-key map (kbd "C-<right>") 'buffer-right-swap)
     (define-key map (kbd "C-<left>")  'buffer-left-swap)
@@ -184,10 +181,10 @@
     (define-key map (kbd "C-S-<left>")  'my:buffer-left-copy)
     (define-key map (kbd "C-S-<right>") 'my:buffer-right-copy)
 
-    (define-key map (kbd "C-x -")     'split-window-vertically) ; Window Split keybindings
+    (define-key map (kbd "C-x -")     'split-window-vertically) ; Window Split key-bindings
     (define-key map (kbd "C-x |")     'split-window-horizontally)
 
-    (define-key map (kbd "C-x x")     'delete-window) ; Window Close keybindings
+    (define-key map (kbd "C-x x")     'delete-window) ; Window Close key-bindings
 
     (define-key map (kbd "C-x C-o") 'ff-find-other-file)
 
@@ -409,7 +406,8 @@ minibuffer), then split the current window horizontally."
       (add-hook 'markdown-mode-hook mode)
 )))
 
-;; file assosiations
+;; file associations
+(add-to-list 'auto-mode-alist '("\\.vbs\\'" . basic-mode))
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 (add-to-list 'auto-mode-alist '("\\.uml\\'" . plantuml-mode))
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode)) ; C++, rather than C
