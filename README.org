@@ -50,6 +50,9 @@ I use [[https://github.com/dimitri/el-get][el-get]] as package manager. This is 
  - [[http://www.emacswiki.org/emacs/basic.el][basic]] : major mode for editing basic and visual basic code
  - [[https://github.com/zeph1e/franca-idl.el][franca-idl]] : A major mode for franca idl
  - [[http://google-styleguide.googlecode.com/svn/trunk/google-c-style.el][google-c-style]] : Google's C/C++ style for c-mode
+ - [[https://github.com/mooz/js2-mode#readme][js2-mode]] : An improved JavaScript editing mode
+ - [[http://mihai.bazon.net/projects/editing-javascript-with-emacs-js2-mode/js2-highlight-vars-mode/js2-highlight-vars.el][js2-highlight-vars]] : Variable occurrencies highlighting for js2 mode
+ - [[https://github.com/magnars/js2-refactor.el.git][js2-refactor]] : A collection of small refactoring functions
  - [[https://github.com/joshwnj/json-mode.git][json-mode]] : Major mode for editing JSON files.
  - [[https://qmake-mode.googlecode.com/hg/][qmake-mode]] : Qmake mode for Emacs
  - [[https://github.com/cataska/qml-mode][qml-mode]] : Qt Declarative UI (QML) mode for Emacs
