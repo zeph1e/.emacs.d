@@ -3,6 +3,9 @@
 ;; Written by Yunsik Jang <doomsday@kldp.org>
 ;; You can use/modify/redistribute this freely.
 
+;; load default config
+(ac-config-default)
+
 (defconst my:achead-std-begin-exp "^#include .+ starts here:$")
 (defconst my:achead-std-end-exp "^End of search list.$")
 (defvar my:achead-std-begin-exp-found nil)
