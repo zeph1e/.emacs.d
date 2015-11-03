@@ -4,7 +4,7 @@
 ;; You can use/modify/redistribute this freely.
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; package initializations
+;; package initialization
 
 ;; global (internal) minor modes
 (require 'ido) (ido-mode t) ; ido
@@ -35,6 +35,7 @@
   (el-get-bundle basic)
   (add-to-list 'auto-mode-alist '("\\.vbs\\'" . basic-mode)))
 (unless (or (eq system-type 'windows-nt) (fboundp 'erc)) (el-get-bundle  erc))
+(el-get-bundle  flyspell-popup)
 (el-get-bundle  franca-idl)
 (if (executable-find "gnuplot") (el-get-bundle  gnuplot-mode))
 (el-get-bundle  google-c-style)
@@ -192,6 +193,10 @@
 
     ;; revert files
     (define-key map (kbd "<f5>") 'my:revert-all-buffers)
+
+    ;; flyspell-mode
+    (define-key map (kbd "<f8>") 'my:flyspell-mode)
+    (define-key map (kbd "C-<f8>") 'flyspell-buffer)
 
     ;; undo+
     (define-key map (kbd "C-_") 'undo)
@@ -353,6 +358,13 @@ minibuffer), then split the current window horizontally."
   (require 'ispell)
   (and (executable-find ispell-program-name) (ac-ispell-ac-setup)))
 
+(define-minor-mode my:flyspell-mode
+  "Enable flyspell-mode."
+  :init-value t
+  (and my:flyspell-mode (derived-mode-p 'prog-mode) (flyspell-prog-mode))
+  (and (setq my:flyspell-mode (flyspell-mode (if my:flyspell-mode 1 -1)))
+       (called-interactively-p) (flyspell-buffer)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; modes initialization
 
@@ -362,8 +374,10 @@ minibuffer), then split the current window horizontally."
 (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
 
 ;; Minor modes to apply
-(setq prog-minor-mode-list '(linum-mode my:whitespace-mode))
-(setq text-minor-mode-list '(linum-mode my:whitespace-mode my:ac-ispell-ac-setup))
+(defvar prog-minor-mode-list nil)
+(defvar text-minor-mode-list nil)
+(setq prog-minor-mode-list '(linum-mode my:whitespace-mode my:flyspell-mode))
+(setq text-minor-mode-list '(linum-mode my:whitespace-mode my:ac-ispell-ac-setup my:flyspell-mode))
 
 ;; enable minor modes for prog-mode(there's a case of that prog-mode is nil)
 (let (value)
