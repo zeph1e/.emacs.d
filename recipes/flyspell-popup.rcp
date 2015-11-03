@@ -3,6 +3,7 @@
        :website "https://github.com/xuchunyang/flyspell-popup"
        :type github
        :pkgname "xuchunyang/flyspell-popup"
-       :post-init (progn
-                    (define-key flyspell-mode-map (kbd "M-$") #'flyspell-popup-correct)
-                    (add-hook 'flyspell-mode-hook #'flyspell-popup-auto-correct-mode)))
+       :post-init (eval-after-load 'flyspell
+                    '(progn
+                       (define-key flyspell-mode-map (kbd "M-$") #'flyspell-popup-correct)
+                       (add-hook 'flyspell-mode-hook #'flyspell-popup-auto-correct-mode))))
