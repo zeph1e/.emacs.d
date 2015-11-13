@@ -67,7 +67,8 @@
         ;; assume windows lacks make and makeinfo
         :build/windows-nt (progn nil)
         :post-init (setq magit-last-seen-setup-instructions "1.4.0")))
-  (el-get-bundle magit)) (setq magit-auto-revert-mode nil)
+  (el-get-bundle magit)
+  (el-get-bundle magit-filenotify)) (setq magit-auto-revert-mode nil)
 (el-get-bundle  magit-gh-pulls)
 (el-get-bundle  markdown-mode)
 (el-get-bundle! markdown-preview-mode)
