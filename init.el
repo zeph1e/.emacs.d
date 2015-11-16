@@ -37,6 +37,7 @@
 (el-get-bundle  franca-idl)
 (el-get-bundle  gnuplot-mode) (or (executable-find "gnuplot") (warn "GNUPlot is not installed"))
 (el-get-bundle  google-c-style)
+(el-get-bundle  google-translate)
 (el-get-bundle  iedit)
 (el-get-bundle  iman)
 (el-get-bundle  js2-mode)

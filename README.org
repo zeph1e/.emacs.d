@@ -15,7 +15,7 @@ This repository contains the emacs configuration currently I'm using. It is bein
 
 *** Emacs and Git version
 
-If you're willing to use emacs 24.4 or later, magit 2.X will be installed and it doesn't work with earlier version of git. You need to install git version 1.9.4 or later. Otherwise, if you're stuck with emacs version 24.3 or earlier, magit 1.X will be installd and the git version will not make a problem.
+If you're willing to use emacs 24.4 or later, magit 2.X will be installed and it doesn't work with earlier version of git. You need to install git version 1.9.4 or later. Otherwise, if you're stuck with emacs version 24.3 or earlier, magit 1.X will be installed and the git version will not make a problem.
 
 Anyway I'm using emacs version 24.3 and (mainly) 24.5. Since tested version is so limited, altough I'm trying to keep compatibility within emacs version 24.X, this might make a problem in other versions.
 
@@ -36,7 +36,7 @@ $ git clone git@github.com:zeph1e/.emacs.d.git ~/
 
 All of rest packages are installed while launching emacs after that.
 
-** Pacakges
+** Packages
 
 I use [[https://github.com/dimitri/el-get][el-get]] as package manager. This is great one. If you're already using MELPA or ELPA, I recommend you to try [[https://github.com/dimitri/el-get][el-get]].
 
