@@ -35,7 +35,7 @@
 (or (fboundp 'erc) (el-get-bundle  erc))
 (el-get-bundle  flyspell-popup)
 (el-get-bundle  franca-idl)
-(el-get-bundle  gnuplot-mode) (or (executable-find "gnuplot") (warn "GNUPlot is not installed"))
+(el-get-bundle  gnuplot-mode :build/windows-nt (progn nil)) (or (executable-find "gnuplot") (warn "GNUPlot is not installed"))
 (el-get-bundle  google-c-style)
 (el-get-bundle  google-translate)
 (el-get-bundle  iedit)
