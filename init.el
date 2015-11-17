@@ -139,6 +139,9 @@
       (define-key map (kbd "C-<kanji>") 'set-mark-command)
       (define-key map (kbd "<kana>")    'toggle-input-method)) ; windows 10, S-<space> as <kana>
 
+    ;; forward-to-indentation
+    (define-key map (kbd "M-S-SPC") (lambda () (interactive)(forward-to-indentation 0)))
+
     ;; scroll to buffer beginning/end
     (define-key map (kbd "C-v") 'my:scroll-up-command)
     (define-key map (kbd "M-v") 'my:scroll-down-command)
@@ -190,8 +193,8 @@
     (define-key map (kbd "M-/") 'mc/mark-all-like-this)
 
     ;; vi-like line insertion
-    (define-key map (kbd "C-o") (lambda (p) (interactive "p")(beginning-of-line)(open-line 1)))
-    (define-key map (kbd "M-o") (lambda (p) (interactive "p")(end-of-line)(newline)))
+    (define-key map (kbd "C-o") (lambda () (interactive)(beginning-of-line)(open-line 1)))
+    (define-key map (kbd "M-o") (lambda () (interactive)(end-of-line)(newline)))
 
     ;; smex
     (when (boundp 'smex)
@@ -200,7 +203,7 @@
 
     ;; magit
     (define-key map (kbd "C-x RET C-s") 'magit-status)
-    (define-key map (kbd "C-x RET C-b") (lambda (p) (interactive "p")
+    (define-key map (kbd "C-x RET C-b") (lambda () (interactive)
                                           (or (and (boundp 'magit-blame-mode)
                                                    magit-blame-mode
                                                    (message "Use q to quit blame mode"))
