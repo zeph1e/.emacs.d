@@ -1,0 +1,5 @@
+(:name git-modes-1.0.0
+        :description "GNU Emacs modes for various Git-related files"
+        :type github
+        :branch "1.0.0" ; default to master, like magit.rcp
+        :pkgname "magit/git-modes")

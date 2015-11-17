@@ -1,0 +1,16 @@
+(:name magit-1.4.0
+        :website "https://github.com/magit/magit#readme"
+        :description "It's Magit! An Emacs mode for Git."
+        :type github
+        :pkgname "magit/magit"
+        :branch "1.4.0"
+        :depends (cl-lib git-modes-1.0.0)
+        :info "."
+        ;; use the Makefile to produce the info manual, el-get can
+        ;; handle compilation and autoloads on its own.
+        :compile "magit.*\\.el\\'"
+        :build `(("make" ,(format "EMACSBIN=%s" el-get-emacs) "docs"))
+        :build/berkeley-unix (("gmake" ,(format "EMACSBIN=%s" el-get-emacs) "docs"))
+        ;; assume windows lacks make and makeinfo
+        :build/windows-nt (progn nil)
+        :post-init (setq magit-last-seen-setup-instructions "1.4.0"))
