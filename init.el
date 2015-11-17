@@ -46,7 +46,28 @@
 (el-get-bundle  json)
 (el-get-bundle  json-mode)
 (if (version< emacs-version "24.4")
-    (el-get-bundle  magit-1.4.0)
+    (progn
+      (el-get-bundle  magit/git-modes
+        :description "GNU Emacs modes for various Git-related files"
+        :type github
+        :branch "1.0.0" ; default to master, like magit.rcp
+        :pkgname "magit/git-modes")
+      (el-get-bundle  magit/magit
+        :website "https://github.com/magit/magit#readme"
+        :description "It's Magit! An Emacs mode for Git."
+        :type github
+        :pkgname "magit/magit"
+        :branch "1.4.0"
+        :depends (cl-lib git-modes)
+        :info "."
+        ;; use the Makefile to produce the info manual, el-get can
+        ;; handle compilation and autoloads on its own.
+        :compile "magit.*\\.el\\'"
+        :build `(("make" ,(format "EMACSBIN=%s" el-get-emacs) "docs"))
+        :build/berkeley-unix (("gmake" ,(format "EMACSBIN=%s" el-get-emacs) "docs"))
+        ;; assume windows lacks make and makeinfo
+        :build/windows-nt (progn nil)
+        :post-init (setq magit-last-seen-setup-instructions "1.4.0")))
   (el-get-bundle magit)
   (el-get-bundle magit-filenotify)) (setq magit-auto-revert-mode nil)
 (el-get-bundle  magit-gh-pulls)
