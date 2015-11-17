@@ -140,7 +140,8 @@
       (define-key map (kbd "<kana>")    'toggle-input-method)) ; windows 10, S-<space> as <kana>
 
     ;; forward-to-indentation
-    (define-key map (kbd "M-S-SPC") (lambda () (interactive)(forward-to-indentation 0)))
+    (define-key map (kbd "M-SPC") (lambda () (interactive)(forward-to-indentation 0)))
+    (define-key map (kbd "M-S-SPC") 'just-one-space) ; original function on M-SPC
 
     ;; scroll to buffer beginning/end
     (define-key map (kbd "C-v") 'my:scroll-up-command)
