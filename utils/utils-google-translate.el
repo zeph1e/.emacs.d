@@ -10,6 +10,7 @@
 (eval-after-load 'google-translate-smooth-ui
   '(progn
      (setq google-translate-translation-directions-alist
-           '(("en" . "ko") ("ko" . "en") ("de" . "ko") ("ko" . "de") ("ko" . "ja")))))
+           '(("en" . "ko") ("ko" . "en") ("de" . "ko") ("ko" . "de")
+             ("en" . "de") ("de" . "en") ("ko" . "ja")))))
 (global-set-key (kbd "M-+") 'google-translate-at-point)
 (global-set-key (kbd "C-+") 'google-translate-smooth-translate)
