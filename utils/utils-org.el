@@ -34,6 +34,7 @@
 
      ;; other settings
      (setq org-confirm-babel-evaluate nil) ; turn off annoying prompt
+     (load-library "utils-theme")
      (setq org-html-head
            (concat "<style type=\"text/css\">"
                    "pre, pre.src { background-color: " (face-attribute 'default :background) "; "
