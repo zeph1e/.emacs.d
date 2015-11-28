@@ -73,5 +73,4 @@ Key bindings:
 ;;       (if branch (format "GIT[%s]" branch)))) 'append))
 ;; (add-hook 'dired-after-readin-hook 'my:magit-branch-mode)
 
-
-
+(provide 'utils-dired)

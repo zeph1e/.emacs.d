@@ -30,3 +30,5 @@
     (when (and (not (string= copied-buffer current-buffer)))
       (set-window-buffer copied-window current-buffer)
       (select-window current-window))))
+
+(provide 'utils-window)

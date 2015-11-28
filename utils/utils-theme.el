@@ -24,3 +24,5 @@
         (funcall my:theme-function)
         (set-face-attribute 'mode-line nil :background "tomato" :foreground "white")))
   (color-theme-standard))
+
+(provide 'utils-theme)

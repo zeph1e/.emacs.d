@@ -14,3 +14,5 @@
              ("en" . "de") ("de" . "en") ("ko" . "ja")))))
 (global-set-key (kbd "M-+") 'google-translate-at-point)
 (global-set-key (kbd "C-+") 'google-translate-smooth-translate)
+
+(provide 'utils-google-translate)

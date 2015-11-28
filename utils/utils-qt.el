@@ -31,3 +31,5 @@
                             '(("\\<SIGNAL\\|SLOT\\>" . 'qt-keywords-face)))
     ))
 (add-hook 'c-mode-common-hook 'jk/c-mode-common-hook)
+
+(provide 'utils-qt)

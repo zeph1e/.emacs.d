@@ -10,3 +10,4 @@
             "DeepSkyBlue1" "Mediu8mOrchid1" "cyan" "white"])
      (setq ansi-color-map (ansi-color-make-color-map))))
 
+(provide 'utils-ansi)

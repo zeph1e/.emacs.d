@@ -8,10 +8,10 @@
   (defun process-live-p (process)
     (let ((status (process-status process)))
       (if (or (eq status 'run)
-	      (eq status 'open)
-	      (eq status 'listen)
-	      (eq status 'connect)
-	      (eq status 'stop)) t))))
+              (eq status 'open)
+              (eq status 'listen)
+              (eq status 'connect)
+              (eq status 'stop)) t))))
 
 ;; define-error was introduced from 24.3
 ;; following code was from:
@@ -37,3 +37,4 @@ Defaults to `error'."
            (delete-dups (copy-sequence (cons name conditions))))
       (when message (put name 'error-message message)))))
 
+(provide 'utils-24compat)

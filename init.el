@@ -94,8 +94,8 @@
 (el-get 'sync)
 
 ;; load files in utils/
-(add-to-list 'load-path "~/.emacs.d/utils")
-(if (file-exists-p "~/.emacs.d/utils")
+(when (file-exists-p "~/.emacs.d/utils")
+  (add-to-list 'load-path "~/.emacs.d/utils")
   (dolist (filename (directory-files "~/.emacs.d/utils"))
     (when (string-match "\\([^.]+\\).el\\'" filename)
       (load-library (match-string 1 filename)))))
