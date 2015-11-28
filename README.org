@@ -10,8 +10,14 @@ This repository contains the emacs configuration currently I'm using. It is bein
  - nodejs / npm for web-beautify
  - markdown for markdown-preview
  - JRE for plantuml
- - texlive-latex-extra(on Ubuntu) for PDF export from org-mode
+ - texlive (on Ubuntu) for PDF export from org-mode
  - ImageMagick for screenshot
+
+Run following command on Ubuntu:
+
+: $ sudo apt-get install git qt5-qmake mercurial cscope gnuplot nodejs-legacy \
+:   npm markdown openjdk-7-jre texlive-latex-recommended texlive-latex-extra \
+:   texlive-fonts-recommended texlive-base texlive-latex-base imagemagick
 
 *** Emacs and Git version
 
@@ -30,7 +36,7 @@ Because I only use gcc for these days, I wrote some stuffs in gcc working manner
 Try following commands on your system:
 
 #+BEGIN_SRC shell
-$ mv ~/.emacs.d ~/.emacs.d.old # backup your old emacs dot directory if you have one already
+$ mv ~/.emacs.d ~/.emacs.d.old # backup your old config
 $ git clone git@github.com:zeph1e/.emacs.d.git ~/
 #+END_SRC
 
@@ -73,7 +79,7 @@ I use [[https://github.com/dimitri/el-get][el-get]] as package manager. This is 
  - [[http://jblevins.org/projects/markdown-mode/][markdown]] : Major mode to edit Markdown files in Emacs
  - [[https://github.com/ancane/markdown-preview-mode.git][markdown-preview]] : Markdown preview mode
  - [[http://orgmode.org/][org-mode]] : Org-mode is powerful authoring tool in Emacs
- - [[https://github.com/rlister/org-present.git][org-present]] : Minimalistic presentation tool for org-mode
+ - [[https://github.com/rlister/org-present.git][org-present]] : Minimalist presentation tool for org-mode
  - [[http://www.emacswiki.org/emacs/org-publish.el][org-publish]] : Publish related org-mode files as a website
  - [[http://www.emacswiki.org/emacs/org-readme.el][org-readme]] : Integrates Readme.org and commentary/chage-logs
  - [[https://github.com/yjwen/org-reveal.git][org-reveal]] : Exports org-mode contents to reveal.js HTML presentation
@@ -84,6 +90,7 @@ I use [[https://github.com/dimitri/el-get][el-get]] as package manager. This is 
  - [[http://www.emacswiki.org/emacs/iedit.el][iedit]] : Edit multiple regions with the same content simulaneously
  - [[https://github.com/magnars/multiple-cursors.el.git][multiple-cursors]] : An experiment in adding multiple cursors to emacs
  - [[http://www.emacswiki.org/emacs/redo+.el][redo+]] : Redo/undo system for Emacs
+ - [[https://github.com/atykhonov/google-translate.git][google-translate]] : Emacs interface to Google Translate
 
 *** Theme
 
