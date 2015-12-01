@@ -58,7 +58,7 @@
      (setq org-startup-folded nil)
 
      (dolist (template my:latex-header-templates)
-       (add-to-list 'org-structure-template-alist my:latex-header-templates))
+       (add-to-list 'org-structure-template-alist template))
 
      ;; inline images setting
      (when (display-graphic-p)
