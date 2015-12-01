@@ -20,6 +20,21 @@
                                  (:lang ruby :req ob-ruby :mode ruby :deps "ruby")
                                  (:lang sh :req ob-sh :mode shell-script)))
 
+;; LaTeX setup:
+;; The idea was heavely inspired from:
+;; http://emacs-fu.blogspot.com/2011/04/nice-looking-pdfs-with-org-mode-and.html
+;; But I don't like to define a new custom latex class while the latex headers be easily applied to
+;; writing document.
+
+;; Download URL for using fonts (in Debian package)
+;; https://packages.debian.org/sid/all/fonts-sil-gentium-basic/download
+;; https://packages.debian.org/sid/all/fonts-sil-charis/download
+;; https://packages.debian.org/sid/all/fonts-sil-gentium/download
+;; https://packages.debian.org/sid/all/ttf-dejavu/download
+
+(defconst my:latex-header-templates
+  '(("lax" "#+LaTeX_CLASS: article\n#+LaTeX_CMD: xelatex\n#+LaTeX_HEADER: \\usepackage[T1]{fontenc}\n#+LaTeX_HEADER: \\usepackage{fontspec}\n#+LaTeX_HEADER: \\usepackage{graphicx}\n#+LaTeX_HEADER: \\usepackage{hyperref}\n#+LaTeX_HEADER: \\usepackage[hyperref,x11names]{xcolor}\n#+LaTeX_HEADER: \\usepackage[parfill]{parskip}\n#+LaTeX_HEADER: \\defaultfontfeatures{Mapping=tex-text}\n#+LaTeX_HEADER: \\setromanfont{Gentium}\n#+LaTeX_HEADER: \\setromanfont [BoldFont={Gentium Basic Bold},ItalicFont={Gentium Basic Italic}]{Gentium Basic}\n#+LaTeX_HEADER: \\setsansfont{Charis SIL}\n#+LaTeX_HEADER: \\setmonofont[Scale=.7]{DejaVu Sans Mono}\n#+LaTeX_HEADER: \\usepackage{geometry}\n#+LaTeX_HEADER: \\geometry{a4paper, textwidth=6.5in, textheight=10in,marginparsep=7pt, marginparwidth=.6in}\n#+LaTeX_HEADER: \\hypersetup{colorlinks=true,linkcolor=DodgerBlue4,citecolor=DodgerBlue4,filecolor=DodgerBlue4,urlcolor=DodgerBlue4}\n?")))
+
 (eval-after-load 'org
   '(progn
      (let (load-languages)
@@ -42,12 +57,22 @@
      (setq org-startup-truncated nil)
      (setq org-startup-folded nil)
 
+     (dolist (template my:latex-header-templates)
+       (add-to-list 'org-structure-template-alist my:latex-header-templates))
+
      ;; inline images setting
      (when (display-graphic-p)
        (setq org-startup-with-inline-images t)
        (add-hook 'org-babel-after-execute-hook (lambda ()
                                                  (when org-inline-image-overlays
                                                    (org-redisplay-inline-images)))))))
+
+(eval-after-load 'ox-latex
+  '(progn
+     (setq org-latex-tables-centered nil)
+     (setq org-latex-pdf-process '("xelatex -interaction nonstopmode %f"
+                                   "xelatex -interaction nonstopmode %f")) ; for multiple passes
+     ))
 
 ;; org-present
 (eval-after-load 'org-present
