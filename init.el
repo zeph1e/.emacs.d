@@ -98,7 +98,7 @@
   (add-to-list 'load-path "~/.emacs.d/utils")
   (dolist (filename (directory-files "~/.emacs.d/utils"))
     (when (string-match "\\([^.]+\\).el\\'" filename)
-      (load-library (match-string 1 filename)))))
+      (require (intern (match-string 1 filename))))))
 
 
 ;; temporary
