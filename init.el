@@ -253,7 +253,7 @@ Key bindings:
 (ad-activate 'load)
 
 ;; ignore mouse
-(dolist (k '([mouse-1] [down-mouse-1] [drag-mouse-1] [double-mouse-1] [triple-mouse-1]
+(dolist (k `([mouse-1] [down-mouse-1] [drag-mouse-1] [double-mouse-1] [triple-mouse-1]
              [mouse-2] [down-mouse-2] [drag-mouse-2] [double-mouse-2] [triple-mouse-2]
              [mouse-3] [down-mouse-3] [drag-mouse-3] [double-mouse-3] [triple-mouse-3]
              ;; [mouse-4] [down-mouse-4] [drag-mouse-4] [double-mouse-4] [triple-mouse-4] ; wheel-up
@@ -262,6 +262,7 @@ Key bindings:
              [mouse-7] [down-mouse-7] [drag-mouse-7] [double-mouse-7] [triple-mouse-7] ; wheel-tilt-right
              [mouse-8] [down-mouse-8] [drag-mouse-8] [double-mouse-8] [triple-mouse-8] ; back
              [mouse-9] [down-mouse-9] [drag-mouse-9] [double-mouse-9] [triple-mouse-9] ; forward
+             ,(kbd "C-z")
              ))
   (global-set-key k 'ignore))
 ;; unbind windcycle default
