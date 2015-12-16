@@ -187,6 +187,12 @@
     (define-key map (kbd "C-S-<left>")  'my:buffer-left-copy)
     (define-key map (kbd "C-S-<right>") 'my:buffer-right-copy)
 
+    ;; frame key bindings
+    (define-key map (kbd "C-x <up>") 'my:make-new-frame)
+    (define-key map (kbd "C-x <down>") 'my:delete-selected-frame)
+    (define-key map (kbd "C-x <right>") 'my:switch-to-next-frame)
+    (define-key map (kbd "C-x <left>") 'my:switch-to-previous-frame)
+
     (define-key map (kbd "C-x -")     'split-window-vertically) ; Window Split key-bindings
     (define-key map (kbd "C-x |")     'split-window-horizontally)
 
@@ -300,6 +306,24 @@ Key bindings:
     (condition-case e
         (scroll-down-command arg)
       (beginning-of-buffer (goto-char (point-min))))))
+
+(defun my:make-new-frame ()
+  (interactive)
+  (and (yes-or-no-p "Create a new frame? ")
+       (select-frame (make-frame))))
+
+(defun my:delete-selected-frame ()
+  (interactive)
+  (and (yes-or-no-p "Delete the current frame? ")
+       (delete-frame (selected-frame))))
+
+(defun my:switch-to-next-frame ()
+  (interactive)
+  (select-frame (next-frame)))
+
+(defun my:switch-to-previous-frame ()
+  (interactive)
+  (select-frame (previous-frame)))
 
 ;; kill heading spaces on kill-line : from http://emacswiki.org/emacs/DeletingWhitespace
 (defadvice kill-line (after kill-line-cleanup-whitespace activate compile)
