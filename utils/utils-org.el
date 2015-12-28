@@ -69,9 +69,11 @@
 
 (eval-after-load 'ox-latex
   '(progn
-     (setq org-latex-tables-centered nil)
-     (setq org-latex-pdf-process '("xelatex -interaction nonstopmode %f"
-                                   "xelatex -interaction nonstopmode %f")) ; for multiple passes
+     (setq org-latex-tables-centered t)
+     (setq org-latex-tables-booktabs t)
+     ;; (setq org-latex-pdf-process '("latexmk -pdf -quiet %f"))
+     ;; (setq org-latex-pdf-process '("xelatex -interaction nonstopmode %f"
+     ;;                               "xelatex -interaction nonstopmode %f")) ; for multiple passes
      ))
 
 ;; org-present
