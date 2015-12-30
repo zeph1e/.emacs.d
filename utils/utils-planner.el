@@ -11,3 +11,5 @@
           :major-mode planner-mode
           :visit-link planner-visit-link))))
 (or (file-exists-p "~/plans") (make-directory "~/plans"))
+
+(provide 'utils-planner)
