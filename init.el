@@ -228,9 +228,9 @@
     (define-key map (kbd "M-o") (lambda () (interactive)(end-of-line)(newline)))
 
     ;; smex
-    (when (boundp 'smex)
-      (define-key map (kbd "M-x") 'smex)
-      (define-key map (kbd "M-X") 'smex-major-mode-commands))
+    (define-key map (kbd "M-x") 'smex)
+    (define-key map (kbd "M-X") 'smex-major-mode-commands)
+    (define-key map (kbd "C-x M-x") 'execute-extended-command)
 
     ;; magit
     (define-key map (kbd "C-x RET C-s") 'magit-status)
