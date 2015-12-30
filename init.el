@@ -80,7 +80,7 @@
 (el-get-bundle  org-present)
 (el-get-bundle  org-publish)
 (el-get-bundle  org-readme)
-;; (or (eq (plist-get (el-get-package-def 'org-mode) :type) 'builtin) (el-get-bundle org-reveal))
+(or (eq (plist-get (el-get-package-def 'org-mode) :type) 'builtin) (el-get-bundle org-reveal))
 (el-get-bundle  planner)
 (el-get-bundle  plantuml-mode)
 (el-get-bundle  qmake-mode)
