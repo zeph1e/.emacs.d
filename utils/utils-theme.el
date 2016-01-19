@@ -22,7 +22,8 @@
         (funcall (intern (getenv "EMACS_THEME")))
       (when (functionp my:theme-function)
         (funcall my:theme-function)
-        (set-face-attribute 'mode-line nil :background "tomato" :foreground "white")))
+        (set-face-attribute 'mode-line nil :background "olive drab" :foreground "white")
+        (set-face-attribute 'mode-line-buffer-id nil :foreground "gold")))
   (color-theme-standard))
 
 (provide 'utils-theme)
