@@ -242,6 +242,8 @@
                                               (and (fboundp 'magit-blame-mode)
                                                    (magit-blame-mode))))) ;; magit 1.x compat
 
+    ;; my:read-only-mode
+    (define-key map (kbd "C-x C-q") 'my:read-only-mode)
     map)
   "global key mode keymap")
 
