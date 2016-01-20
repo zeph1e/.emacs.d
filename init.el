@@ -241,6 +241,9 @@
                                               (and (fboundp 'magit-blame) (magit-blame nil (buffer-file-name)))
                                               (and (fboundp 'magit-blame-mode)
                                                    (magit-blame-mode))))) ;; magit 1.x compat
+    ;; magit 2.X only
+    (define-key map (kbd "C-x RET C-f") 'magit-log-buffer-file)
+    (define-key map (kbd "C-x RET C-l") (lambda () (interactive) (magit-log-head)))
 
     ;; my:read-only-mode
     (define-key map (kbd "C-x C-q") 'my:read-only-mode)
