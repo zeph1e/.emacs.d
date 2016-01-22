@@ -74,19 +74,14 @@
 (el-get-bundle  markdown-mode)
 (el-get-bundle! markdown-preview-mode)
 (el-get-bundle  multiple-cursors)
-(el-get-bundle  muse)
-(if (eq system-type 'windows-nt)
-    (el-get-bundle builtin:org-mode) (el-get-bundle org-mode)) ; just use builtin on windows
 (el-get-bundle  org-present)
 (el-get-bundle  org-publish)
 (el-get-bundle  org-readme)
 (or (eq (plist-get (el-get-package-def 'org-mode) :type) 'builtin) (el-get-bundle org-reveal))
-(el-get-bundle  planner)
 (el-get-bundle  plantuml-mode)
 (el-get-bundle  qmake-mode)
 (el-get-bundle  qml-mode)
 (el-get-bundle! redo+)
-(el-get-bundle  remember)
 (el-get-bundle  screenshot) (or (executable-find "convert") (warn "ImageMagick is not installed"))
 (el-get-bundle  smex)
 (el-get-bundle  windcycle)
@@ -94,6 +89,12 @@
 (el-get-bundle  color-theme) (color-theme-initialize)
 (el-get-bundle  color-theme-tomorrow)
 (el-get-bundle  web-beautify)
+(if (eq system-type 'windows-nt) ; windows
+    (progn
+      (el-get-bundle builtin:org-mode) (el-get-bundle org-mode)) ; just use builtin on windows
+  (el-get-bundle  planner)  ; not-windows
+  (el-get-bundle  muse)
+  (el-get-bundle  remember))
 (el-get 'sync)
 
 ;; load files in utils/
