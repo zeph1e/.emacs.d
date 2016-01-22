@@ -7,6 +7,10 @@
   (make-sparse-keymap)
   "my:read-only-mode-keymap")
 
+(defconst my:insert-command-list
+  '(self-insert-command
+    org-self-insert-command))
+
 (define-minor-mode my:read-only-mode
   "My read only mode which have no-mod-key bindings."
   :lighter " READONLY"
@@ -19,8 +23,8 @@
   (let ((pkey (key-binding (kbd "p")))
         (nkey (key-binding (kbd "n"))))
     (define-key my:read-only-mode-keymap (kbd "p")
-      (and (equal pkey 'self-insert-command) 'previous-line))
+      (and (member pkey my:insert-command-list) 'previous-line))
     (define-key my:read-only-mode-keymap (kbd "n")
-      (and (equal nkey 'self-insert-command) 'next-line))))
+      (and (member nkey my:insert-command-list) 'next-line))))
 
 (provide 'utils-readonly)
