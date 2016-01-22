@@ -1,5 +1,10 @@
-;;; qt.el -- from emacswiki http://www.emacswiki.org/emacs/QtMode, slightly modified
+;;; qt.el -- Configuration for Qt C++ or Qml
+
+;; Written by Yunsik Jang <doomsday@kldp.org>
+;; You can use/modify/redistribute this freely.
+
 ;; syntax-highlighting for Qt
+;; from emacswiki http://www.emacswiki.org/emacs/QtMode, slightly modified
 ;; (based on work by Arndt Gulbrandsen, Troll Tech)
 (defun jk/c-mode-common-hook ()
   "Set up c-mode and related modes.
@@ -31,5 +36,62 @@
                             '(("\\<SIGNAL\\|SLOT\\>" . 'qt-keywords-face)))
     ))
 (add-hook 'c-mode-common-hook 'jk/c-mode-common-hook)
+
+;; qml-mode indentation sucks.
+;; following codes are taken from my franca-idl
+(defun my:qml-calculate-indentation ()
+  "Return the column to which the current line should be indented."
+  (save-excursion
+    (let ((curp (point))(paren 0) indent basep)
+      (goto-char (min (1+ curp) (point-max))) ; for current line
+      (condition-case nil
+          (while (search-backward-regexp "[{}]") ; find unmatching opening brace
+            (if (char-equal ?{ (char-after))
+                (progn
+                  (setq paren (1+ paren)) ; opening brace
+                  (if (> paren 0) (error "do break")))
+              ;; if } is at the first column, don't go further unless user entered it
+              (if (and (/= curp (point)) (= (line-beginning-position) (point)))
+                  (error "no need to go further"))
+              (setq paren (1- paren))))
+        (error nil))
+      (if (<= paren 0) 0 ; no unmatcing open brace found
+        ;; calculate indent base position
+        ;;   method aa {
+        ;;   _ <-- base position
+        ;; We need to find another open brace in same line for the case like:
+        ;;   method aa { in {
+        ;;                   _ <-- indent here
+        (setq basep (search-backward-regexp "[{]" (point-at-bol) t))
+        (if (null basep) (setq basep (point-at-bol))
+          (setq basep (1+ basep)))
+        (goto-char basep)
+        (skip-chars-forward "\t ")
+        (setq indent (current-column)) ; candidate
+        ;; We need to check if there's following statements in the same line for the case like:
+        ;;   method aa { in { String aa
+        ;;                    _ <-- indent here
+        (goto-char basep)
+        (setq basep (search-forward-regexp "[{]\\s-*[^\t {}]" (point-at-eol) t))
+        (if basep
+          (- basep (line-beginning-position) 1)
+            (+ indent tab-width))))))
+
+(eval-after-load "qml-mode"
+  '(progn
+     (defadvice qml-indent-line (around my:qml-indent-line)
+       "Because the default indentation behaviour of qml-mode sucks."
+       (interactive)
+       (let* ((savep (point))
+              (indent-col
+               (save-excursion
+                 (back-to-indentation)
+                 (if (>= (point) savep) (setq savep nil))
+                 (max (my:qml-calculate-indentation) 0))))
+         (if (null indent-col) 'noindent
+           (if savep
+               (save-excursion (indent-line-to indent-col))
+             (indent-line-to indent-col)))))
+     (ad-activate 'qml-indent-line)))
 
 (provide 'utils-qt)
