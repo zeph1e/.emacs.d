@@ -94,4 +94,5 @@
              (indent-line-to indent-col)))))
      (ad-activate 'qml-indent-line)))
 
+(add-hook 'qml-mode-hook (lambda () (linum-mode)))
 (provide 'utils-qt)
