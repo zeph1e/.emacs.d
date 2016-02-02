@@ -230,8 +230,8 @@
 
     ;; smex
     (define-key map (kbd "M-x") 'smex)
-    (define-key map (kbd "M-X") 'smex-major-mode-commands)
-    (define-key map (kbd "C-x M-x") 'execute-extended-command)
+    ;; (define-key map (kbd "M-X") 'smex-major-mode-commands)
+    (define-key map (kbd "M-X") 'execute-extended-command)
 
     ;; magit
     (define-key map (kbd "C-x RET C-s") 'magit-status)
