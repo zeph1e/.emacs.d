@@ -23,7 +23,6 @@
 
 ;; to notify current major mode is switched
 (defun my:rename-term-shell-buffer (&optional buffer)
-  (interactive)
   (let* ((buf (or buffer (current-buffer)))
          (bufname (buffer-name buf))
          (modename (or (when (string-match "\\*\\(terminal\\|shell\\)\\(-\\(shell\\|term\\)\\)?\\*"
@@ -41,23 +40,24 @@
 (defun my:term-switch-to-shell-mode ()
   (interactive)
   (cond ((equal major-mode 'term-mode)
+         (require 'shell)
          (shell-mode)
          (set-process-filter (get-buffer-process (current-buffer))
                              'comint-output-filter)
          (local-set-key (kbd "C-j") 'my:term-switch-to-shell-mode)
          (compilation-shell-minor-mode 1)
-         (comint-send-input)
-         (my:rename-term-shell-buffer))
+         (comint-send-input))
         ((equal major-mode 'shell-mode)
+         (require 'term)
          (compilation-shell-minor-mode -1)
          (font-lock-mode -1)
-         (set-process-filter (get-buffer-process (current-buffer))
-                             'term-emulate-terminal)
          (term-mode)
          (term-char-mode)
+         (set-process-filter (get-buffer-process (current-buffer))
+                             'term-emulate-terminal)
          (term-send-raw-string (kbd "C-l"))
-         (define-key term-raw-map (kbd "C-j") 'my:term-switch-to-shell-mode)
-         (my:rename-term-shell-buffer))))
+         (define-key term-raw-map (kbd "C-j") 'my:term-switch-to-shell-mode)))
+  (my:rename-term-shell-buffer))
 
 (add-hook 'shell-mode-hook
           (lambda () (local-set-key (kbd "C-j") 'my:term-switch-to-shell-mode)))
