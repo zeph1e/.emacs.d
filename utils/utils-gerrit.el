@@ -1,4 +1,4 @@
-;;; utils-auto-complete.el
+;;; utils-gerrit.el
 
 ;; Written by Yunsik Jang <doomsday@kldp.org>
 ;; You can use/modify/redistribute this freely.
