@@ -73,7 +73,8 @@
 ;; make "term" to be "ansi-term"
 (defadvice term (around my:term-adviced (&optional program new-buffer-name directory))
   (interactive)
-  (funcall 'ansi-term (or program "/bin/bash") (or new-buffer-name "term")))
+  (if (eq system-type 'windows-nt) (funcall 'shell)
+    (funcall 'ansi-term (or program "/bin/bash") (or new-buffer-name "term"))))
 (ad-activate 'term)
 
 (defvar my:ansi-term-list nil
@@ -117,7 +118,10 @@
 ;; Try to update buffer-name with current directory
 (defvar-local my:term-current-directory nil)
 (defadvice term-command-hook (around my:term-command-hook)
-  (and ad-do-it (my:term-refresh-buffer-name)))
+  (and ad-do-it
+       (not (equal my:term-current-directory default-directory))
+       (setq my:term-current-directory default-directory)
+       (my:term-refresh-buffer-name)))
 (ad-activate 'term-command-hook)
 
 ;; install hook for term-mode
