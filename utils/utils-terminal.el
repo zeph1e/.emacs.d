@@ -25,16 +25,19 @@
 (defun my:term-refresh-buffer-name (&optional buffer)
   (let* ((buf (or buffer (current-buffer)))
          (bufname (buffer-name buf))
-         (modename (car (or (when (string-match
-                                  "\\*\\(term\\|terminal\\|ansi-term\\)\\((S)\\)?\\(@.+\\)?\\*\\(<.+>\\)?"
-                                  bufname)
-                             (split-string (replace-match "\\1 \\4" t nil bufname)))
-                           (error "Unable to get original mode!"))))
-         (toggled (not (equal 'term-mode major-mode))))
-    (rename-buffer (generate-new-buffer-name
-                    (concat "*" modename (and toggled "(S)")
-                            "@" (abbreviate-file-name default-directory) "*")))))
-
+         (bufinfo (or (when (string-match
+                             "\\*\\(term\\|terminal\\|ansi-term\\)\\((S)\\)?\\(:.+\\)?\\*\\(<.+>\\)?"
+                             bufname)
+                        (split-string (replace-match "\\1 \\4" t nil bufname)))
+                      (error "Unable to get original mode!")))
+         (modename (car bufinfo))
+         (modeident (cadr bufinfo))
+         (toggled (not (equal 'term-mode major-mode)))
+         (seed (concat "*" modename (and toggled "(S)")
+                            ":" (abbreviate-file-name default-directory) "*"))
+         (candidate (concat seed modeident)))
+    (or (equal candidate (buffer-name (current-buffer)))
+        (rename-buffer (generate-new-buffer-name seed)))))
 
 ;; excerpted from http://www.emacswiki.org/emacs/ShellMode
 (defun my:term-switch-to-shell-mode ()
@@ -115,20 +118,30 @@
     (and (equal (switch-to-buffer  buffer) (current-buffer))
          (message "Switching to %S" (buffer-name buffer)))))
 
+(defun my:term-update-directory ()
+  (and (not (equal my:term-current-directory default-directory))
+       (setq-local my:term-current-directory default-directory)
+       (my:term-refresh-buffer-name)))
+
 ;; Try to update buffer-name with current directory
 (defvar-local my:term-current-directory nil)
-(defadvice term-command-hook (around my:term-command-hook)
-  (and ad-do-it
-       (not (equal my:term-current-directory default-directory))
-       (setq my:term-current-directory default-directory)
-       (my:term-refresh-buffer-name)))
+(defadvice term-command-hook (around my:term-command-hook-adviced)
+  (and ad-do-it (my:term-update-directory)))
 (ad-activate 'term-command-hook)
+
+;; Ask to close terminal on exit
+(defadvice term-handle-exit (after my:term-handle-exit-adviced)
+  (kill-buffer (current-buffer)))
+(ad-activate 'term-handle-exit)
 
 ;; install hook for term-mode
 (add-hook 'term-mode-hook
           (lambda ()
-            (setq-local yas-dont-activate t) ; yas-expand is bound on tab!!!!
-            (setq-local my:term-current-directory default-directory)
+            (and (boundp 'yas-minor-mode) ; yas-expand is bound on tab!!!!
+                 (setq-local yas-dont-activate t)
+                 (yas-minor-mode -1))
+            (set (make-local-variable 'my:term-current-directory) nil)
+            (my:term-update-directory)
             (define-key term-raw-map (kbd "C-j") 'my:term-switch-to-shell-mode)))
 
 (provide 'utils-terminal)
