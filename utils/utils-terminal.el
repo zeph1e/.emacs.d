@@ -21,25 +21,8 @@
                              :foreground fg
                              :background bg)))))
 
-;; to notify current major mode is switched
-(defun my:term-refresh-buffer-name (&optional buffer)
-  (let* ((buf (or buffer (current-buffer)))
-         (bufname (buffer-name buf))
-         (bufinfo (or (when (string-match
-                             "\\*\\(term\\|terminal\\|ansi-term\\)\\((S)\\)?\\(:.+\\)?\\*\\(<.+>\\)?"
-                             bufname)
-                        (split-string (replace-match "\\1 \\4" t nil bufname)))
-                      (error "Unable to get original mode!")))
-         (modename (car bufinfo))
-         (modeident (cadr bufinfo))
-         (toggled (not (equal 'term-mode major-mode)))
-         (seed (concat "*" modename (and toggled "(S)")
-                            ":" (abbreviate-file-name default-directory) "*"))
-         (candidate (concat seed modeident)))
-    (or (equal candidate (buffer-name (current-buffer)))
-        (rename-buffer (generate-new-buffer-name seed)))))
-
 ;; excerpted from http://www.emacswiki.org/emacs/ShellMode
+;; this switches from-to shell-mode.
 (defun my:term-switch-to-shell-mode ()
   (interactive)
   (cond ((equal major-mode 'term-mode)
@@ -62,16 +45,11 @@
          (define-key term-raw-map (kbd "C-j") 'my:term-switch-to-shell-mode)))
   (my:term-refresh-buffer-name))
 
-;; make original "term" to be "terminal"
-(unless (fboundp 'terminal)
-  (setq original-term (symbol-function 'term))
-  (defun terminal (program)
-    (interactive (list (read-from-minibuffer "Run program: "
-                                             (or explicit-shell-file-name
-                                                 (getenv "ESHELL")
-                                                 (getenv "SHELL")
-                                                 "/bin/sh"))))
-    (funcall (symbol-function 'original-term) program)))
+;;
+;; I hate to type `ansi-term' and hope typing `term' to be ansi-term.
+;; I also hate to type `enter' to choose program `/bin/bash' because I will
+:; not use others than `bash' with `term' command.
+;;
 
 ;; make "term" to be "ansi-term"
 (defadvice term (around my:term-adviced (&optional program new-buffer-name directory))
@@ -83,7 +61,7 @@
 (defvar my:ansi-term-list nil
   "Multiple term mode list to iterate between.")
 
-;; make ansi-term be a kinda multi-term
+;; make ansi-terms be managed
 (defadvice ansi-term (around my:ansi-term-adviced (program &optional new-buffer-name))
   (interactive (list (read-from-minibuffer "Run program: "
                        (or explicit-shell-file-name
@@ -101,9 +79,12 @@
           (lambda ()
             (when (or (equal major-mode 'term-mode)
                       (equal major-mode 'shell-mode))
-              (setq my:ansi-term-list (remove (current-buffer) my:ansi-term-list)))))
+              (setq my:ansi-term-list (remove (current-buffer) my:ansi-term-list))
+              (if (eq my:term-last-used (current-buffer))
+                  (setq my:term-last-used nil)))))
 
 (defun my:select-prev-ansi-term ()
+  "Find previous ansi-term in ringed list of buffers."
   (interactive)
   (let* ((pos (1+ (cl-position (current-buffer) my:ansi-term-list))) ; list is reversed
          (buffer (nth (% pos (length my:ansi-term-list)) my:ansi-term-list)))
@@ -111,6 +92,7 @@
          (message "Switching to %S" (buffer-name buffer)))))
 
 (defun my:select-next-ansi-term ()
+  "Find next ansi-term in ringed list of buffers."
   (interactive)
   (let* ((pos (1- (+ (length my:ansi-term-list)
                      (cl-position (current-buffer) my:ansi-term-list)))) ; list is reversed
@@ -119,12 +101,39 @@
          (message "Switching to %S" (buffer-name buffer)))))
 
 (defun my:term-update-directory ()
+  "Update buffer-name when directory is changed."
   (and (not (equal my:term-current-directory default-directory))
        (setq-local my:term-current-directory default-directory)
        (my:term-refresh-buffer-name)))
 
+(defvar my:term-last-used nil
+  "The terminal buffer which used at last")
+
+;; to notify current major mode or directory is switched by changing its buffer name
+(defun my:term-refresh-buffer-name (&optional buffer)
+  (let* ((buf (or buffer (current-buffer)))
+         (bufname (buffer-name buf))
+         (bufinfo (or (when (string-match
+                             "\\*\\(term\\|terminal\\|ansi-term\\)\\((S)\\)?\\(:.+\\)?\\*\\(<.+>\\)?"
+                             bufname)
+                        (split-string (replace-match "\\1 \\4" t nil bufname)))
+                      (error "Unable to get original mode!")))
+         (modename (car bufinfo))
+         (modeident (cadr bufinfo))
+         (toggled (not (equal 'term-mode major-mode)))
+         (seed (concat "*" modename (and toggled "(S)")
+                            ":" (abbreviate-file-name default-directory) "*"))
+         (candidate (concat seed modeident)))
+    (or (equal candidate (buffer-name (current-buffer)))
+        (rename-buffer (generate-new-buffer-name seed)))
+    (setq my:term-last-used buf)))
+
+;;
+;; There's no hooks for directory update or exit in term-mode
+;; So, advice is used instead
+;;
 ;; Try to update buffer-name with current directory
-(defvar-local my:term-current-directory nil)
+(defvar my:term-current-directory nil)
 (defadvice term-command-hook (around my:term-command-hook-adviced)
   (and ad-do-it (my:term-update-directory)))
 (ad-activate 'term-command-hook)
@@ -143,5 +152,22 @@
             (set (make-local-variable 'my:term-current-directory) nil)
             (my:term-update-directory)
             (define-key term-raw-map (kbd "C-j") 'my:term-switch-to-shell-mode)))
+
+;; For hot-key functions
+(defun my:term-get-create ()
+  (interactive)
+  (or (let ((dir default-directory)
+            found)
+        (dolist (buf my:ansi-term-list)
+          (with-current-buffer buf
+            (and (equal dir default-directory)
+                 (setq found buf))))
+        (and found (switch-to-buffer found)))
+      (term)))
+
+(defun my:term-get-last-used ()
+  (interactive)
+  (if my:term-last-used (switch-to-buffer my:term-last-used)
+    (my:term-get-create)))
 
 (provide 'utils-terminal)

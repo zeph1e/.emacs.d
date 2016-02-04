@@ -249,6 +249,10 @@
 
     ;; my:read-only-mode
     (define-key map (kbd "C-x C-q") 'my:read-only-mode)
+
+    ;; term
+    (define-key map (kbd "C-x t") 'my:term-get-create)
+    (define-key map (kbd "C-x y") 'my:term-get-last-used)
     map)
   "global key mode keymap")
 
