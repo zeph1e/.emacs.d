@@ -88,7 +88,7 @@
   (interactive)
   (let* ((pos (1+ (cl-position (current-buffer) my:ansi-term-list))) ; list is reversed
          (buffer (nth (% pos (length my:ansi-term-list)) my:ansi-term-list)))
-    (and (equal (switch-to-buffer  buffer) (current-buffer))
+    (and (equal (my:term-switch-to-buffer  buffer) (current-buffer))
          (message "Switching to %S" (buffer-name buffer)))))
 
 (defun my:select-next-ansi-term ()
@@ -97,7 +97,7 @@
   (let* ((pos (1- (+ (length my:ansi-term-list)
                      (cl-position (current-buffer) my:ansi-term-list)))) ; list is reversed
          (buffer (nth (% pos (length my:ansi-term-list)) my:ansi-term-list)))
-    (and (equal (switch-to-buffer  buffer) (current-buffer))
+    (and (equal (my:term-switch-to-buffer  buffer) (current-buffer))
          (message "Switching to %S" (buffer-name buffer)))))
 
 (defun my:term-update-directory ()
@@ -154,6 +154,15 @@
             (define-key term-raw-map (kbd "C-j") 'my:term-switch-to-shell-mode)))
 
 ;; For hot-key functions
+(defun my:term-switch-to-buffer (buffer-or-name)
+  (let (term-win)
+    (dolist (win (window-list))
+      (with-current-buffer (window-buffer win)
+        (and (eq (get-buffer buffer-or-name) (current-buffer))
+             (setq term-win win))))
+    (if term-win (select-window term-win)
+      (switch-to-buffer buffer-or-name))))
+
 (defun my:term-get-create ()
   (interactive)
   (or (let ((dir default-directory)
@@ -161,13 +170,14 @@
         (dolist (buf my:ansi-term-list)
           (with-current-buffer buf
             (and (equal dir default-directory)
-                 (setq found buf))))
-        (and found (switch-to-buffer found)))
+                 (setq found (current-buffer)))))
+        (and found (my:term-switch-to-buffer found))
+        found)
       (term)))
 
 (defun my:term-get-last-used ()
   (interactive)
-  (if my:term-last-used (switch-to-buffer my:term-last-used)
-    (my:term-get-create)))
+  (if my:term-last-used (my:term-switch-to-buffer my:term-last-used)
+      (my:term-get-create)))
 
 (provide 'utils-terminal)
