@@ -25,17 +25,16 @@
 (defun my:term-refresh-buffer-name (&optional buffer)
   (let* ((buf (or buffer (current-buffer)))
          (bufname (buffer-name buf))
-         (matched (or (when (string-match
-                             "\\*\\(term\\|terminal\\|ansi-term\\)\\(-shell\\)?\\*\\(<.+>\\)?\\(.+\\)?"
-                             bufname)
-                         (split-string (replace-match "\\1 \\3" t nil bufname)))
-                      (error "Unable to get original mode!")))
-         (modename (car matched))
-         (ident (cadr matched))
+         (modename (car (or (when (string-match
+                                  "\\*\\(term\\|terminal\\|ansi-term\\)\\((S)\\)?\\(@.+\\)?\\*\\(<.+>\\)?"
+                                  bufname)
+                             (split-string (replace-match "\\1 \\4" t nil bufname)))
+                           (error "Unable to get original mode!"))))
          (toggled (not (equal 'term-mode major-mode))))
-    (rename-buffer (concat "*" modename (and toggled "-shell") "*"
-                           ident
-                           "[ " (abbreviate-file-name default-directory) " ]"))))
+    (rename-buffer (generate-new-buffer-name
+                    (concat "*" modename (and toggled "(S)")
+                            "@" (abbreviate-file-name default-directory) "*")))))
+
 
 ;; excerpted from http://www.emacswiki.org/emacs/ShellMode
 (defun my:term-switch-to-shell-mode ()
