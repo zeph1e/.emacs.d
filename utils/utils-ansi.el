@@ -7,7 +7,7 @@
   '(progn
      (setq ansi-color-names-vector
            ["black" "tomato" "chartreuse1" "gold1"
-            "DeepSkyBlue1" "MediumOrchid1" "cyan" "white"])
+            "DodgerBlue3" "MediumOrchid1" "cyan" "white"])
      (setq ansi-color-map (ansi-color-make-color-map))))
 
 (provide 'utils-ansi)
