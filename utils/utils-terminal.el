@@ -218,8 +218,9 @@
 (defun my:term-list-quit (&optional buffer)
   (interactive)
   (when (equal major-mode 'my:term-list-mode)
-    (let (restore)
+    (let (restore popup)
       (with-current-buffer (current-buffer)
+        (setq popup (current-buffer))
         (setq restore (or buffer
                           (and (buffer-live-p my:term-list-parent-window-buffer)
                                my:term-list-parent-window-buffer))))
@@ -227,6 +228,7 @@
       (and my:term-list-parent-window
            (select-window my:term-list-parent-window))
       (switch-to-buffer restore)
+      (kill-buffer popup)
       (setq-local my:term-list-parent-window nil)
       (setq-local my:term-list-parent-window-buffer nil))))
 
