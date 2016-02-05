@@ -256,7 +256,7 @@
 
     ;; term
     (define-key map (kbd "C-x t") 'my:term-get-create)
-    (define-key map (kbd "C-x y") 'my:term-get-last-used)
+    (define-key map (kbd "C-x y") 'my:term-get-recent)
     map)
   "global key mode keymap")
 

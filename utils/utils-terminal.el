@@ -67,7 +67,7 @@
             (when (or (equal major-mode 'term-mode)
                       (equal major-mode 'shell-mode))
               (setq my:ansi-term-list (remove (current-buffer) my:ansi-term-list))
-              (setq my:term-used-history (remove (current-buffer) my:term-used-history)))))
+              (setq my:term-recent-history (remove (current-buffer) my:term-recent-history)))))
 
 (defun my:select-prev-ansi-term ()
   "Find previous ansi-term in ringed list of buffers."
@@ -92,7 +92,7 @@
        (setq-local my:term-current-directory default-directory)
        (my:term-refresh-buffer-name)))
 
-(defvar my:term-used-history nil
+(defvar my:term-recent-history nil
   "The terminal buffer which used at last")
 
 ;; to notify current major mode or directory is switched by changing its buffer name
@@ -112,7 +112,7 @@
          (candidate (concat seed modeident)))
     (or (equal candidate (buffer-name (current-buffer)))
         (rename-buffer (generate-new-buffer-name seed)))
-    (add-to-list 'my:term-used-history buf)))
+    (add-to-list 'my:term-recent-history buf)))
 
 ;;
 ;; There's no hooks for directory update or exit in term-mode
@@ -165,10 +165,89 @@
           (and found (my:term-switch-to-buffer found))))
       (term)))
 
-(defun my:term-get-last-used ()
+(defun my:term-get-recent ()
   "Pick last used terminal."
   (interactive)
-  (if my:term-used-history (my:term-switch-to-buffer (car my:term-used-history))
+  (if my:term-recent-history (my:term-switch-to-buffer (car my:term-recent-history))
       (my:term-get-create)))
+
+(defvar my:term-list-keymap
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "n") 'my:term-list-next)
+    (define-key map (kbd "p") 'my:term-list-prev)
+    (define-key map (kbd "RET") 'my:term-list-select)
+    (define-key map (kbd "SPC") 'my:term-list-show)
+    (define-key map (kbd "q") 'my:term-list-quit)
+    map)
+  "Terminal list popup keybinding.")
+
+(define-derived-mode my:term-list-mode fundamental-mode ""
+  (use-local-map my:term-list-keymap)
+  (set (make-local-variable 'buffer-read-only) t))
+
+(defun my:term-list-next ()
+  (interactive)
+  (next-line)
+  (my:term-list-show))
+
+(defun my:term-list-prev ()
+  (interactive)
+  (previous-line)
+  (my:term-list-show))
+
+(defun my:term-list-select ()
+  (interactive)
+  (let ((popup-window (selected-window))
+        buffer-name)
+    (with-current-buffer (window-buffer popup-window)
+      (setq buffer-name (get-text-property (point) 'buffer-name)))
+    (my:term-list-quit (get-buffer buffer-name))))
+
+(defun my:term-list-show ()
+  (interactive)
+  (let ((popup-window (selected-window))
+        (parent-window my:term-list-parent-window)
+        buffer-name)
+    (with-current-buffer (window-buffer popup-window)
+      (setq buffer-name (get-text-property (point) 'buffer-name)))
+    (when (and parent-window buffer-name)
+      (select-window parent-window)
+      (switch-to-buffer buffer-name)
+      (select-window popup-window))))
+
+(defun my:term-list-quit (&optional buffer)
+  (interactive)
+  (when (equal major-mode 'my:term-list-mode)
+    (let (restore)
+      (with-current-buffer (current-buffer)
+        (setq restore (or buffer
+                          (and (buffer-live-p my:term-list-parent-window-buffer)
+                               my:term-list-parent-window-buffer))))
+      (delete-window (selected-window))
+      (and my:term-list-parent-window
+           (select-window my:term-list-parent-window))
+      (switch-to-buffer restore)
+      (setq-local my:term-list-parent-window nil)
+      (setq-local my:term-list-parent-window-buffer nil))))
+
+(defvar my:term-list-parent-window nil)
+(defvar my:term-list-parent-window-buffer nil)
+(defun my:term-list-popup ()
+  (interactive)
+  (let ((parent-window (selected-window))
+        (popup-buffer (get-buffer-create "*Terminal List*"))
+        (inhibit-read-only t))
+    (with-current-buffer popup-buffer
+      (delete-region (point-min)(point-max))
+      (goto-char (point-min))
+      (dolist (term-buf my:term-recent-history)
+        (insert (propertize (buffer-name term-buf)
+                            'buffer-name (buffer-name term-buf))"\n"))
+      (my:term-list-mode)
+      (setq-local my:term-list-parent-window parent-window)
+      (setq-local my:term-list-parent-window-buffer (window-buffer parent-window))
+      (goto-char (point-min)))
+    (select-window (display-buffer popup-buffer '(display-buffer-below-selected)))
+    (fit-window-to-buffer (selected-window) 15 5)))
 
 (provide 'utils-terminal)
