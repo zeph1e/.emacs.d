@@ -80,8 +80,7 @@
             (when (or (equal major-mode 'term-mode)
                       (equal major-mode 'shell-mode))
               (setq my:ansi-term-list (remove (current-buffer) my:ansi-term-list))
-              (if (eq my:term-last-used (current-buffer))
-                  (setq my:term-last-used nil)))))
+              (setq my:term-used-history (remove (current-buffer) my:term-used-history)))))
 
 (defun my:select-prev-ansi-term ()
   "Find previous ansi-term in ringed list of buffers."
@@ -106,7 +105,7 @@
        (setq-local my:term-current-directory default-directory)
        (my:term-refresh-buffer-name)))
 
-(defvar my:term-last-used nil
+(defvar my:term-used-history nil
   "The terminal buffer which used at last")
 
 ;; to notify current major mode or directory is switched by changing its buffer name
@@ -126,7 +125,7 @@
          (candidate (concat seed modeident)))
     (or (equal candidate (buffer-name (current-buffer)))
         (rename-buffer (generate-new-buffer-name seed)))
-    (setq my:term-last-used buf)))
+    (add-to-list 'my:term-used-history buf)))
 
 ;;
 ;; There's no hooks for directory update or exit in term-mode
@@ -178,7 +177,7 @@
 (defun my:term-get-last-used ()
   "Pick last used terminal."
   (interactive)
-  (if my:term-last-used (my:term-switch-to-buffer my:term-last-used)
+  (if my:term-used-history (my:term-switch-to-buffer (car my:term-used-history))
       (my:term-get-create)))
 
 (provide 'utils-terminal)
