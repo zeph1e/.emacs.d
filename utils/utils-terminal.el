@@ -138,7 +138,7 @@
   (and ad-do-it (my:term-update-directory)))
 (ad-activate 'term-command-hook)
 
-;; Ask to close terminal on exit
+;;close terminal buffer on exit
 (defadvice term-handle-exit (after my:term-handle-exit-adviced)
   (kill-buffer (current-buffer)))
 (ad-activate 'term-handle-exit)
@@ -164,18 +164,19 @@
       (switch-to-buffer buffer-or-name))))
 
 (defun my:term-get-create ()
+  "Get terminal for current directory or create if there's no such terminal buffer."
   (interactive)
-  (or (let ((dir default-directory)
-            found)
-        (dolist (buf my:ansi-term-list)
-          (with-current-buffer buf
-            (and (equal dir default-directory)
-                 (setq found (current-buffer)))))
-        (and found (my:term-switch-to-buffer found))
-        found)
+  (or (with-current-buffer (current-buffer)
+        (let ((dir (abbreviate-file-name default-directory)) found)
+          (dolist (buf my:ansi-term-list)
+            (with-current-buffer buf
+              (and (equal dir (abbreviate-file-name default-directory))
+                   (setq found buf))))
+          (and found (my:term-switch-to-buffer found))))
       (term)))
 
 (defun my:term-get-last-used ()
+  "Pick last used terminal."
   (interactive)
   (if my:term-last-used (my:term-switch-to-buffer my:term-last-used)
       (my:term-get-create)))
