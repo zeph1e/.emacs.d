@@ -169,6 +169,10 @@
     (define-key map (kbd "M-SPC") (lambda () (interactive)(forward-to-indentation 0)))
     (define-key map (kbd "M-S-SPC") 'just-one-space) ; original function on M-SPC
 
+    (define-key map (kbd "M-F") 'forward-symbol)
+    (define-key map (kbd "M-B") (lambda (&optional arg) (interactive "p")
+                                  (forward-symbol (- (or arg 1))))) ; backward-symbol doesn't exist
+
     ;; scroll to buffer beginning/end
     (define-key map (kbd "C-v") 'my:scroll-up-command)
     (define-key map (kbd "M-v") 'my:scroll-down-command)
