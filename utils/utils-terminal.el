@@ -61,19 +61,6 @@
 (defvar my:ansi-term-list nil
   "Multiple term mode list to iterate between.")
 
-;; make ansi-terms be managed
-(defadvice ansi-term (around my:ansi-term-adviced (program &optional new-buffer-name))
-  (interactive (list (read-from-minibuffer "Run program: "
-                       (or explicit-shell-file-name
-                           (getenv "ESHELL")
-                           (getenv "SHELL")
-                           "/bin/sh"))))
-  ad-do-it
-  (push (current-buffer) my:ansi-term-list)
-  (define-key term-raw-map (kbd "M-<left>") 'my:select-prev-ansi-term)
-  (define-key term-raw-map (kbd "M-<right>") 'my:select-next-ansi-term))
-(ad-activate 'ansi-term)
-
 ;; update ansi-term-list on kill-buffer
 (add-hook 'kill-buffer-hook
           (lambda ()
@@ -150,6 +137,10 @@
                  (yas-minor-mode -1))
             (set (make-local-variable 'my:term-current-directory) nil)
             (my:term-update-directory)
+            (push (current-buffer) my:ansi-term-list)
+            (define-key term-raw-map (kbd "M-<left>") 'my:select-prev-ansi-term)
+            (define-key term-raw-map (kbd "M-<right>") 'my:select-next-ansi-term)
+            (define-key term-raw-map (kbd "C-c ?") 'my:term-list-popup)
             (define-key term-raw-map (kbd "C-j") 'my:term-switch-to-shell-mode)))
 
 ;; For hot-key functions
