@@ -9,6 +9,7 @@
 
 (defconst my:insert-command-list
   '(self-insert-command
+    undefined
     org-self-insert-command))
 
 (define-minor-mode my:read-only-mode
@@ -18,13 +19,12 @@
   :keymap my:read-only-mode-keymap
   ;; if there is any bind other than inserting p/n character
   ;; this mode will not override it.
-  (define-key my:read-only-mode-keymap (kbd "p") nil)
-  (define-key my:read-only-mode-keymap (kbd "n") nil)
   (let ((pkey (key-binding (kbd "p")))
         (nkey (key-binding (kbd "n"))))
     (define-key my:read-only-mode-keymap (kbd "p")
-      (and (member pkey my:insert-command-list) 'previous-line))
+      (and (or (null pkey) (member pkey my:insert-command-list)) 'previous-line))
     (define-key my:read-only-mode-keymap (kbd "n")
-      (and (member nkey my:insert-command-list) 'next-line))))
+      (and (or (null nkey) (member nkey my:insert-command-list)) 'next-line))))
 
+(add-hook 'help-mode-hook 'my:read-only-mode)
 (provide 'utils-readonly)
