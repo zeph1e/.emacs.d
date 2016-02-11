@@ -55,8 +55,10 @@
 (add-hook 'kill-buffer-hook
           (lambda ()
             (when (my:term-buffer-p)
-              (setq my:ansi-term-list (remove (current-buffer) my:ansi-term-list))
-              (setq my:term-recent-history (remove (current-buffer) my:term-recent-history)))))
+              (with-current-buffer (current-buffer)
+                (setq my:term-current-directory nil) ; to avoid buffer-list-update-hook insert it again
+                (setq my:ansi-term-list (remove (current-buffer) my:ansi-term-list))
+                (setq my:term-recent-history (remove (current-buffer) my:term-recent-history))))))
 
 (add-hook 'buffer-list-update-hook
           (lambda ()
@@ -179,12 +181,12 @@
 
 (defun my:term-list-next ()
   (interactive)
-  (next-line)
+  (forward-line)
   (my:term-list-show))
 
 (defun my:term-list-prev ()
   (interactive)
-  (previous-line)
+  (forward-line -1)
   (my:term-list-show))
 
 (defun my:term-list-select ()
