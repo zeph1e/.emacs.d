@@ -21,30 +21,6 @@
                              :foreground fg
                              :background bg)))))
 
-;; excerpted from http://www.emacswiki.org/emacs/ShellMode
-;; this switches from-to shell-mode.
-(defun my:term-switch-to-shell-mode ()
-  (interactive)
-  (cond ((equal major-mode 'term-mode)
-         (require 'shell)
-         (shell-mode)
-         (set-process-filter (get-buffer-process (current-buffer))
-                             'comint-output-filter)
-         (local-set-key (kbd "C-j") 'my:term-switch-to-shell-mode)
-         (compilation-shell-minor-mode 1)
-         (comint-send-input))
-        ((equal major-mode 'shell-mode)
-         (require 'term)
-         (compilation-shell-minor-mode -1)
-         (font-lock-mode -1)
-         (term-mode)
-         (term-char-mode)
-         (set-process-filter (get-buffer-process (current-buffer))
-                             'term-emulate-terminal)
-         (term-send-raw-string (kbd "C-l"))
-         (define-key term-raw-map (kbd "C-j") 'my:term-switch-to-shell-mode)))
-  (my:term-refresh-buffer-name))
-
 ;;
 ;; I hate to type `ansi-term' and hope typing `term' to be ansi-term.
 ;; I also hate to type `enter' to choose program `/bin/bash' because I will
@@ -72,8 +48,7 @@
 (defun my:term-buffer-p (&optional buffer)
   (let ((buf (or buffer (current-buffer))))
     (with-current-buffer buf
-      (and (or (equal major-mode 'term-mode)
-               (equal major-mode 'shell-mode))
+      (and (equal major-mode 'term-mode)
            my:term-current-directory))))
 
 ;; update ansi-term-list on kill-buffer
@@ -119,9 +94,9 @@
   (let* ((buf (or buffer (current-buffer)))
          (bufname (buffer-name buf))
          (bufinfo (or (when (string-match
-                             "\\*\\(term\\|terminal\\|ansi-term\\)\\((S)\\)?\\(:.+\\)?\\*\\(<.+>\\)?"
+                             "\\*\\(term\\|terminal\\|ansi-term\\)\\(:.+\\)?\\*\\(<.+>\\)?"
                              bufname)
-                        (split-string (replace-match "\\1 \\4" t nil bufname)))
+                        (split-string (replace-match "\\1 \\3" t nil bufname)))
                       (error "Unable to get original mode!")))
          (modename (car bufinfo))
          (modeident (cadr bufinfo))
@@ -156,8 +131,8 @@
             (add-to-list 'my:ansi-term-list (current-buffer))
             (define-key term-raw-map (kbd "M-<left>") 'my:term-select-prev-ansi-term)
             (define-key term-raw-map (kbd "M-<right>") 'my:term-select-next-ansi-term)
-            (define-key term-raw-map (kbd "C-c ?") 'my:term-list-popup)
-            (define-key term-raw-map (kbd "C-j") 'my:term-switch-to-shell-mode)))
+            (define-key term-raw-map (kbd "C-c ?") 'my:term-list-popup)))
+
 
 ;; For hot-key functions
 (defun my:term-switch-to-buffer (buffer-or-name)
