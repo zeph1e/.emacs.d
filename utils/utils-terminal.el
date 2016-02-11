@@ -59,17 +59,39 @@
 (ad-activate 'term)
 
 (defvar my:ansi-term-list nil
-  "Multiple term mode list to iterate between.")
+  "Multiple term mode list to iterate between. Ordered by creation.")
+
+(defvar my:term-recent-history nil
+  "The terminal buffer which used recently. Ordered by recent.")
+
+(defvar my:term-current-directory nil
+  "Current directory of terminal.")
+(make-variable-buffer-local 'my:term-current-directory)
+
+
+(defun my:term-buffer-p (&optional buffer)
+  (let ((buf (or buffer (current-buffer))))
+    (with-current-buffer buf
+      (and (or (equal major-mode 'term-mode)
+               (equal major-mode 'shell-mode))
+           my:term-current-directory))))
 
 ;; update ansi-term-list on kill-buffer
 (add-hook 'kill-buffer-hook
           (lambda ()
-            (when (or (equal major-mode 'term-mode)
-                      (equal major-mode 'shell-mode))
+            (when (my:term-buffer-p)
               (setq my:ansi-term-list (remove (current-buffer) my:ansi-term-list))
               (setq my:term-recent-history (remove (current-buffer) my:term-recent-history)))))
 
-(defun my:select-prev-ansi-term ()
+(add-hook 'buffer-list-update-hook
+          (lambda ()
+            (let ((buffer (car (buffer-list))))
+              (when (and (my:term-buffer-p buffer)
+                         (buffer-live-p buffer))
+                (setq my:term-recent-history (remove buffer my:term-recent-history))
+                (push buffer my:term-recent-history)))))
+
+(defun my:term-select-prev-ansi-term ()
   "Find previous ansi-term in ringed list of buffers."
   (interactive)
   (let* ((pos (1+ (cl-position (current-buffer) my:ansi-term-list))) ; list is reversed
@@ -77,7 +99,7 @@
     (and (equal (my:term-switch-to-buffer  buffer) (current-buffer))
          (message "Switching to %S" (buffer-name buffer)))))
 
-(defun my:select-next-ansi-term ()
+(defun my:term-select-next-ansi-term ()
   "Find next ansi-term in ringed list of buffers."
   (interactive)
   (let* ((pos (1- (+ (length my:ansi-term-list)
@@ -91,9 +113,6 @@
   (and (not (equal my:term-current-directory default-directory))
        (setq-local my:term-current-directory default-directory)
        (my:term-refresh-buffer-name)))
-
-(defvar my:term-recent-history nil
-  "The terminal buffer which used at last")
 
 ;; to notify current major mode or directory is switched by changing its buffer name
 (defun my:term-refresh-buffer-name (&optional buffer)
@@ -111,15 +130,13 @@
                             ":" (abbreviate-file-name default-directory) "*"))
          (candidate (concat seed modeident)))
     (or (equal candidate (buffer-name (current-buffer)))
-        (rename-buffer (generate-new-buffer-name seed)))
-    (add-to-list 'my:term-recent-history buf)))
+        (rename-buffer (generate-new-buffer-name seed)))))
 
 ;;
 ;; There's no hooks for directory update or exit in term-mode
 ;; So, advice is used instead
 ;;
 ;; Try to update buffer-name with current directory
-(defvar my:term-current-directory nil)
 (defadvice term-command-hook (around my:term-command-hook-adviced)
   (and ad-do-it (my:term-update-directory)))
 (ad-activate 'term-command-hook)
@@ -135,11 +152,10 @@
             (and (boundp 'yas-minor-mode) ; yas-expand is bound on tab!!!!
                  (setq-local yas-dont-activate t)
                  (yas-minor-mode -1))
-            (set (make-local-variable 'my:term-current-directory) nil)
             (my:term-update-directory)
-            (push (current-buffer) my:ansi-term-list)
-            (define-key term-raw-map (kbd "M-<left>") 'my:select-prev-ansi-term)
-            (define-key term-raw-map (kbd "M-<right>") 'my:select-next-ansi-term)
+            (add-to-list 'my:ansi-term-list (current-buffer))
+            (define-key term-raw-map (kbd "M-<left>") 'my:term-select-prev-ansi-term)
+            (define-key term-raw-map (kbd "M-<right>") 'my:term-select-next-ansi-term)
             (define-key term-raw-map (kbd "C-c ?") 'my:term-list-popup)
             (define-key term-raw-map (kbd "C-j") 'my:term-switch-to-shell-mode)))
 
@@ -178,6 +194,7 @@
     (define-key map (kbd "RET") 'my:term-list-select)
     (define-key map (kbd "SPC") 'my:term-list-show)
     (define-key map (kbd "q") 'my:term-list-quit)
+    (define-key map (kbd "C-g") 'my:term-list-quit)
     map)
   "Terminal list popup keybinding.")
 
@@ -233,7 +250,11 @@
       (setq-local my:term-list-parent-window-buffer nil))))
 
 (defvar my:term-list-parent-window nil)
+(make-variable-buffer-local 'my:term-list-parent-window)
+
 (defvar my:term-list-parent-window-buffer nil)
+(make-variable-buffer-local 'my:term-list-parent-window-buffer)
+
 (defun my:term-list-popup ()
   (interactive)
   (let ((parent-window (selected-window))
