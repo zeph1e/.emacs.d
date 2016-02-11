@@ -22,9 +22,9 @@
   (let ((pkey (key-binding (kbd "p")))
         (nkey (key-binding (kbd "n"))))
     (define-key my:read-only-mode-keymap (kbd "p")
-      (and (or (null pkey) (member pkey my:insert-command-list)) 'previous-line))
+      (and (or (member pkey my:insert-command-list)) 'previous-line))
     (define-key my:read-only-mode-keymap (kbd "n")
-      (and (or (null nkey) (member nkey my:insert-command-list)) 'next-line))))
+      (and (or (member nkey my:insert-command-list)) 'next-line))))
 
-(add-hook 'help-mode-hook 'my:read-only-mode)
+;;(add-hook 'help-mode-hook 'my:read-only-mode)
 (provide 'utils-readonly)
