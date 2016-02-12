@@ -44,6 +44,39 @@
   "Current directory of terminal.")
 (make-variable-buffer-local 'my:term-current-directory)
 
+;;
+;; This is a tricky way to get directory info from remote host when a user used ssh or telnet
+;; in terminal
+;;
+
+;; (defvar my:term-running-child-process nil
+;;   "The child process is being run by term process.")
+;; (make-variable-buffer-local 'my:term-running-child-process)
+
+;; (defconst my:term-remote-shell-programs '("ssh" "telnet"))
+
+;; (defun my:term-init-remote-prompt ()
+;;   (let* ((proc (get-buffer-process (current-buffer)))
+;;          (filter (process-filter proc)))
+;;     (term-send-string proc "function set-eterm-dir { echo -e \"\\033AnSiTu\" \"$USER\\n\\033AnSiTc\" \"$PWD\\n\\033AnSiTh\" \"`hostname`\";history -a; };PROMPT_COMMAND=set-eterm-dir\n")
+;;     (my:term-update-directory)))
+
+;; (defun my:term-check-running-child-process ()
+;;   (let* ((proc (get-buffer-process (current-buffer)))
+;;          (pid (process-id proc))
+;;          sys-proc-list child)
+;;     (if (process-running-child-p proc)
+;;         (when (null my:term-running-child-process)
+;;           (setq sys-proc-list (list-system-processes))
+;;           (while (and (null my:term-running-child-process)
+;;                       sys-proc-list)
+;;             (setq child (pop sys-proc-list))
+;;             (when (equal pid (cdr (assq 'ppid (process-attributes child))))
+;;               (setq my:term-running-child-process (process-attributes child))
+;;               (when (member (car (split-string (cdr (assq 'args my:term-running-child-process))))
+;;                             my:term-remote-shell-programs)
+;;                 (my:term-init-remote-prompt)))))
+;;       (setq my:term-running-child-process nil))))
 
 (defun my:term-buffer-p (&optional buffer)
   (let ((buf (or buffer (current-buffer))))
@@ -95,18 +128,20 @@
 (defun my:term-refresh-buffer-name (&optional buffer)
   (let* ((buf (or buffer (current-buffer)))
          (bufname (buffer-name buf))
-         (bufinfo (or (when (string-match
-                             "\\*\\(term\\|terminal\\|ansi-term\\)\\(:.+\\)?\\*\\(<.+>\\)?"
-                             bufname)
-                        (split-string (replace-match "\\1 \\3" t nil bufname)))
-                      (error "Unable to get original mode!")))
-         (modename (car bufinfo))
-         (modeident (cadr bufinfo))
-         (toggled (not (equal 'term-mode major-mode)))
-         (seed (concat "*" modename (and toggled "(S)")
-                            ":" (abbreviate-file-name default-directory) "*"))
-         (candidate (concat seed modeident)))
-    (or (equal candidate (buffer-name (current-buffer)))
+         (ident (or (when (string-match
+                           "\\*\\([^:]+\\)\\(:.+\\)?\\*\\(<.+>\\)?"
+                           bufname)
+                      (replace-match "\\3" t nil bufname))
+                    (error "Unable to get original mode!")))
+         (remote-directory (if (string-match "/\\([^:]+\\):\\(.+\\)" default-directory)
+                               (split-string (replace-match "\\1 \\2" t nil default-directory))))
+         (seed (if remote-directory
+                   (concat "*" (car remote-directory)
+                           ":" (abbreviate-file-name (cadr remote-directory)) "*")
+                 (concat "*" "localhost"
+                         ":" (abbreviate-file-name default-directory) "*")))
+         (candidate (concat seed ident)))
+    (or (equal candidate bufname)
         (rename-buffer (generate-new-buffer-name seed)))))
 
 ;;
@@ -114,9 +149,18 @@
 ;; So, advice is used instead
 ;;
 ;; Try to update buffer-name with current directory
-(defadvice term-command-hook (around my:term-command-hook-adviced)
-  (and ad-do-it (my:term-update-directory)))
+(defadvice term-command-hook (after my:term-command-hook-adviced (string))
+  (my:term-update-directory))
 (ad-activate 'term-command-hook)
+
+(defadvice term-handle-ansi-terminal-messages
+    (after my:term-handle-ansi-terminal-messages-adviced (message))
+  (unless (eq message ad-return-value)
+    (while (string-match "\032.+\n" ad-return-value) ;; ignore this only if ansi messages are handled
+      (setq ad-return-value (replace-match "" t t ad-return-value)))
+    (my:term-update-directory))
+  ad-return-value)
+(ad-activate 'term-handle-ansi-terminal-messages)
 
 ;;close terminal buffer on exit
 (defadvice term-handle-exit (after my:term-handle-exit-adviced)
