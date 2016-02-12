@@ -44,39 +44,68 @@
   "Current directory of terminal.")
 (make-variable-buffer-local 'my:term-current-directory)
 
-;;
+
 ;; This is a tricky way to get directory info from remote host when a user used ssh or telnet
 ;; in terminal
-;;
 
-;; (defvar my:term-running-child-process nil
-;;   "The child process is being run by term process.")
-;; (make-variable-buffer-local 'my:term-running-child-process)
+(defvar my:term-running-child-process nil
+  "The child process is being run by term process.")
+(make-variable-buffer-local 'my:term-running-child-process)
 
-;; (defconst my:term-remote-shell-programs '("ssh" "telnet"))
+(defvar my:term-need-init-remote nil)
+(make-variable-buffer-local 'my:term-need-init-remote)
 
-;; (defun my:term-init-remote-prompt ()
-;;   (let* ((proc (get-buffer-process (current-buffer)))
-;;          (filter (process-filter proc)))
-;;     (term-send-string proc "function set-eterm-dir { echo -e \"\\033AnSiTu\" \"$USER\\n\\033AnSiTc\" \"$PWD\\n\\033AnSiTh\" \"`hostname`\";history -a; };PROMPT_COMMAND=set-eterm-dir\n")
-;;     (my:term-update-directory)))
+(defconst my:term-remote-shell-programs '("ssh" "rsh" "telnet"))
 
-;; (defun my:term-check-running-child-process ()
-;;   (let* ((proc (get-buffer-process (current-buffer)))
-;;          (pid (process-id proc))
-;;          sys-proc-list child)
-;;     (if (process-running-child-p proc)
-;;         (when (null my:term-running-child-process)
-;;           (setq sys-proc-list (list-system-processes))
-;;           (while (and (null my:term-running-child-process)
-;;                       sys-proc-list)
-;;             (setq child (pop sys-proc-list))
-;;             (when (equal pid (cdr (assq 'ppid (process-attributes child))))
-;;               (setq my:term-running-child-process (process-attributes child))
-;;               (when (member (car (split-string (cdr (assq 'args my:term-running-child-process))))
-;;                             my:term-remote-shell-programs)
-;;                 (my:term-init-remote-prompt)))))
-;;       (setq my:term-running-child-process nil))))
+(defun my:term-init-remote-prompt ()
+  (let* ((proc (get-buffer-process (current-buffer)))
+         (filter (process-filter proc)))
+    (term-send-string proc "function set-eterm-dir { echo -e \"\\033AnSiTu\" \"$USER\\n\\033AnSiTc\" \"$PWD\\n\\033AnSiTh\" \"`hostname`\";history -a; };PROMPT_COMMAND=set-eterm-dir\r\n")
+    (my:term-update-directory)))
+
+(defun my:term-check-running-child-process ()
+  (let* ((proc (get-buffer-process (current-buffer)))
+         (pid (process-id proc))
+         sys-proc-list child)
+    (if (process-running-child-p proc)
+        (when (null my:term-running-child-process)
+          (setq sys-proc-list (list-system-processes))
+          (while (and (null my:term-running-child-process)
+                      sys-proc-list)
+            (setq child (pop sys-proc-list))
+            (when (equal pid (cdr (assq 'ppid (process-attributes child))))
+              (setq my:term-running-child-process (process-attributes child))
+              (when (member (car (split-string (cdr (assq 'args my:term-running-child-process))))
+                            my:term-remote-shell-programs)
+                ;; (message "found!")
+                (setq my:term-need-init-remote t)))))
+      (setq my:term-running-child-process nil))))
+
+(defvar my:term-remote-shell-checker-timer nil)
+(make-variable-buffer-local 'my:term-remote-shell-checker-timer)
+(defun my:term-trigger-remote-shell-checker ()
+  (if my:term-remote-shell-checker-timer
+      (cancel-timer my:term-remote-shell-checker-timer))
+  (setq my:term-remote-shell-checker-timer
+        (run-at-time "0.1 sec" nil
+                     (lambda ()
+                       ;; (message "checking...")
+                       (my:term-check-running-child-process)
+                       (setq my:term-remote-shell-checker-timer nil)))))
+
+;; The next two adviced functions are to trigger remote shell checker
+;; this is way to find remote shell it doesn't print ansi message
+
+;; for char mode
+(defadvice term-send-raw-string (after my:term-send-raw-string (chars))
+  (if (member ?\r (string-to-list chars))
+      (my:term-trigger-remote-shell-checker)))
+(ad-activate 'term-send-raw-string)
+
+;; for line mode
+(defadvice term-simple-send (after my:term-simple-send-adviced)
+  (my:term-trigger-remote-shell-checker))
+(ad-activate 'term-simple-send)
 
 (defun my:term-buffer-p (&optional buffer)
   (let ((buf (or buffer (current-buffer))))
@@ -153,12 +182,23 @@
   (my:term-update-directory))
 (ad-activate 'term-command-hook)
 
+;; prompt pattern from tramp
+(defconst my:term-prompt-pattern "\\(?:^\\|\\)[^]#$%>\n]*#?[]#$%>] *\\(\\[[0-9;]*[a-zA-Z] *\\)*")
 (defadvice term-handle-ansi-terminal-messages
     (after my:term-handle-ansi-terminal-messages-adviced (message))
-  (unless (eq message ad-return-value)
-    (while (string-match "\032.+\n" ad-return-value) ;; ignore this only if ansi messages are handled
-      (setq ad-return-value (replace-match "" t t ad-return-value)))
-    (my:term-update-directory))
+  (let (handled)
+    (unless (eq message ad-return-value)
+      (setq handled t)
+      (while (string-match "\032.+\n" ad-return-value) ;; ignore this only if ansi messages are handled
+        (setq ad-return-value (replace-match "" t t ad-return-value)))
+      (my:term-update-directory))
+    ;; user connected to remote and remote doesn't configured with eterm ansi messages
+    (when (and my:term-need-init-remote
+               (setq my:term-need-init-remote (not handled)))
+      ;; (message "need init!")
+      (when (and (not handled) (string-match my:term-prompt-pattern ad-return-value))
+        (my:term-init-remote-prompt)
+        (setq my:term-need-init-remote nil))))
   ad-return-value)
 (ad-activate 'term-handle-ansi-terminal-messages)
 
