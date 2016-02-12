@@ -118,6 +118,8 @@
           (lambda ()
             (when (my:term-buffer-p)
               (with-current-buffer (current-buffer)
+                (if my:term-remote-shell-checker-timer
+                    (cancel-timer my:term-remote-shell-checker-timer))
                 (setq my:term-current-directory nil) ; to avoid buffer-list-update-hook insert it again
                 (setq my:ansi-term-list (remove (current-buffer) my:ansi-term-list))
                 (setq my:term-recent-history (remove (current-buffer) my:term-recent-history))))))
