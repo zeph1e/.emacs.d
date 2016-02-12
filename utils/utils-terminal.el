@@ -128,19 +128,18 @@
 (defun my:term-refresh-buffer-name (&optional buffer)
   (let* ((buf (or buffer (current-buffer)))
          (bufname (buffer-name buf))
-         (info (or (when (string-match
-                          "\\*\\([^\\[]+\\)\\(\\[.+\\)?\\*\\(<.+>\\)?"
-                          bufname)
-                     (split-string (replace-match "\\1 \\3" t nil bufname)))
-                   (error "Unable to get original mode!")))
-         (mode (car info))
-         (ident (cadr info))
+         (ident (or (when (string-match
+                           "\\*\\([^:]+\\)\\(:.+\\)?\\*\\(<.+>\\)?"
+                           bufname)
+                      (replace-match "\\3" t nil bufname))
+                    (error "Unable to get original mode!")))
          (remote-directory (if (string-match "/\\([^:]+\\):\\(.+\\)" default-directory)
                                (split-string (replace-match "\\1 \\2" t nil default-directory))))
-         (seed (format "*%s[%s]*" mode (or (and remote-directory
-                                                (concat (car remote-directory) ":"
-                                                        (abbreviate-file-name (cadr remote-directory))))
-                                           (abbreviate-file-name default-directory))))
+         (seed (if remote-directory
+                   (concat "*" (car remote-directory)
+                           ":" (abbreviate-file-name (cadr remote-directory)) "*")
+                 (concat "*" "localhost"
+                         ":" (abbreviate-file-name default-directory) "*")))
          (candidate (concat seed ident)))
     (or (equal candidate bufname)
         (rename-buffer (generate-new-buffer-name seed)))))
@@ -179,6 +178,7 @@
             (define-key term-raw-map (kbd "M-<left>") 'my:term-select-prev-ansi-term)
             (define-key term-raw-map (kbd "M-<right>") 'my:term-select-next-ansi-term)
             (define-key term-raw-map (kbd "C-c ?") 'my:term-list-popup)))
+
 
 ;; For hot-key functions
 (defun my:term-switch-to-buffer (buffer-or-name)
