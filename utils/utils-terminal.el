@@ -250,6 +250,17 @@
   (if my:term-recent-history (my:term-switch-to-buffer (car my:term-recent-history))
       (my:term-get-create)))
 
+;;
+;; term-list-mode: a major mode for terminal listing popup
+;;
+(defvar my:term-list-parent-window nil
+  "A reference to the window which called this popup.")
+(make-variable-buffer-local 'my:term-list-parent-window)
+
+(defvar my:term-list-parent-window-buffer nil
+  "The buffer, the window, which called this popup, originally was displaying.")
+(make-variable-buffer-local 'my:term-list-parent-window-buffer)
+
 (defvar my:term-list-keymap
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "n") 'my:term-list-next)
@@ -311,12 +322,6 @@
       (kill-buffer popup)
       (setq-local my:term-list-parent-window nil)
       (setq-local my:term-list-parent-window-buffer nil))))
-
-(defvar my:term-list-parent-window nil)
-(make-variable-buffer-local 'my:term-list-parent-window)
-
-(defvar my:term-list-parent-window-buffer nil)
-(make-variable-buffer-local 'my:term-list-parent-window-buffer)
 
 (defun my:term-list-popup ()
   (interactive)
