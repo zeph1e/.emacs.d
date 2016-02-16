@@ -28,17 +28,44 @@
 ;;
 
 ;; make "term" to be "ansi-term"
+;;;###autoload
 (defadvice term (around my:term-adviced (&optional program new-buffer-name directory))
   (interactive)
   (if (eq system-type 'windows-nt) (funcall 'shell)
     (funcall 'ansi-term (or program "/bin/bash") (or new-buffer-name "term"))))
 (ad-activate 'term)
 
+;; remote terminal
+;;;###autoload
+(defun rterm (host user &optional directory)
+  (interactive (my:term-read-rterm-args))
+  (let ((buffer (make-term "rterm" "ssh" nil
+                           (format "%s%s" (or (and user (concat user "@")) "") host))))
+    (with-current-buffer buffer
+      (term-mode)
+      (term-char-mode)
+      (setq my:term-need-init-remote t)
+      (setq my:term-desired-init-directory directory)) ; find shell prompt and do init remote
+    (switch-to-buffer buffer)))
+
+(defun my:term-read-rterm-args ()
+  "Prompt the user for where to connect."
+  (require 'tramp)
+  (let* ((user-input (funcall (if (and (boundp 'ido-mode) ido-mode)
+                                  'ido-completing-read 'completing-read)
+                              "[user@]host: "
+                              (mapcar 'cadr (delete nil (tramp-parse-sconfig "~/.ssh/config")))))
+         (cred (when (string-match "\\`\\(\\([a-zA-Z0-9\\.\\_\\-]+\\)@\\)?\\(.+\\)\\'" user-input)
+                 (split-string (replace-match "\\3 \\2" t nil user-input))))
+         (host (car cred))
+         (user (cadr cred)))
+    (values host user)))
+
 (defvar my:ansi-term-list nil
   "Multiple term mode list to iterate between. Ordered by creation.")
 
 (defvar my:term-recent-history nil
-  "The terminal buffer which used recently. Ordered by recent.")
+  "The terminal buffer which used recently. Ordered by recent use.")
 
 (defvar my:term-current-directory nil
   "Current directory of terminal.")
@@ -55,12 +82,15 @@
 (defvar my:term-need-init-remote nil)
 (make-variable-buffer-local 'my:term-need-init-remote)
 
+(defvar my:term-desired-init-directory nil)
+(make-variable-buffer-local 'my:term-desired-init-directory)
+
 (defconst my:term-remote-shell-programs '("ssh" "rsh" "telnet"))
 
 (defun my:term-init-remote-prompt ()
   (let* ((proc (get-buffer-process (current-buffer)))
          (filter (process-filter proc)))
-    (term-send-string proc "function set-eterm-dir { echo -e \"\\033AnSiTu\" \"$USER\\n\\033AnSiTc\" \"$PWD\\n\\033AnSiTh\" \"`hostname`\";history -a; };PROMPT_COMMAND=set-eterm-dir\r\n")
+    (term-send-string proc "function promptcmd { echo -e \"\\033AnSiTu $USER\\n\\033AnSiTc $PWD\\n\\033AnSiTh `hostname`\"; };PROMPT_COMMAND=promptcmd\r\n")
     (my:term-update-directory)))
 
 (defun my:term-check-running-child-process ()
@@ -184,21 +214,25 @@
   (my:term-update-directory))
 (ad-activate 'term-command-hook)
 
-;; prompt pattern from tramp
-(defconst my:term-prompt-pattern "\\(?:^\\|\\)[^]#$%>\n]*#?[]#$%>] *\\(\\[[0-9;]*[a-zA-Z] *\\)*")
 (defadvice term-handle-ansi-terminal-messages
     (after my:term-handle-ansi-terminal-messages-adviced (message))
+  (require 'tramp) ; to use prompt pattern
   (let (handled)
     (unless (eq message ad-return-value)
       (setq handled t)
       (while (string-match "\032.+\n" ad-return-value) ;; ignore this only if ansi messages are handled
         (setq ad-return-value (replace-match "" t t ad-return-value)))
       (my:term-update-directory))
+    ;; need to move directory
+    (when (and my:term-desired-init-directory
+               (string-match tramp-shell-prompt-pattern ad-return-value))
+      (term-send-raw-string (format "cd %s\n" my:term-desired-init-directory))
+      (setq my:term-desired-init-directory nil))
     ;; user connected to remote and remote doesn't configured with eterm ansi messages
     (when (and my:term-need-init-remote
                (setq my:term-need-init-remote (not handled)))
       ;; (message "need init!")
-      (when (and (not handled) (string-match my:term-prompt-pattern ad-return-value))
+      (when (and (not handled) (string-match tramp-shell-prompt-pattern ad-return-value))
         (my:term-init-remote-prompt)
         (setq my:term-need-init-remote nil))))
   ad-return-value)
@@ -235,14 +269,25 @@
 (defun my:term-get-create ()
   "Get terminal for current directory or create if there's no such terminal buffer."
   (interactive)
-  (or (with-current-buffer (current-buffer)
-        (let ((dir (abbreviate-file-name default-directory)) found)
-          (dolist (buf my:ansi-term-list)
-            (with-current-buffer buf
-              (and (equal dir (abbreviate-file-name default-directory))
-                   (setq found buf))))
-          (and found (my:term-switch-to-buffer found))))
-      (term)))
+  (with-current-buffer (current-buffer)
+    (let* ((vec (and (file-remote-p default-directory)
+                     (tramp-dissect-file-name default-directory)))
+           (host (tramp-file-name-host vec))
+           (user (tramp-file-name-user vec))
+           (dir (abbreviate-file-name (or (tramp-file-name-localname vec)
+                                          default-directory)))
+           found)
+      (dolist (buf my:ansi-term-list)
+        (with-current-buffer buf
+          (let ((bvec (and (file-remote-p default-directory)
+                           (tramp-dissect-file-name default-directory))))
+            (and (equal host (tramp-file-name-host bvec))
+                 (equal user (tramp-file-name-user bvec))
+                 (equal dir (abbreviate-file-name (or (tramp-file-name-localname bvec)
+                                                      default-directory)))
+                 (setq found buf)))))
+      (or (and found (my:term-switch-to-buffer found))
+          (if host (rterm host user dir) (term))))))
 
 (defun my:term-get-recent ()
   "Pick last used terminal."
