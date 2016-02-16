@@ -223,11 +223,6 @@
       (while (string-match "\032.+\n" ad-return-value) ;; ignore this only if ansi messages are handled
         (setq ad-return-value (replace-match "" t t ad-return-value)))
       (my:term-update-directory))
-    ;; need to move directory
-    (when (and my:term-desired-init-directory
-               (string-match tramp-shell-prompt-pattern ad-return-value))
-      (term-send-raw-string (format "cd %s\n" my:term-desired-init-directory))
-      (setq my:term-desired-init-directory nil))
     ;; user connected to remote and remote doesn't configured with eterm ansi messages
     (when (and my:term-need-init-remote
                (setq my:term-need-init-remote (not handled)))
@@ -235,6 +230,15 @@
       (when (and (not handled) (string-match tramp-shell-prompt-pattern ad-return-value))
         (my:term-init-remote-prompt)
         (setq my:term-need-init-remote nil))))
+    ;; need to move directory
+    (when (and my:term-desired-init-directory
+               (string-match tramp-shell-prompt-pattern ad-return-value))
+      (and (file-remote-p default-directory)
+           (not (equal my:term-desired-init-directory
+                       (abbreviate-file-name
+                        (tramp-file-name-localname (tramp-dissect-file-name default-directory)))))
+           (term-send-raw-string (format "cd %s\n" my:term-desired-init-directory)))
+      (setq my:term-desired-init-directory nil))
   ad-return-value)
 (ad-activate 'term-handle-ansi-terminal-messages)
 
