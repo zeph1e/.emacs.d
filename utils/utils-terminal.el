@@ -273,6 +273,7 @@
 (defun my:term-get-create ()
   "Get terminal for current directory or create if there's no such terminal buffer."
   (interactive)
+  (require 'tramp)
   (with-current-buffer (current-buffer)
     (let* ((vec (and (file-remote-p default-directory)
                      (tramp-dissect-file-name default-directory)))
