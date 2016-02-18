@@ -20,11 +20,18 @@
   ;; if there is any bind other than inserting p/n character
   ;; this mode will not override it.
   (let ((pkey (key-binding (kbd "p")))
-        (nkey (key-binding (kbd "n"))))
+        (nkey (key-binding (kbd "n")))
+        (jkey (key-binding (kbd "j")))
+        (kkey (key-binding (kbd "k"))))
     (define-key my:read-only-mode-keymap (kbd "p")
       (and buffer-read-only (member pkey my:insert-command-list) 'previous-line))
     (define-key my:read-only-mode-keymap (kbd "n")
-      (and buffer-read-only (member nkey my:insert-command-list) 'next-line))))
+      (and buffer-read-only (member nkey my:insert-command-list) 'next-line))
+    (define-key my:read-only-mode-keymap (kbd "j")
+      (and buffer-read-only (member jkey my:insert-command-list) 'my:scroll-up-command))
+    (define-key my:read-only-mode-keymap (kbd "k")
+      (and buffer-read-only (member kkey my:insert-command-list) 'my:scroll-down-command))))
+
 
 ;;(add-hook 'help-mode-hook 'my:read-only-mode)
 (provide 'utils-readonly)
