@@ -258,7 +258,7 @@
             (add-to-list 'my:ansi-term-list (current-buffer))
             (define-key term-raw-map (kbd "M-<left>") 'my:term-select-prev-ansi-term)
             (define-key term-raw-map (kbd "M-<right>") 'my:term-select-next-ansi-term)
-            (define-key term-raw-map (kbd "C-c ?") 'my:term-list-popup)))
+            (define-key term-raw-map (kbd "C-x /") 'my:term-list-popup)))
 
 ;; For hot-key functions
 (defun my:term-switch-to-buffer (buffer-or-name)
