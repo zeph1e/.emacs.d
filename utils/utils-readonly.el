@@ -6,6 +6,7 @@
 (defvar my:read-only-mode-keymap
   (make-sparse-keymap)
   "my:read-only-mode-keymap")
+(make-variable-buffer-local 'my:read-only-mode-keymap)
 
 (defconst my:insert-command-list
   '(self-insert-command
