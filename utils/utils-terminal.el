@@ -39,6 +39,7 @@
 ;;;###autoload
 (defun rterm (host user &optional directory)
   (interactive (my:term-read-rterm-args))
+  (setq my:term-remote-hostname host)
   (let ((buffer (make-term "rterm" "ssh" nil
                            (format "%s%s" (or (and user (concat user "@")) "") host))))
     (with-current-buffer buffer
@@ -85,12 +86,19 @@
 (defvar my:term-desired-init-directory nil)
 (make-variable-buffer-local 'my:term-desired-init-directory)
 
-(defconst my:term-remote-shell-programs '("ssh" "rsh" "telnet"))
+(defvar my:term-remote-hostname nil)
+(make-variable-buffer-local 'my:term-remote-hostname)
+
+(defconst my:term-remote-shell-programs '(("ssh" . "bcDEeFIiLlmOopQRSWw")
+                                          ("rsh" . "bcDEeFIiLlmOopQRSWw")
+                                          ("telnet" . "Sbeln"))
+  "Remote shell programs and its vector of command line options
+which taking an argument.")
 
 (defun my:term-init-remote-prompt ()
   (let* ((proc (get-buffer-process (current-buffer)))
          (filter (process-filter proc)))
-    (term-send-string proc "function promptcmd { echo -e \"\\033AnSiTu $USER\\n\\033AnSiTc $PWD\\n\\033AnSiTh `hostname`\"; };PROMPT_COMMAND=promptcmd\r\n")
+    (term-send-string proc (format "function promptcmd { echo -e \"\\033AnSiTu $USER\\n\\033AnSiTc $PWD\\n\\033AnSiTh %s\"; };PROMPT_COMMAND=promptcmd\r\n" (or my:term-remote-hostname "`hostname`")))
     (my:term-update-directory)))
 
 (defun my:term-check-running-child-process ()
@@ -104,11 +112,31 @@
                       sys-proc-list)
             (setq child (pop sys-proc-list))
             (when (equal pid (cdr (assq 'ppid (process-attributes child))))
-              (setq my:term-running-child-process (process-attributes child))
-              (when (member (car (split-string (cdr (assq 'args my:term-running-child-process))))
-                            my:term-remote-shell-programs)
-                ;; (message "found!")
-                (setq my:term-need-init-remote t)))))
+              (setq my:term-running-child-process
+                    (append (process-attributes child) (list (cons 'pid child))))
+              (let* ((args (split-string (cdr (assq 'args my:term-running-child-process))))
+                     (program (assoc (car args) my:term-remote-shell-programs))
+                     (options (cdr program))
+                     arg skip)
+                (when program
+                  ;; (message "found!")
+                  (while (and (null my:term-remote-hostname)
+                              (setq args (delete (car args) args))
+                              (setq arg (car args)))
+                    (message "arg: %S, args: %S" arg args)
+                    (if skip (setq skip nil)
+                      (if (equal (aref arg 0) ?-)
+                          (setq skip (let (matched)
+                                       (dotimes (index (length options))
+                                         ;; (message "options: %S, index: %d" options index)
+                                         (if (equal (aref arg 1) (aref options index))
+                                             (setq matched t)))
+                                       matched))
+                        (setq my:term-remote-hostname
+                              (if (string-match "\\`\\([^@]+@\\)?\\([a-zA-Z0-9]+\\)\\'" arg)
+                                  (replace-match "\\2" t nil arg))))))
+                  (setq my:term-need-init-remote t))))))
+      (setq my:term-remote-hostname nil)
       (setq my:term-running-child-process nil))))
 
 (defvar my:term-remote-shell-checker-timer nil)
@@ -229,7 +257,11 @@
                (setq my:term-need-init-remote (not handled)))
       ;; (message "need init!")
       (when (and (not handled) (string-match tramp-shell-prompt-pattern ad-return-value))
-        (my:term-init-remote-prompt)
+        ;; check if still remote program is running
+        (if (member (cdr (assq 'pid my:term-running-child-process))
+                    (list-system-processes))
+            (my:term-init-remote-prompt)
+          (setq my:term-running-child-process nil))
         (setq my:term-need-init-remote nil))))
     ;; need to move directory
     (when (and my:term-desired-init-directory
@@ -238,6 +270,11 @@
            (not (equal my:term-desired-init-directory
                        (abbreviate-file-name
                         (tramp-file-name-localname (tramp-dissect-file-name default-directory)))))
+           ;; check if still remote program is running
+           (if (member (cdr (assq 'pid my:term-running-child-process))
+                       (list-system-processes))
+               t
+             (setq my:term-running-child-process nil))
            (term-send-raw-string (format "cd %s\n" my:term-desired-init-directory)))
       (setq my:term-desired-init-directory nil))
   ad-return-value)
