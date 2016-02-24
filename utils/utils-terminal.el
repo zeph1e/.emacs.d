@@ -98,7 +98,7 @@ which taking an argument.")
 (defun my:term-init-remote-prompt ()
   (let* ((proc (get-buffer-process (current-buffer)))
          (filter (process-filter proc)))
-    (term-send-string proc (format "function promptcmd { echo -e \"\\033AnSiTu $USER\\n\\033AnSiTc $PWD\\n\\033AnSiTh %s\"; };PROMPT_COMMAND=promptcmd\r\n" (or my:term-remote-hostname "`hostname`")))
+    (term-send-string proc (format "export PS1=\"\\033AnSiTu \\u\\n\\033AnSiTc \\w\\n\\033AnSiTh %s\n$PS1\"\r\n" (or my:term-remote-hostname "`hostname`")))
     (my:term-update-directory)))
 
 (defun my:term-check-running-child-process ()
