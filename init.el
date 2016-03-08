@@ -144,7 +144,7 @@
 (ignore-errors
   (let ((warning-minimum-level :emergency)) ; a kinda tricky way to suppress warning
     (require 'server)
-    (if (not (server-running-p)) (server-start)) ; start server
+    (unless (server-running-p) (server-start)) ; start server
     (if (processp server-process)
         (process-put server-process ':as (cond ((daemonp) 'daemon)
                                                ((display-graphic-p) 'gui)
