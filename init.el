@@ -406,11 +406,14 @@ minibuffer), then split the current window horizontally."
 
 (define-minor-mode my:flyspell-mode
   "Enable flyspell-mode."
-  :init-value t
-  (and my:flyspell-mode (derived-mode-p 'prog-mode) (flyspell-prog-mode))
-  (and (setq my:flyspell-mode (flyspell-mode (if my:flyspell-mode 1 -1)))
-       (called-interactively-p) (flyspell-buffer))
-  (and my:flyspell-mode auto-complete-mode (ac-flyspell-workaround)))
+  :variable my:flyspell-mode
+  (if my:flyspell-mode
+      (progn
+        (if (derived-mode-p 'prog-mode) (flyspell-prog-mode)
+          (flyspell-mode))
+        (if auto-complete-mode (ac-flyspell-workaround))
+        (if (called-interactively-p) (flyspell-buffer)))
+    (flyspell-mode -1)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; modes initialization
