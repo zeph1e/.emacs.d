@@ -14,6 +14,50 @@
 (tool-bar-mode -1)
 (unless (display-graphic-p) (menu-bar-mode -1))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; basic options
+(set-language-environment "Korean")
+(setq-default
+  c-default-style '((java-mode . "java") (awk-mode . "awk") (python-mode . "python")
+                    (other . "linux"))
+  c-basic-offset 4
+  tab-width 4 ; tab width 4
+  indent-tabs-mode nil ; don't insert tabs in indent
+  tab-stop-list '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80)
+  tab-always-indent nil
+  show-paren-mode t
+  my:use-theme t
+  load-prefer-newer t
+  )
+
+(setq
+  truncate-partial-width-windows nil ; do not wrap
+  visible-bell t ; ring a visible bell
+  make-backup-files nil ; no backup files
+  inhibit-startup-screen t ; no startup screen
+  inhibit-startup-message t ; no startup message
+  linum-format "%4d\u2502"
+  default-input-method "korean-hangul390"
+  ;; coding-system-for-read 'utf-8
+)
+
+(when (string-match "UTF-8" (concat (getenv "LANG")))
+  (setq coding-system-for-read 'utf-8)
+  (setq coding-system-for-write 'utf-8))
+
+(ignore-errors
+  (let ((warning-minimum-level :emergency)) ; a kinda tricky way to suppress warning
+    (require 'server)
+    (unless (server-running-p) (server-start)) ; start server
+    (if (processp server-process)
+        (process-put server-process ':as (cond ((daemonp) 'daemon)
+                                               ((display-graphic-p) 'gui)
+                                               (t 'tty)))))
+  (when (display-graphic-p)
+    (let ((korean-font (if (eq system-type 'windows-nt) "맑은 고딕-10" "NanumGothicCoding-10")))
+      (set-face-font 'default "Lucida Console-10")
+      (set-fontset-font "fontset-default" '(#x1100 . #xffdc) korean-font)
+      (set-fontset-font "fontset-default" '(#xe0bc . #xf66e) korean-font))))
 
 ;; el-get initialization
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
@@ -110,50 +154,6 @@
 (when (file-exists-p "~/.emacs.d/slack/")
   (add-to-list 'load-path "~/.emacs.d/slack/"))
 ;;   (if (file-exists-p "~/.emacs.d/slack/slack.el") (require 'slack)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; basic options
-(set-language-environment "Korean")
-(setq-default
-  c-default-style '((java-mode . "java") (awk-mode . "awk") (python-mode . "python")
-                    (other . "linux"))
-  c-basic-offset 4
-  tab-width 4 ; tab width 4
-  indent-tabs-mode nil ; don't insert tabs in indent
-  tab-stop-list '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80)
-  tab-always-indent nil
-  show-paren-mode t
-  my:use-theme t
-)
-
-(setq
-  truncate-partial-width-windows nil ; do not wrap
-  visible-bell t ; ring a visible bell
-  make-backup-files nil ; no backup files
-  inhibit-startup-screen t ; no startup screen
-  inhibit-startup-message t ; no startup message
-  linum-format "%4d\u2502"
-  default-input-method "korean-hangul390"
-  ;; coding-system-for-read 'utf-8
-)
-
-(when (string-match "UTF-8" (concat (getenv "LANG")))
-  (setq coding-system-for-read 'utf-8)
-  (setq coding-system-for-write 'utf-8))
-
-(ignore-errors
-  (let ((warning-minimum-level :emergency)) ; a kinda tricky way to suppress warning
-    (require 'server)
-    (unless (server-running-p) (server-start)) ; start server
-    (if (processp server-process)
-        (process-put server-process ':as (cond ((daemonp) 'daemon)
-                                               ((display-graphic-p) 'gui)
-                                               (t 'tty)))))
-  (when (display-graphic-p)
-    (let ((korean-font (if (eq system-type 'windows-nt) "맑은 고딕-10" "NanumGothicCoding-10")))
-      (set-face-font 'default "Lucida Console-10")
-      (set-fontset-font "fontset-default" '(#x1100 . #xffdc) korean-font)
-      (set-fontset-font "fontset-default" '(#xe0bc . #xf66e) korean-font))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; global key-bindings
