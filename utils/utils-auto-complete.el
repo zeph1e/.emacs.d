@@ -13,7 +13,6 @@
 
 ;; grap some include paths from compiler
 (defun my:achead-find-std-headers (lang)
-  (interactive "sLang:")
   (let ((buffer-name "*my:achead-find-std*")
         (compiler (or (getenv "CC")
                       (executable-find "gcc")
