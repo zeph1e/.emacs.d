@@ -63,4 +63,10 @@
      (dolist (path (append paths (my:achead-find-subdirs paths)))
        (add-to-list 'achead:include-directories path))))
 
+;; add key-binding to ac popup
+(eval-after-load 'auto-complete
+  '(progn
+     (define-key ac-completing-map (kbd "C-n") 'ac-next)
+     (define-key ac-completing-map (kbd "C-p") 'ac-previous)))
+
 (provide 'utils-auto-complete)
