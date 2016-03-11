@@ -411,7 +411,6 @@ minibuffer), then split the current window horizontally."
       (progn
         (if (derived-mode-p 'prog-mode) (flyspell-prog-mode)
           (flyspell-mode))
-        (if auto-complete-mode (ac-flyspell-workaround))
         (if (called-interactively-p) (flyspell-buffer)))
     (flyspell-mode -1)))
 

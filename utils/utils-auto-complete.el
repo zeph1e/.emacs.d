@@ -67,6 +67,8 @@
 (eval-after-load 'auto-complete
   '(progn
      (define-key ac-completing-map (kbd "C-n") 'ac-next)
-     (define-key ac-completing-map (kbd "C-p") 'ac-previous)))
+     (define-key ac-completing-map (kbd "C-p") 'ac-previous)
+     (ac-flyspell-workaround)
+     (ac-linum-workaround)))
 
 (provide 'utils-auto-complete)
