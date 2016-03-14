@@ -152,7 +152,7 @@ which taking an argument.")
   (if my:term-remote-shell-checker-timer
       (cancel-timer my:term-remote-shell-checker-timer))
   (setq my:term-remote-shell-checker-timer
-        (run-at-time "0.5 sec" nil
+        (run-at-time "0.3 sec" nil
                      (lambda ()
                        ;; (message "checking...")
                        (my:term-check-running-child-process)
@@ -359,6 +359,8 @@ which taking an argument.")
   "The buffer, the window, which called this popup, originally was displaying.")
 (make-variable-buffer-local 'my:term-list-parent-window-buffer)
 
+(defvar my:term-list-window-configuration nil)
+
 (defvar my:term-list-keymap
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "n") 'my:term-list-next)
@@ -419,7 +421,8 @@ which taking an argument.")
       (switch-to-buffer restore)
       (kill-buffer popup)
       (setq-local my:term-list-parent-window nil)
-      (setq-local my:term-list-parent-window-buffer nil))))
+      (setq-local my:term-list-parent-window-buffer nil))
+    (set-window-configuration my:term-list-window-configuration)))
 
 (defun my:term-list-popup ()
   (interactive)
@@ -435,6 +438,7 @@ which taking an argument.")
       (my:term-list-mode)
       (setq-local my:term-list-parent-window parent-window)
       (setq-local my:term-list-parent-window-buffer (window-buffer parent-window))
+      (setq my:term-list-window-configuration (current-window-configuration))
       (goto-char (point-min)))
     (select-window (display-buffer popup-buffer '(display-buffer-below-selected)))
     (fit-window-to-buffer (selected-window) 15 5)))
