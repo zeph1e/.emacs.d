@@ -59,7 +59,11 @@
   (let* ((user-input (funcall (if (and (boundp 'ido-mode) ido-mode)
                                   'ido-completing-read 'completing-read)
                               "[user@]host: "
-                              (mapcar 'cadr (delete nil (tramp-parse-sconfig "~/.ssh/config")))))
+                              (mapcar 'cadr
+                                      (delete nil (let (items)
+                                                    (dolist (func (tramp-get-completion-function "ssh"))
+                                                      (setq items (append (apply func))))
+                                                    items)))))
          (cred (when (string-match "\\`\\(\\([a-zA-Z0-9\\.\\_\\-]+\\)@\\)?\\(.+\\)\\'" user-input)
                  (split-string (replace-match "\\3 \\2" t nil user-input))))
          (host (car cred))
