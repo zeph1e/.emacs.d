@@ -6,3 +6,5 @@
 (setq-default screenshot-schemes
               '(("local" :dir "~/Pictures/")
                 ("current-directory :dir default-directory")))
+
+(provide 'utils-screenshot)
