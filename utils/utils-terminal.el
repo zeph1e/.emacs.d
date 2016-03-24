@@ -47,6 +47,7 @@
     (with-current-buffer buffer
       (term-mode)
       (term-char-mode)
+      (message "term proc: %S" (get-buffer-process (current-buffer)))
       ;; (term-set-escape-char ?\C-x) ; like ansi-term
       (setq my:term-remote-hostname host)
       (setq my:term-need-init-remote t)
@@ -283,12 +284,10 @@ which taking an argument.")
     (when (and my:term-desired-init-directory
                (string-match tramp-shell-prompt-pattern ad-return-value))
       (and (file-remote-p default-directory)
-           (not (equal my:term-desired-init-directory
-                       (abbreviate-file-name
-                        (tramp-file-name-localname (tramp-dissect-file-name default-directory)))))
            ;; check if still remote program is running
-           (if (member (cdr (assq 'pid my:term-running-child-process))
-                       (list-system-processes))
+           (if (or my:term-need-no-child
+                   (member (cdr (assq 'pid my:term-running-child-process))
+                           (list-system-processes)))
                t
              (setq my:term-running-child-process nil))
            (term-send-raw-string (format "cd %s\n" my:term-desired-init-directory)))
