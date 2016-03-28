@@ -210,6 +210,17 @@
 
     ;; revert files
     (define-key map (kbd "<f5>") 'my:revert-all-buffers)
+    (define-key map (kbd "C-<f5>") 'my:revert-local-buffers)
+
+    ;; tramp cleanup
+    (define-key map (kbd "<f6>") (lambda () (interactive)
+                                   (when (y-or-n-p "Cleanup all tramp connections? ")
+                                     (tramp-cleanup-all-connections)
+                                     (message "Cleaned all tramp connections up"))))
+    (define-key map (kbd "C-<f6>") (lambda () (interactive)
+                                     (when (y-or-n-p "Cleanup all tramp buffers? ")
+                                       (tramp-cleanup-all-buffers)
+                                       (message "Cleaned all tramp buffers up"))))
 
     ;; flyspell-mode
     (define-key map (kbd "<f8>") 'my:flyspell-mode)
@@ -306,7 +317,19 @@ Key bindings:
     (with-current-buffer buf
       (when (and (buffer-file-name) (file-exists-p (buffer-file-name)) (not (buffer-modified-p)))
         (revert-buffer t t t) )))
-  (message "Refreshed open files.") )
+  (message "Refreshed all opened files."))
+
+(defun my:revert-local-buffers ()
+  "Refreshes only local buffers from their respective files."
+  (interactive)
+  (dolist (buf (buffer-list))
+    (with-current-buffer buf
+      (when (and (buffer-file-name)
+                 (file-exists-p (buffer-file-name))
+                 (not (file-remote-p (buffer-file-name (current-buffer))))
+                 (not (buffer-modified-p)))
+        (revert-buffer t t t))))
+    (message "Refreshed opened local files."))
 
 (defun my:scroll-up-command (&optional arg)
   (interactive "P")
