@@ -5,9 +5,8 @@
 
 
 ;; store backup files in .emacs.d/backups
-(defconst emacs-backup-directory "~/.emacs.d/backups")
+(defconst emacs-backup-directory "~/.emacs.d/backups/")
 (setq backup-directory-alist `((".*" . ,emacs-backup-directory))
-      auto-save-file-name-transforms `((".*" ,emacs-backup-directory t))
-      auto-save-list-file-prefix emacs-backup-directory)
+      auto-save-file-name-transforms `((".*" ,emacs-backup-directory t)))
 
 (provide 'utils-autosave)
