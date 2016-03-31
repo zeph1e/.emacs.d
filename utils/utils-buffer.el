@@ -25,6 +25,15 @@
         (revert-buffer t t t))))
   (message "Refreshed opened local files."))
 
+(defun my:display-buffer-modification (&optional buffer-or-name)
+  (let* ((buffer (or (and buffer-or-name (get-buffer buffer-or-name))
+                     (current-buffer)))
+         (diff-switches "-urN")
+         (file-name (buffer-file-name buffer)))
+    (display-buffer buffer '(display-buffer-same-window))
+    (delete-other-windows)
+    (diff (if (file-exists-p file-name) file-name null-device) buffer nil 'noasync)))
+
 (defadvice kill-buffer (around my:kill-buffer-modified (&optional buffer-or-name))
   "Adviced kill buffer to show diff with original file to verify the changes."
   (with-current-buffer (or buffer-or-name (current-buffer))
@@ -32,11 +41,7 @@
              (buffer-modified-p)
              (buffer-file-name))
         (save-window-excursion
-          (display-buffer (current-buffer) '(display-buffer-same-window))
-          (delete-other-windows)
-          (let ((diff-switches "-urN"))
-            (diff (if (file-exists-p buffer-file-name) buffer-file-name null-device)
-                  (current-buffer) nil 'noasync))
+          (my:display-buffer-modification (current-buffer))
           (when (yes-or-no-p (format "Buffer %s modified; kill anyway? " (buffer-name)))
             (set-buffer-modified-p nil)
             ad-do-it))
@@ -96,15 +101,9 @@ change the additional actions you can take on files."
                           t
                         (setq queried t)
                         (if (buffer-file-name buffer)
-                            (progn
-                              (display-buffer buffer '(display-buffer-same-window))
-                              (delete-other-windows)
-                              (let ((diff-switches "-urN"))
-                                (diff (if (file-exists-p (buffer-file-name buffer))
-                                          (buffer-file-name buffer) null-device)
-                                      buffer nil 'noasync))
-                              (format "Save file %s? "
-                                      (buffer-file-name buffer)))
+                            (progn (my:display-buffer-modification buffer)
+                                   (format "Save file %s? "
+                                           (buffer-file-name buffer)))
                           (format "Save buffer %s? "
                                   (buffer-name buffer))))))
                (lambda (buffer)
