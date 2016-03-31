@@ -38,23 +38,6 @@ minibuffer), then split the current window horizontally."
     (split-window-sensibly window)))
 (setq split-window-preferred-function 'my:split-window-prefer-horizonally)
 
-(defadvice kill-buffer (around my:kill-buffer-modified (&optional buffer-or-name))
-  "Adviced kill buffer to show diff with original file to verify the changes."
-  (with-current-buffer (or buffer-or-name (current-buffer))
-    (if (and (buffer-modified-p)
-             (buffer-file-name))
-      (save-window-excursion
-        (display-buffer (current-buffer) '(display-buffer-same-window))
-        (delete-other-windows)
-        (let ((diff-switches "-urN"))
-          (diff (if (file-exists-p buffer-file-name) buffer-file-name null-device)
-                (current-buffer) nil 'noasync))
-        (when (yes-or-no-p (format "Buffer %s modified; kill anyway? " (buffer-name)))
-          (set-buffer-modified-p nil)
-          ad-do-it))
-      ad-do-it)))
-(ad-activate 'kill-buffer)
-
 ;; My white space mode:
 ;;  - highlight trailing spaces
 ;:  - highlight tabs: http://www.emacswiki.org/emacs/ShowWhiteSpace
