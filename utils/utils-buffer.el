@@ -133,7 +133,7 @@ change the additional actions you can take on files."
                      (length autosaved-buffers)
                      (mapconcat 'identity autosaved-buffers ", "))))))))
 
-;; to override recover-file
+;; to override recover-file (from 24.5.5 files.el)
 (defun my:recover-file (file)
   "Visit file FILE, but get contents from its last auto-save file."
   ;; Actually putting the file name in the minibuffer should be used
