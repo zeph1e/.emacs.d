@@ -49,9 +49,8 @@
 (ad-activate 'kill-buffer)
 
 ;; override default save-some-buffers (from 24.5.5 files.el)
-(eval-after-load 'files
-  (defun save-some-buffers (&optional arg pred)
-    "Save some modified file-visiting buffers.  Asks user about each one.
+(defun my:save-some-buffers (&optional arg pred)
+  "Save some modified file-visiting buffers.  Asks user about each one.
 You can answer `y' to save, `n' not to save, `C-r' to look at the
 buffer in question with `view-buffer' before deciding or `d' to
 view the differences using `diff-buffer-with-file'.
@@ -68,70 +67,132 @@ to consider it or not when called with that buffer current.
 
 See `save-some-buffers-action-alist' if you want to
 change the additional actions you can take on files."
-    (interactive "P")
-    (save-window-excursion
-      (let* (queried autosaved-buffers
-                     files-done abbrevs-done)
-        (dolist (buffer (buffer-list))
-          ;; First save any buffers that we're supposed to save unconditionally.
-          ;; That way the following code won't ask about them.
-          (with-current-buffer buffer
-            (when (and buffer-save-without-query (buffer-modified-p))
-              (push (buffer-name) autosaved-buffers)
-              (save-buffer))))
-        ;; Ask about those buffers that merit it,
-        ;; and record the number thus saved.
-        (setq files-done
-              (map-y-or-n-p
-               (lambda (buffer)
-                 ;; Note that killing some buffers may kill others via
-                 ;; hooks (e.g. Rmail and its viewing buffer).
-                 (and (buffer-live-p buffer)
-                      (buffer-modified-p buffer)
-                      (not (buffer-base-buffer buffer))
-                      (or
-                       (buffer-file-name buffer)
-                       (and pred
-                            (progn
-                              (set-buffer buffer)
-                              (and buffer-offer-save (> (buffer-size) 0)))))
-                      (or (not (functionp pred))
-                          (with-current-buffer buffer (funcall pred)))
-                      (if arg
-                          t
-                        (setq queried t)
-                        (if (buffer-file-name buffer)
-                            (progn (my:display-buffer-modification buffer)
-                                   (format "Save file %s? "
-                                           (buffer-file-name buffer)))
-                          (format "Save buffer %s? "
-                                  (buffer-name buffer))))))
-               (lambda (buffer)
-                 (with-current-buffer buffer
-                   (save-buffer)))
-               (buffer-list)
-               '("buffer" "buffers" "save")
-               save-some-buffers-action-alist))
-        ;; Maybe to save abbrevs, and record whether
-        ;; we either saved them or asked to.
-        (and save-abbrevs abbrevs-changed
-             (progn
-               (if (or arg
-                       (eq save-abbrevs 'silently)
-                       (y-or-n-p (format "Save abbrevs in %s? " abbrev-file-name)))
-                   (write-abbrev-file nil))
-               ;; Don't keep bothering user if he says no.
-               (setq abbrevs-changed nil)
-               (setq abbrevs-done t)))
-        (or queried (> files-done 0) abbrevs-done
-            (cond
-             ((null autosaved-buffers)
-              (message "(No files need saving)"))
-             ((= (length autosaved-buffers) 1)
-              (message "(Saved %s)" (car autosaved-buffers)))
-             (t
-              (message "(Saved %d files: %s)"
-                       (length autosaved-buffers)
-                       (mapconcat 'identity autosaved-buffers ", ")))))))))
+  (interactive "P")
+  (save-window-excursion
+    (let* (queried autosaved-buffers
+                   files-done abbrevs-done)
+      (dolist (buffer (buffer-list))
+        ;; First save any buffers that we're supposed to save unconditionally.
+        ;; That way the following code won't ask about them.
+        (with-current-buffer buffer
+          (when (and buffer-save-without-query (buffer-modified-p))
+            (push (buffer-name) autosaved-buffers)
+            (save-buffer))))
+      ;; Ask about those buffers that merit it,
+      ;; and record the number thus saved.
+      (setq files-done
+            (map-y-or-n-p
+             (lambda (buffer)
+               ;; Note that killing some buffers may kill others via
+               ;; hooks (e.g. Rmail and its viewing buffer).
+               (and (buffer-live-p buffer)
+                    (buffer-modified-p buffer)
+                    (not (buffer-base-buffer buffer))
+                    (or
+                     (buffer-file-name buffer)
+                     (and pred
+                          (progn
+                            (set-buffer buffer)
+                            (and buffer-offer-save (> (buffer-size) 0)))))
+                    (or (not (functionp pred))
+                        (with-current-buffer buffer (funcall pred)))
+                    (if arg
+                        t
+                      (setq queried t)
+                      (if (buffer-file-name buffer)
+                          (progn (my:display-buffer-modification buffer)
+                                 (format "Save file %s? "
+                                         (buffer-file-name buffer)))
+                        (format "Save buffer %s? "
+                                (buffer-name buffer))))))
+             (lambda (buffer)
+               (with-current-buffer buffer
+                 (save-buffer)))
+             (buffer-list)
+             '("buffer" "buffers" "save")
+             save-some-buffers-action-alist))
+      ;; Maybe to save abbrevs, and record whether
+      ;; we either saved them or asked to.
+      (and save-abbrevs abbrevs-changed
+           (progn
+             (if (or arg
+                     (eq save-abbrevs 'silently)
+                     (y-or-n-p (format "Save abbrevs in %s? " abbrev-file-name)))
+                 (write-abbrev-file nil))
+             ;; Don't keep bothering user if he says no.
+             (setq abbrevs-changed nil)
+             (setq abbrevs-done t)))
+      (or queried (> files-done 0) abbrevs-done
+          (cond
+           ((null autosaved-buffers)
+            (message "(No files need saving)"))
+           ((= (length autosaved-buffers) 1)
+            (message "(Saved %s)" (car autosaved-buffers)))
+           (t
+            (message "(Saved %d files: %s)"
+                     (length autosaved-buffers)
+                     (mapconcat 'identity autosaved-buffers ", "))))))))
+
+;; to override recover-file
+(defun my:recover-file (file)
+  "Visit file FILE, but get contents from its last auto-save file."
+  ;; Actually putting the file name in the minibuffer should be used
+  ;; only rarely.
+  ;; Not just because users often use the default.
+  (interactive "FRecover file: ")
+  (setq file (expand-file-name file))
+  (if (auto-save-file-name-p (file-name-nondirectory file))
+      (error "%s is an auto-save file" (abbreviate-file-name file)))
+  (let ((file-name (let ((buffer-file-name file))
+                     (make-auto-save-file-name))))
+    (cond ((if (file-exists-p file)
+               (not (file-newer-than-file-p file-name file))
+             (not (file-exists-p file-name)))
+           (error "Auto-save file %s not current"
+                  (abbreviate-file-name file-name)))
+          ((save-window-excursion
+             (with-temp-buffer-window
+              "*Directory*" nil
+              #'(lambda (window _value)
+                  (with-selected-window window
+                    (unwind-protect
+                        (yes-or-no-p (format "Recover auto save file %s? " file-name))
+                      (when (window-live-p window)
+                        (quit-restore-window window 'kill)))))
+              (let* ((file-buffer (find-buffer-visiting file))
+                     (diff-switches "-urN"))
+                (display-buffer file-buffer '(display-buffer-same-window))
+                (delete-other-windows)
+                (diff file-buffer file-name nil 'noasync)
+                (with-current-buffer standard-output
+                  (let ((switches dired-listing-switches))
+                    (if (file-symlink-p file)
+                        (setq switches (concat switches " -L")))
+                    ;; Use insert-directory-safely, not insert-directory,
+                    ;; because these files might not exist.  In particular,
+                    ;; FILE might not exist if the auto-save file was for
+                    ;; a buffer that didn't visit a file, such as "*mail*".
+                    ;; The code in v20.x called `ls' directly, so we need
+                    ;; to emulate what `ls' did in that case.
+                    (insert-directory-safely file switches)
+                    (insert-directory-safely file-name switches)))
+                (fit-window-to-buffer
+                 (select-window (display-buffer standard-output '(display-buffer-at-bottom)))))))
+           (switch-to-buffer (find-file-noselect file t))
+           (let ((inhibit-read-only t)
+                 ;; Keep the current buffer-file-coding-system.
+                 (coding-system buffer-file-coding-system)
+                 ;; Auto-saved file should be read with special coding.
+                 (coding-system-for-read 'auto-save-coding))
+             (erase-buffer)
+             (insert-file-contents file-name nil)
+             (set-buffer-file-coding-system coding-system))
+           (after-find-file nil nil t))
+          (t (user-error "Recover-file canceled")))))
+
+(eval-after-load 'files
+  `(progn
+     (defalias 'save-some-buffers 'my:save-some-buffers)
+     (defalias 'recover-file 'my:recover-file)))
 
 (provide 'utils-buffer)
