@@ -4,6 +4,7 @@
 ;; You can use/modify/redistribute this freely
 
 (require 'utils-keybinding)
+(require 'utils-screenshot)
 
 ;; To resolve encoding conflict of shell on windows
 (eval-after-load "shell"
@@ -24,6 +25,10 @@
 
     (set-fontset-font "fontset-default" '(#x1100 . #xffdc) korean-font)
     (set-fontset-font "fontset-default" '(#xe0bc . #xf66e) korean-font)))
+
+(setq-default screenshot-schemes
+              '(("local" :dir "/d:/Pictures/")
+                ("current-directory :dir default-directory")))
 
 (provide 'utils-win32)
 
