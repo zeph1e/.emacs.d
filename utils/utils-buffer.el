@@ -3,6 +3,13 @@
 ;; Written by Yunsik Jang <doomsday@kldp.org>
 ;; You can use/modify/redistribute this freely
 
+(defconst display-buffer-custom-actions '(
+    ("*Buffer List*" . (display-buffer-same-window))
+    ) "display-buffer custom actions.")
+
+(dolist (action display-buffer-custom-actions)
+  (add-to-list 'display-buffer-alist action nil))
+
 ;; revert all buffers that are visiting a file: from http://emacswiki.org/emacs/RevertBuffer
 (defun my:revert-all-buffers ()
   "Refreshes all open buffers from their respective files."
