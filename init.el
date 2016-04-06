@@ -168,7 +168,7 @@
 ;; Minor modes to apply
 (defvar prog-minor-mode-list nil)
 (defvar text-minor-mode-list nil)
-(setq prog-minor-mode-list '(linum-mode my:whitespace-mode my:ac-ispell-ac-setup my:flyspell-mode))
+(setq prog-minor-mode-list '(linum-mode my:whitespace-mode my:flyspell-mode))
 (setq text-minor-mode-list '(linum-mode my:whitespace-mode my:ac-ispell-ac-setup my:flyspell-mode))
 
 ;; enable minor modes for prog-mode(there's a case of that prog-mode is nil)
