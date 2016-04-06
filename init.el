@@ -146,7 +146,9 @@
 (when (file-exists-p "~/.emacs.d/utils")
   (add-to-list 'load-path "~/.emacs.d/utils")
   (dolist (filename (directory-files "~/.emacs.d/utils"))
-    (when (string-match "\\([^.]+\\).el\\'" filename)
+    (when (and (not (file-symlink-p filename))
+               (not (file-directory-p filename))
+               (string-match "\\([^.]+\\).el\\'" filename))
       (require (intern (match-string 1 filename))))))
 
 
