@@ -36,7 +36,6 @@
 
 (defconst my:read-only-mode-blacklist '(
   magit-popup-mode
-  magit-mode
   ) "The blacklist which can not be run well with my:read-only-mode.")
 
 (defvar my:read-only-overridden-keys nil)
