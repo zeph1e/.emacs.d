@@ -22,6 +22,8 @@
              (forward-char))))
   ("j" . next-line)
   ("k" . previous-line)
+  ("/" . isearch-forward)
+  ("?" . isearch-backward)
 
   ;; page scroll
   ("SPC" . my:scroll-up-command)
