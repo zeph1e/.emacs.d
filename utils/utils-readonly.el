@@ -29,23 +29,12 @@
 
   ) "key binding for read-only buffer")
 
-(defconst my:read-only-overridable-commands '(
-  self-insert-command
-  org-self-insert-command
-  ) "Commands which can be overridden by my:read-only-mode.")
-
 (defconst my:read-only-mode-blacklist '(
   magit-popup-mode
   ) "The blacklist which can not be run well with my:read-only-mode.")
 
 (defvar my:read-only-overridden-keys nil)
 (make-variable-buffer-local 'my:read-only-overridden-keys)
-
-(defun my:read-only-overridable (key)
-  "Check if there is any key binding to other than overridable commands."
-  (let ((command (or (lookup-key (current-local-map) key)
-                      (lookup-key (current-global-map) key))))
-    (or (null command) (member command my:read-only-overridable-commands))))
 
 (define-minor-mode my:read-only-mode
   "Control-key-less keybind for read-only buffer."
@@ -54,7 +43,7 @@
   (let ((overwritten-keys my:read-only-overridden-keys))
     (if buffer-read-only
         (progn (dolist (keybind my:read-only-keybind-alist)
-                 (when (my:read-only-overridable (kbd (car keybind)))
+                 (unless (lookup-key (current-local-map) (kbd (car keybind)))
                    (add-to-list 'overwritten-keys (car keybind))
                    (local-set-key (kbd (car keybind)) (cdr keybind))))
                (setq my:read-only-overridden-keys overwritten-keys))
