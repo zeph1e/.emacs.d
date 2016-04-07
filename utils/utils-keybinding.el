@@ -108,7 +108,8 @@
     (define-key map (kbd "C-x y") 'my:term-get-recent)
 
     ;; read-only
-    (define-key map (kbd "C-x C-q") 'my:read-only-mode)
+    (define-key map (kbd "C-x C-q") 'my:read-only-mode) ; override default key
+    (define-key map (kbd "<f12>") 'my:read-only-mode)
     map)
   "global key mode keymap")
 
