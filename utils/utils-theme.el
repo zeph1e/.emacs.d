@@ -26,4 +26,10 @@
         (set-face-attribute 'mode-line-buffer-id nil :foreground "gold")))
   (color-theme-standard))
 
+(when (display-graphic-p)
+  (setq-default nyan-wavy-trail t)
+  (setq-default nyan-bar-length 24)
+  (nyan-mode 1)
+  (nyan-start-animation))
+
 (provide 'utils-theme)

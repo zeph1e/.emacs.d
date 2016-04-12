@@ -119,6 +119,7 @@
 (el-get-bundle  markdown-mode)
 (el-get-bundle! markdown-preview-mode)
 (el-get-bundle  multiple-cursors)
+(el-get-bundle  nyan-mode)
 (el-get-bundle  org-present)
 (el-get-bundle  org-publish)
 (el-get-bundle  org-readme)
