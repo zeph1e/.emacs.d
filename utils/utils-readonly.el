@@ -56,10 +56,10 @@
         (progn (dolist (keybind my:read-only-keybind-alist)
                  (unless (lookup-key (current-local-map) (kbd (car keybind)))
                    (add-to-list 'overwritten-keys (car keybind))
-                   (local-set-key (kbd (car keybind)) (cdr keybind))))
+                   (buffer-local-set-key (kbd (car keybind)) (cdr keybind))))
                (setq my:read-only-overridden-keys overwritten-keys))
       (dolist (key overwritten-keys)
-        (local-unset-key (kbd key)))
+        (buffer-local-set-key (kbd key) nil))
       (setq my:read-only-overridden-keys nil)))
   (read-only-mode (if buffer-read-only 1 -1)))
 
