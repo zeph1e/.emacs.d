@@ -38,9 +38,18 @@
 (defvar my:read-only-overridden-keys nil)
 (make-variable-buffer-local 'my:read-only-overridden-keys)
 
+(defface my:read-only-face
+  '((t :foreground "yellow" :background "red"))
+  "Used for readonly lighter"
+  :group 'basic-faces)
+
+(defvar my:read-only-mode-lighter
+  (list " " (propertize "Readonly" 'face `my:read-only-face)))
+(put 'my:read-only-mode-lighter 'risky-local-variable t)
+
 (define-minor-mode my:read-only-mode
   "Control-key-less keybind for read-only buffer."
-  :lighter " RO"
+  :lighter my:read-only-mode-lighter
   :variable buffer-read-only
   (let ((overwritten-keys my:read-only-overridden-keys))
     (if buffer-read-only
