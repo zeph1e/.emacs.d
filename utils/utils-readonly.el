@@ -33,8 +33,6 @@
 
 (defconst my:read-only-mode-blacklist '(
   magit-popup-mode
-  dired-mode
-  fundamental-mode
   ) "The blacklist which can not be run well with my:read-only-mode.")
 
 (defvar my:read-only-overridden-keys nil)
@@ -56,7 +54,8 @@
   (let ((overwritten-keys my:read-only-overridden-keys))
     (if buffer-read-only
         (progn (dolist (keybind my:read-only-keybind-alist)
-                 (unless (lookup-key (current-local-map) (kbd (car keybind)))
+                 (unless (and (current-local-map)
+                              (lookup-key (current-local-map) (kbd (car keybind))))
                    (add-to-list 'overwritten-keys (car keybind))
                    (buffer-local-set-key (kbd (car keybind)) (cdr keybind))))
                (setq my:read-only-overridden-keys overwritten-keys))
