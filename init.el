@@ -69,8 +69,8 @@
     (eval-print-last-sexp)))
 (add-to-list 'el-get-recipe-path "~/.emacs.d/recipes")
 
-(el-get-bundle  ascope)
-(el-get-bundle  ascope-ext)
+;; (el-get-bundle  ascope)
+;; (el-get-bundle  ascope-ext)
 (el-get-bundle  auto-complete)
 (el-get-bundle  auto-complete-emacs-lisp)
 (el-get-bundle! auto-complete-c-headers)
@@ -131,6 +131,7 @@
 (el-get-bundle  screenshot) (or (executable-find "convert") (warn "ImageMagick is not installed"))
 (el-get-bundle  smex)
 (el-get-bundle  windcycle)
+(el-get-bundle  xcscope)
 (el-get-bundle  yasnippet) (yas-global-mode t)
 (el-get-bundle  color-theme) (color-theme-initialize)
 (el-get-bundle  color-theme-tomorrow)
