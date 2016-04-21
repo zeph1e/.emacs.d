@@ -24,11 +24,16 @@
     (define-key map (kbd "<kana>")    'toggle-input-method) ; windows 10, S-<space> as <kana>
 
     (set-fontset-font "fontset-default" '(#x1100 . #xffdc) korean-font)
-    (set-fontset-font "fontset-default" '(#xe0bc . #xf66e) korean-font)))
+    (set-fontset-font "fontset-default" '(#xe0bc . #xf66e) korean-font))
 
-(setq-default screenshot-schemes
-              '(("local" :dir "/d:/Pictures/")
-                ("current-directory :dir default-directory")))
+  (setq-default screenshot-schemes
+                '(("local" :dir "/d:/Pictures/")
+                  ("current-directory :dir default-directory")))
+  (when (executable-find "aspell")
+    (setq ispell-program-name "aspell")
+    (setq ispell-personal-dictionary "~/.ispell"))
+
+  )
 
 (provide 'utils-win32)
 
