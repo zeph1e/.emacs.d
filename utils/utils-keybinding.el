@@ -72,8 +72,12 @@
     (define-key map (kbd "C-_") 'undo)
     (define-key map (kbd "M-_") 'redo)
 
+    ;; modified mark word
+    (define-key map (kbd "M-@") 'my:mark-word)
+    (define-key map (kbd "M-#") 'my:mark-symbol)
+
     ;; iedit
-    (define-key map (kbd "M-#") 'iedit-mode)
+    (define-key map (kbd "C-M-#") 'iedit-mode)
 
     ;; multiple-cursors
     (define-key map (kbd "M-?") 'mc/edit-lines)
