@@ -33,6 +33,10 @@
     (setq ispell-program-name "aspell")
     (setq ispell-personal-dictionary "~/.ispell"))
 
+  (when (executable-find "plink")
+    (require 'tramp)
+    (setq-default tramp-default-method "plink"))
+
   )
 
 (provide 'utils-win32)
