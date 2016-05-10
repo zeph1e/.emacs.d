@@ -76,13 +76,27 @@ minibuffer), then split the current window horizontally."
 ;; My white space mode:
 ;;  - highlight trailing spaces
 ;:  - highlight tabs: http://www.emacswiki.org/emacs/ShowWhiteSpace
-(defface my:tab-face '((t :background "dark slate gray"))
+(defface my:tab-face '((t :foreground "gray50" :background "dark slate gray"))
   "Used for tab highlighting."
   :group 'basic-faces)
+
+(defvar my:buffer-display-table)
+(make-variable-buffer-local 'my:buffer-display-table)
+
 (define-minor-mode my:whitespace-mode
-"Shows trailing whitespaces."
-  nil nil nil
-  (setq show-trailing-whitespace t)
-  (font-lock-add-keywords nil '(("\t" . 'my:tab-face))))
+  "Highlight trailing white space and tab"
+  :variable my:whitespace-mode
+  (setq show-trailing-whitespace my:whitespace-mode)
+  (if my:whitespace-mode
+      (progn
+        (font-lock-add-keywords nil '(("\t" . 'my:tab-face)))
+        (setq my:buffer-display-table buffer-display-table)
+        (let ((table (or buffer-display-table
+                         (make-display-table))))
+          (aset table ?\t (vector 187 ?\t))
+          (setq buffer-display-table table)))
+    (setq-local buffer-display-table my:buffer-display-table)
+    (font-lock-remove-keywords nil '(("\t" . 'my:tab-face))))
+  (font-lock-fontify-buffer))
 
 (provide 'utils-editor)
