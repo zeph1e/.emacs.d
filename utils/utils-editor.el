@@ -76,7 +76,7 @@ minibuffer), then split the current window horizontally."
 ;; My white space mode:
 ;;  - highlight trailing spaces
 ;:  - highlight tabs: http://www.emacswiki.org/emacs/ShowWhiteSpace
-(defface my:tab-face '((t :background "orchid"))
+(defface my:tab-face '((t :background "dark slate gray"))
   "Used for tab highlighting."
   :group 'basic-faces)
 (define-minor-mode my:whitespace-mode
