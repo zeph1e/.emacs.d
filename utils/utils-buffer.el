@@ -28,7 +28,7 @@
                               "" nil ,os)))))
 
 (defun cheol (eol-type)
-  "Change buffer's EOL to preffered one in given OS"
+  "Change buffer's EOL to preferred one in given OS"
   (interactive (my:read-eol-type))
   (let ((cs (format "%s-%s" (with-current-buffer (current-buffer)
                               (let ((cs (symbol-name buffer-file-coding-system)))
