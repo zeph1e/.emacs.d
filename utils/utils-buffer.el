@@ -10,6 +10,35 @@
 (dolist (action display-buffer-custom-actions)
   (add-to-list 'display-buffer-alist action nil))
 
+(defun my:read-eol-type ()
+  (let* ((os (cond
+              ((eq system-type 'ms-dos) "dos")
+              ((eq system-type 'windows-nt) "dos")
+              ((eq system-type 'darwin) "mac")
+              (t "unix")))
+         (cur-eol (or (with-current-buffer (current-buffer)
+                        (let ((cs (symbol-name buffer-file-coding-system)))
+                          (when (string-match "\\(.+\\)-\\(unix\\|dos\\|mac\\)\\'" cs)
+                            (replace-match "\\2" t nil cs))))
+                      os))
+         (readfunc (if (and (boundp 'ido-mode) ido-mode)
+                       #'ido-completing-read
+                     #'completing-read)))
+    (values (apply readfunc `(,(format "EOL Type (current: %s): " cur-eol) ("unix" "dos" "mac") nil t
+                              "" nil ,os)))))
+
+(defun cheol (eol-type)
+  "Change buffer's EOL to preffered one in given OS"
+  (interactive (my:read-eol-type))
+  (let ((cs (format "%s-%s" (with-current-buffer (current-buffer)
+                              (let ((cs (symbol-name buffer-file-coding-system)))
+                                (if (string-match "\\(.+\\)\\(-unix\\|-dos\\|-mac\\)\\'" cs)
+                                    (replace-match "\\1" t nil cs) cs)))
+                    eol-type)))
+    (unless (member (list cs) coding-system-alist)
+      (error "Unsupported coding system: %S" cs))
+    (setq buffer-file-coding-system (intern cs))))
+
 ;; revert all buffers that are visiting a file: from http://emacswiki.org/emacs/RevertBuffer
 (defun my:revert-all-buffers ()
   "Refreshes all open buffers from their respective files."
