@@ -37,7 +37,8 @@
                     eol-type)))
     (unless (member (list cs) coding-system-alist)
       (error "Unsupported coding system: %S" cs))
-    (setq buffer-file-coding-system (intern cs))))
+    (setq buffer-file-coding-system (intern cs))
+    (set-buffer-modified-p t)))
 
 ;; revert all buffers that are visiting a file: from http://emacswiki.org/emacs/RevertBuffer
 (defun my:revert-all-buffers ()
