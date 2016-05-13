@@ -8,8 +8,6 @@
       `(when (require ,symbol nil t)
          ,@body))
 
-
-(require 'cc-styles.el)
 (defmacro define-c-style (name parent offset use-tab &rest args)
   "Define c style"
   `(c-add-style  ,name

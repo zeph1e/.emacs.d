@@ -7,14 +7,16 @@
 
 (define-c-style "webkit" "google" 4 nil
   :innamespace 0
-  :access-level -
-  :case-level 0
+  :access-label -
+  :case-label 0
   :member-init-intro +
   :topmost-intro 0
   :arglist-cont-nonempty +
   )
 
-(define-c-style "default" "webkit" 4 nil)
+(define-c-style "default" "webkit" 4 nil
+  :case-label +
+  )
 
 (setq-default
  c-default-style '((java-mode . "java") (awk-mode . "awk") (python-mode . "python")
