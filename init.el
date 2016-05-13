@@ -18,13 +18,6 @@
 ;; basic options
 (set-language-environment "Korean")
 (setq-default
-  c-default-style '((java-mode . "java") (awk-mode . "awk") (python-mode . "python")
-                    (other . "linux"))
-  c-basic-offset 4
-  tab-width 4 ; tab width 4
-  indent-tabs-mode nil ; don't insert tabs in indent
-  tab-stop-list '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80)
-  tab-always-indent nil
   show-paren-mode t
   my:use-theme t
   load-prefer-newer t
