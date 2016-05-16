@@ -5,6 +5,8 @@
 
 (require 'utils-macros)
 
+(define-c-style "kernel" "linux" 4 t)
+
 (define-c-style "webkit" "google" 4 nil
   :innamespace 0
   :access-label -
