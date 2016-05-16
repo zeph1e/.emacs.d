@@ -420,13 +420,15 @@ which taking an argument.")
                           (and (buffer-live-p my:term-list-parent-window-buffer)
                                my:term-list-parent-window-buffer))))
       (delete-window (selected-window))
+      (when my:term-list-window-configuration
+        (set-window-configuration my:term-list-window-configuration)
+        (setq my:term-list-window-configuration nil))
       (and my:term-list-parent-window
            (select-window my:term-list-parent-window))
       (switch-to-buffer restore)
       (kill-buffer popup)
       (setq-local my:term-list-parent-window nil)
-      (setq-local my:term-list-parent-window-buffer nil))
-    (set-window-configuration my:term-list-window-configuration)))
+      (setq-local my:term-list-parent-window-buffer nil))))
 
 (defun my:term-list-popup ()
   (interactive)
