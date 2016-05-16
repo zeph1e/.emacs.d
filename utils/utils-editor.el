@@ -73,30 +73,24 @@ minibuffer), then split the current window horizontally."
     (split-window-sensibly window)))
 (setq split-window-preferred-function 'my:split-window-prefer-horizonally)
 
-;; My white space mode:
-;;  - highlight trailing spaces
-;:  - highlight tabs: http://www.emacswiki.org/emacs/ShowWhiteSpace
-(defface my:tab-face '((t :foreground "gray50" :background "dark slate gray"))
-  "Used for tab highlighting."
-  :group 'basic-faces)
-
-(defvar my:buffer-display-table)
-(make-variable-buffer-local 'my:buffer-display-table)
+(require 'whitespace)
+(set-face-attribute 'whitespace-line nil :foreground nil :background "gray30")
+(set-face-attribute 'whitespace-tab nil :foreground "gray50" :background "dark slate gray")
 
 (define-minor-mode my:whitespace-mode
-  "Highlight trailing white space and tab"
+  "Setup Whitespace mode for each major modes"
   :variable my:whitespace-mode
-  (setq show-trailing-whitespace my:whitespace-mode)
   (if my:whitespace-mode
       (progn
-        (font-lock-add-keywords nil '(("\t" . 'my:tab-face)))
-        (setq my:buffer-display-table buffer-display-table)
-        (let ((table (or buffer-display-table
-                         (make-display-table))))
-          (aset table ?\t (vector 187 ?\t))
-          (setq buffer-display-table table)))
-    (setq-local buffer-display-table my:buffer-display-table)
-    (font-lock-remove-keywords nil '(("\t" . 'my:tab-face))))
-  (font-lock-fontify-buffer))
+        (cond ((or (derived-mode-p 'prog-mode)
+                   (derived-mode-p 'text-mode))
+               (setq-local whitespace-line-column fill-column)
+               (setq-local whitespace-style
+                           '(face trailing lines-tail tabs tab-mark)))
+              (t
+               (setq-local whitespace-line-column nil)
+               (setq-local whitespace-style '(face trailing tabs tab-mark))))
+        (whitespace-mode t))
+    (whitespace-mode -1)))
 
 (provide 'utils-editor)

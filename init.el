@@ -21,6 +21,7 @@
   show-paren-mode t
   my:use-theme t
   load-prefer-newer t
+  fill-column 80
   )
 
 (setq
