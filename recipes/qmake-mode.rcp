@@ -1,0 +1,8 @@
+(:name qmake-mode
+       :description "A major mode for qmake file focused on indentation in line-continuation and block."
+       :website "https://github.com/inlinechan/qmake-mode"
+       :type github
+       :pkgname "inlinechan/qmake-mode"
+       :prepare (progn
+                  (add-to-list 'auto-mode-alist '("\\.pro\\'" . qmake-mode))
+                  (add-to-list 'auto-mode-alist '("\\.pri\\'" . qmake-mode))))
