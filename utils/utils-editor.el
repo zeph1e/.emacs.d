@@ -74,7 +74,7 @@ minibuffer), then split the current window horizontally."
 (setq split-window-preferred-function 'my:split-window-prefer-horizonally)
 
 (require 'whitespace)
-(set-face-attribute 'whitespace-line nil :foreground nil :background "gray30")
+(set-face-attribute 'whitespace-line nil :foreground nil :background "red4")
 (set-face-attribute 'whitespace-tab nil :foreground "gray50" :background "dark slate gray")
 
 (define-minor-mode my:whitespace-mode
