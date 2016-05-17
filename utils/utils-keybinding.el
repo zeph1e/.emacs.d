@@ -89,10 +89,25 @@
     (define-key map (kbd "C-o") (lambda () (interactive)(beginning-of-line)(open-line 1)))
     (define-key map (kbd "M-o") (lambda () (interactive)(end-of-line)(newline)))
 
-    ;; smex
-    (define-key map (kbd "M-x") 'smex)
-    ;; (define-key map (kbd "M-X") 'smex-major-mode-commands)
+    ;; helm
+    (define-key map (kbd "M-x") 'helm-M-x)
+    (define-key map (kbd "M-y") 'helm-show-kill-ring)
+    (define-key map (kbd "C-x C-f") 'helm-find-files)
+    (define-key map (kbd "C-x r b") 'helm-filtered-bookmarks)
+    (define-key map (kbd "C-x b") 'helm-mini)
+    (define-key map (kbd "C-h a") 'helm-apropos)
+    (define-key map (kbd "M-r") 'helm-occur)
+    (define-key map (kbd "M-g s") 'helm-google-suggest)
+
+    ;; helm-ls-git-ls
+    (define-key map (kbd "M-t") 'helm-ls-git-ls)
+
+    ;; keep original M-x
     (define-key map (kbd "M-X") 'execute-extended-command)
+
+    ;; auto-complete
+    (define-key map (kbd "C-;") 'auto-complete)
+    (define-key map (kbd "C-:") 'ac-complete-with-helm)
 
     ;; magit
     (define-key map (kbd "C-x RET C-s") 'magit-status)

@@ -4,17 +4,6 @@
 ;; You can use/modify/redistribute this freely.
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; package initialization
-
-;; global (internal) minor modes
-(ido-mode t) ; ido
-(column-number-mode)
-(show-paren-mode)
-(global-hl-line-mode t) ; highlight current line
-(tool-bar-mode -1)
-(unless (display-graphic-p) (menu-bar-mode -1))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; basic options
 (set-language-environment "Korean")
 (setq-default
@@ -53,6 +42,9 @@
       (set-fontset-font "fontset-default" '(#x1100 . #xffdc) korean-font)
       (set-fontset-font "fontset-default" '(#xe0bc . #xf66e) korean-font))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; package initialization
+
 ;; el-get initialization
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 (unless (require 'el-get nil 'noerror)
@@ -68,15 +60,20 @@
 (el-get-bundle  auto-complete)
 (el-get-bundle  auto-complete-emacs-lisp)
 (el-get-bundle! auto-complete-c-headers)
+(el-get-bundle  ac-helm)
 (el-get-bundle  ac-ispell)
 (el-get-bundle  basic)
 (or (fboundp 'erc) (el-get-bundle  erc))
+(el-get-bundle  fill-column-indicator)
 (el-get-bundle  flyspell-popup)
 (el-get-bundle  franca-idl)
 (el-get-bundle  grep-a-lot)
 (el-get-bundle  gnuplot-mode :build/windows-nt (progn nil)) (or (executable-find "gnuplot") (warn "GNUPlot is not installed"))
 (el-get-bundle  google-c-style)
 (el-get-bundle  google-translate)
+(el-get-bundle  helm)
+(el-get-bundle  helm-projectile)
+(el-get-bundle  helm-ls-git)
 (el-get-bundle  iedit)
 (el-get-bundle  iman)
 (el-get-bundle  js2-mode)
@@ -120,11 +117,11 @@
 (el-get-bundle  org-readme)
 (or (eq (plist-get (el-get-package-def 'org-mode) :type) 'builtin) (el-get-bundle org-reveal))
 (el-get-bundle  plantuml-mode)
+(el-get-bundle  projectile)
 (el-get-bundle  qmake-mode)
 (el-get-bundle  qml-mode)
 (el-get-bundle! redo+)
 (el-get-bundle  screenshot) (or (executable-find "convert") (warn "ImageMagick is not installed"))
-(el-get-bundle  smex)
 (el-get-bundle  windcycle)
 (el-get-bundle  xcscope)
 (el-get-bundle  yasnippet) (yas-global-mode t)
@@ -156,6 +153,14 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; modes initialization
+
+;; global (internal) minor modes
+;; (ido-mode t) ; ido
+(column-number-mode)
+(show-paren-mode)
+(global-hl-line-mode t) ; highlight current line
+(tool-bar-mode -1)
+(unless (display-graphic-p) (menu-bar-mode -1))
 
 ;; el-doc
 (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
