@@ -51,7 +51,7 @@ be run during `helm-initialize' and should be added to the hook
             (helm-attrset 'follow 1 (symbol-value source))))
         helm-sources))
 
-;; Add hook to enable helm-follow mode for specified helm 
+;; Add hook to enable helm-follow mode for specified helm
 (add-hook 'helm-before-initialize-hook 'my:helm-set-follow)
 
 (provide 'utils-helm)
