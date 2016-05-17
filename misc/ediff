@@ -1,0 +1,70 @@
+#!/bin/sh
+# -*- mode: shell-script;-*-
+# run ediff with emacsclient
+
+FILE1=$1
+FILE2=$2
+if [ $# -lt 2 -o ! -f "$FILE1" -o ! -f "$FILE2" ]; then
+    echo "Invalid argument" 1>&2
+    exit 1
+fi
+
+EMACSCLIENT="emacsclient"
+SERVER_RUNNING=`$EMACSCLIENT -e "(server-running-p)"`
+EMACS_LAUNCHED=
+if [ -z "$SERVER_RUNNING" ]; then
+    exec nohup emacs --iconic > /dev/null &
+    RETRY=10
+    echo "Launching emacs..."
+    while [ $RETRY -gt 0 ]; do
+        SERVER_RUNNING=`$EMACSCLIENT -e "(server-running-p)"`
+        if [ -n "$SERVER_RUNNING" ]; then
+            break
+        fi
+        sleep 0.5
+        RETRY=`expr $RETRY \- 1`
+    done
+    if [ -z "$SERVER_RUNNING" ]; then
+        echo "Unable to launch emacs" 1>&2
+        exit 1
+    fi
+    EMACS_LAUNCHED=t
+fi
+
+$EMACSCLIENT -e "(defvar my:emacs-inited-finally nil)"
+if [ -n "$EMACS_LAUNCHED" ]; then
+    $EMACSCLIENT -e "(add-hook \'after-init-hook (lambda () (setq my:emacs-inited-finally t)))"
+    RETRY=30
+    echo "Waiting for emacs..."
+    while [ $RETRY -gt 0 ]; do
+        if [ -n "`$EMACSCLIENT -e my:emacs-inited-finally`" ]; then
+            break
+        fi
+        sleep 1
+        RETRY=`expr $RETRY \- 1`
+    done
+    if [ -z "`$EMACSCLIENT -e my:emacs-inited-finally`" ]; then
+        echo "Emacs is not responding." 1>&2
+        if [ -n "$EMACS_LAUNCHED" ]; then
+            $EMACSCLIENT -e "(maximize-frame)"
+        fi
+        exit 1
+    fi
+fi
+
+OPT=
+if [ -z "$EMACS" ]; then
+    if [ "$RUNNING_AS" = "gui" -a -z "`echo $TERM | grep xterm`" ]; then
+        OPT="-c"
+    else
+        OPT="-t"
+    fi
+fi
+
+$EMACSCLIENT $OPT -e "(let ((default-directory \"$PWD\")) (ediff \"$FILE1\" \"$FILE2\"))"
+RETURN=$?
+if [ -n "$EMACS_LAUNCHED" ]; then
+    echo "set maximized"
+    $EMACSCLIENT -e "(maximize-frame)"
+fi
+exit $RETURN
