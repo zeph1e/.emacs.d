@@ -29,7 +29,7 @@
 
 (when (display-graphic-p)
   (setq-default nyan-wavy-trail t)
-  (setq-default nyan-bar-length 24)
+  (setq-default nyan-bar-length 16)
   (nyan-mode 1)
   (nyan-start-animation))
 
