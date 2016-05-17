@@ -61,7 +61,8 @@ if [ -z "$EMACS" ]; then
     fi
 fi
 
-$EMACSCLIENT $OPT -e "(let ((default-directory \"$PWD\")) (ediff \"$FILE1\" \"$FILE2\"))"
+$EMACSCLIENT $OPT -e "(progn (add-hook 'ediff-quit-hook (lambda () (delete-frame (selected-frame)))) \
+                      (let ((default-directory \"$PWD\")) (ediff \"$FILE1\" \"$FILE2\")))"
 RETURN=$?
 if [ -n "$EMACS_LAUNCHED" ]; then
     echo "set maximized"
