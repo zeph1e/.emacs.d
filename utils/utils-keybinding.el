@@ -166,4 +166,8 @@ Key bindings:
              [M-S-left] [M-S-right] [M-S-up] [M-S-down]))
   (global-unset-key k))
 
+;; Disable C-x C-c
+(global-set-key (kbd "C-x C-c")
+                (lambda ()(interactive)
+                  (error "C-x C-c is disabled. Use M-x kill-emacs instead.")))
 (provide 'utils-keybinding)
