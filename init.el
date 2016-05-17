@@ -31,11 +31,13 @@
 (ignore-errors
   (let ((warning-minimum-level :emergency)) ; a kinda tricky way to suppress warning
     (require 'server)
-    (unless (server-running-p) (server-start)) ; start server
-    (if (processp server-process)
-        (process-put server-process ':as (cond ((daemonp) 'daemon)
-                                               ((display-graphic-p) 'gui)
-                                               (t 'tty)))))
+    (unless (server-running-p)
+      (server-start) ; start server
+      (when (processp server-process)
+          (process-put server-process :as (cond ((daemonp) 'daemon)
+                                                 ((display-graphic-p) 'gui)
+                                                 (t 'tty)))
+          (process-put server-process :terminal (frame-terminal)))))
   (when (display-graphic-p)
     (let ((korean-font "NanumGothicCoding-10"))
       (set-face-font 'default "Lucida Console-10")

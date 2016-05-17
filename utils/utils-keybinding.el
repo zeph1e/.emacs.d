@@ -166,8 +166,13 @@ Key bindings:
              [M-S-left] [M-S-right] [M-S-up] [M-S-down]))
   (global-unset-key k))
 
-;; Disable C-x C-c
+;; Disable C-x C-c only for server frame
 (global-set-key (kbd "C-x C-c")
-                (lambda ()(interactive)
-                  (error "C-x C-c is disabled. Use M-x kill-emacs instead.")))
+                (lambda (&optional ARG)
+                  (interactive)
+                  (if (and (processp server-process)
+                           (not (equal (process-get server-process :terminal)
+                                       (frame-terminal))))
+                      (save-buffers-kill-terminal ARG)
+                  (error "C-x C-c is disabled. Use M-x kill-emacs instead."))))
 (provide 'utils-keybinding)
