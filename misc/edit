@@ -2,7 +2,7 @@
 EMACSCLIENT="emacsclient"
 SERVER_RUNNING=`$EMACSCLIENT -e "(server-running-p)"`
 if [ -z "$SERVER_RUNNING" ]; then
-    exec emacs -mm $@
+    exec emacs -mm $@ &
     exit 0
 fi
 
