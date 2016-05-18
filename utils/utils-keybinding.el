@@ -50,6 +50,14 @@
 
     (define-key map (kbd "C-x C-o") 'ff-find-other-file)
 
+    ;; set-fill-column updates whitespace-mode's lines-tail highlight
+    (define-key map (kbd "C-x f") (lambda (arg)
+                                    (interactive
+                                     (list (call-interactively 'set-fill-column)))
+                                    (when (and (boundp my:whitespace-mode)
+                                               my:whitespace-mode)
+                                      (my:whitespace-mode -1)
+                                      (my:whitespace-mode t))))
     ;; revert files
     (define-key map (kbd "<f5>") 'my:revert-all-buffers)
     (define-key map (kbd "C-<f5>") 'my:revert-local-buffers)
