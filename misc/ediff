@@ -2,20 +2,96 @@
 # -*- mode: shell-script;-*-
 # run ediff with emacsclient
 
-FILE1=$1
-FILE2=$2
-if [ $# -lt 2 -o ! -f "$FILE1" -o ! -f "$FILE2" ]; then
-    echo "Invalid argument" 1>&2
+# If you are willing to use this for git difftool & merge,
+# add following excerption of configuration into your .gitconfig
+#
+# [diff]
+#     tool = ediff
+# [difftool "ediff"]
+#     cmd = /path/to/ediff $LOCAL $REMOTE
+#     trustExitCode = true
+# [merge]
+#     tool = ediff
+# [mergetool "ediff"]
+#     cmd = /path/to/ediff $LOCAL $REMOTE $MERGED $BASE
+#     trustExitCode = true
+#
+# While following emacs lisp codes are loaded into your emacs :
+#
+# ;; command line diff & merge with emacsclient
+# (defvar my:ediff-frame nil)
+# (make-variable-frame-local 'my:ediff-frame)
+#
+# (defun my:ediff-cmd-register-frame (&optional frame)
+#   (setq my:ediff-frame (or frame (selected-frame))))
+#
+# (defun my:ediff-cmd-cleanup-frame ()
+#   (dolist (frame (frame-list))
+#     (with-selected-frame frame
+#       (when (and (boundp 'my:ediff-frame)
+#                  (framep my:ediff-frame)
+#                  (equal frame my:ediff-frame))
+#         (delete-frame my:ediff-frame)
+#         (setq my:ediff-frame nil)))))
+#
+# (defun my:ediff-cmd (file-a file-b)
+#   (add-hook 'ediff-quit-hook #'(lambda ()
+#                                  (dolist (buf (list ediff-buffer-A ediff-buffer-B))
+#                                    (with-current-buffer buf
+#                                      (unless (buffer-modified-p)
+#                                        (kill-buffer (current-buffer)))))
+#                                  (my:ediff-cmd-cleanup-frame)))
+#   (my:ediff-cmd-register-frame (selected-frame))
+#   (ediff-files file-a file-b))
+#
+# (defun my:emerge-cmd (file-a file-b file-out)
+#   (add-hook 'ediff-quit-hook #'(lambda ()
+#                                  (dolist (buf (list ediff-buffer-A ediff-buffer-B ediff-buffer-C))
+#                                    (with-current-buffer buf
+#                                      (unless (buffer-modified-p)
+#                                        (kill-buffer (current-buffer)))))
+#                                  (my:ediff-cmd-cleanup-frame)))
+#   (my:ediff-cmd-register-frame (selected-frame))
+#   (ediff-merge-files file-a file-b nil file-out))
+#
+# (defun my:emerge-with-ancestor-cmd (file-a file-b file-out file-ancestor)
+#   (add-hook 'ediff-quit-hook #'(lambda ()
+#                                  (dolist (buf (list ediff-buffer-A ediff-buffer-B ediff-buffer-C))
+#                                    (with-current-buffer buf
+#                                      (unless (buffer-modified-p)
+#                                        (kill-buffer (current-buffer)))))
+#                                  (my:ediff-cmd-cleanup-frame)))
+#   (my:ediff-cmd-register-frame (selected-frame))
+#   (ediff-merge-files-with-ancestor file-a file-b file-ancestor nil file-out))
+
+# command definitions
+EMACSCLIENT="emacsclient"
+BASENAME="basename"
+CP="cp"
+MKTEMP="mktemp"
+EGREP="egrep"
+
+# test arguments
+if [ $# -lt  2 ]; then
+    echo "Usage: $0 LOCAL REMOTE [MERGED BASE]" 1>&2
     exit 1
+elif [ $# -ge 3 ]; then
+    EDIFF_MODE=merge
+else
+    EDIFF_MODE=diff
 fi
 
-EMACSCLIENT="emacsclient"
-SERVER_RUNNING=`$EMACSCLIENT -e "(server-running-p)"`
+FILE_LOCAL=$1
+FILE_REMOTE=$2
+FILE_MERGED=$3
+FILE_BASE=$4
+
+# start server unless it is running
+SERVER_RUNNING=`$EMACSCLIENT -e "(server-running-p)" 2> /dev/null`
 EMACS_LAUNCHED=
 if [ -z "$SERVER_RUNNING" ]; then
-    exec nohup emacs --iconic > /dev/null &
+    exec emacs -mm &
     RETRY=10
-    echo "Launching emacs..."
     while [ $RETRY -gt 0 ]; do
         SERVER_RUNNING=`$EMACSCLIENT -e "(server-running-p)"`
         if [ -n "$SERVER_RUNNING" ]; then
@@ -29,43 +105,81 @@ if [ -z "$SERVER_RUNNING" ]; then
         exit 1
     fi
     EMACS_LAUNCHED=t
-fi
 
-$EMACSCLIENT -e "(defvar my:emacs-inited-finally nil)"
-if [ -n "$EMACS_LAUNCHED" ]; then
-    $EMACSCLIENT -e "(add-hook \'after-init-hook (lambda () (setq my:emacs-inited-finally t)))"
-    RETRY=30
-    echo "Waiting for emacs..."
-    while [ $RETRY -gt 0 ]; do
-        if [ -n "`$EMACSCLIENT -e my:emacs-inited-finally`" ]; then
-            break
+    # waiting for emacs init
+    $EMACSCLIENT -e "(defvar my:emacs-inited-finally nil)"
+    if [ -n "$EMACS_LAUNCHED" ]; then
+        $EMACSCLIENT -e "(add-hook 'after-init-hook (lambda () (setq my:emacs-inited-finally t)))"
+        INITED=
+        RETRY=30
+        echo "Waiting for emacs..."
+        while [ $RETRY -gt 0 ]; do
+            INITED=`$EMACSCLIENT -e "my:emacs-inited-finally"`
+            if [ -n "$INITED" ]; then
+                break
+            fi
+            sleep 1
+            RETRY=`expr $RETRY \- 1`
+        done
+        if [ -z "$INITED" ]; then
+            echo "Emacs is not responding." 1>&2
+            exit 1
         fi
-        sleep 1
-        RETRY=`expr $RETRY \- 1`
-    done
-    if [ -z "`$EMACSCLIENT -e my:emacs-inited-finally`" ]; then
-        echo "Emacs is not responding." 1>&2
-        if [ -n "$EMACS_LAUNCHED" ]; then
-            $EMACSCLIENT -e "(maximize-frame)"
-        fi
-        exit 1
     fi
 fi
 
+# choosing options for the running environment
+RUNNING_AS=`[ -n "$SERVER_RUNNING" ] && \
+            $EMACSCLIENT -e "(process-get server-process :as)"`
 OPT=
-if [ -z "$EMACS" ]; then
-    if [ "$RUNNING_AS" = "gui" -a -z "`echo $TERM | grep xterm`" ]; then
-        OPT="-c"
-    else
-        OPT="-t"
-    fi
+if [ -z "$EMACS" -o -z "$EMACS_LAUNCHED" ]; then
+    case "$RUNNING_AS" in
+        gui)
+            if [ -z "`echo $TERM | grep xterm`" ]; then
+                OPT="-c"
+                break
+            fi
+            OPT="-t"
+            ;;
+        daemon)
+            if [ -n "$DISPLAY" -a -z "`echo $TERM | grep xterm`" ]; then
+                OPT="-c"
+                break
+            fi
+            OPT="-t"
+            ;;
+        *)
+            OPT="-t"
+            ;;
+    esac
 fi
 
-$EMACSCLIENT $OPT -e "(progn (add-hook 'ediff-quit-hook (lambda () (delete-frame (selected-frame)))) \
-                      (let ((default-directory \"$PWD\")) (ediff \"$FILE1\" \"$FILE2\")))"
-RETURN=$?
-if [ -n "$EMACS_LAUNCHED" ]; then
-    echo "set maximized"
-    $EMACSCLIENT -e "(maximize-frame)"
-fi
+case "$EDIFF_MODE" in
+    diff)
+        $EMACSCLIENT $OPT -e "(my:ediff-cmd \"$FILE_LOCAL\" \"$FILE_REMOTE\")"
+        RETURN=$?
+        ;;
+    merge)
+        # http://stackoverflow.com/questions/1817370/using-ediff-as-git-mergetool
+        if [ -r "$FILE_BASE" ]; then
+            EDIFF_FUNC="my:emerge-with-ancestor-cmd"
+        else
+            EDIFF_FUNC="my:emerge-cmd"
+        fi
+        $EMACSCLIENT $OPT -e "($EDIFF_FUNC `for var in $@; do echo \\\"$var\\\"; done`)"
+        RETURN=$?
+        if [ ! $($EGREP -c '^(<<<<<<<|=======|>>>>>>>|####### Ancestor)' $FILE_MERGED) = 0 ]; then
+            FILE_MERGEDSAVE=$($MKTEMP --tmpdir `$BASENAME $FILE_MERGED`.XXXXXXXXXX)
+            $CP $FILE_MERGED $FILE_MERGEDSAVE
+            echo "Oops! Conflict markers detected in $_MERGED." 1>&2
+            echo "Saved your changes to ${FILE_MERGEDSAVE}" 1>&2
+            echo "Exiting with code 1." 1>&2 
+            RETURN=1
+        fi
+        ;;
+    *)
+        echo "Unable to determine mode(diff|merge) to run" 1>&2
+        RETURN=1
+        ;;
+esac
 exit $RETURN
