@@ -20,6 +20,7 @@
       helm-scroll-amount 8
       helm-ff-file-name-history-use-recentf t
       helm-M-x-fuzzy-match t
+      helm-split-window-in-side-p t
 
       ;; projectile
       projectile-enable-caching t

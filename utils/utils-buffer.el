@@ -5,6 +5,10 @@
 
 (defconst display-buffer-custom-actions '(
     ("*Buffer List*" . (display-buffer-same-window))
+    ("\\`\\*helm.*\\*\\'"
+               (display-buffer-in-side-window)
+               (inhibit-same-window . t)
+               (window-height . 0.4))
     ) "display-buffer custom actions.")
 
 (dolist (action display-buffer-custom-actions)
