@@ -105,6 +105,7 @@
     (define-key map (kbd "C-x b") 'helm-mini)
     (define-key map (kbd "C-h a") 'helm-apropos)
     (define-key map (kbd "M-r") 'helm-occur)
+    (define-key map (kbd "M-R") 'helm-grep-do-git-grep)
     (define-key map (kbd "M-g s") 'helm-google-suggest)
 
     ;; helm-ls-git-ls

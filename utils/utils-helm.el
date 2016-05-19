@@ -38,7 +38,8 @@
 
 ;; http://emacs.stackexchange.com/questions/2563/helm-search-within-buffer-feature
 (defconst my:helm-follow-sources
-  '(helm-source-occur)
+  '(helm-source-occur
+    helm-source-grep)
   "List of sources for which helm-follow-mode should be enabled")
 
 (defun my:helm-set-follow ()
