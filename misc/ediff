@@ -163,7 +163,7 @@ case "$EDIFF_MODE" in
             $CP $FILE_MERGED $FILE_MERGEDSAVE
             echo "Oops! Conflict markers detected in $_MERGED." 1>&2
             echo "Saved your changes to ${FILE_MERGEDSAVE}" 1>&2
-            echo "Exiting with code 1." 1>&2 
+            echo "Exiting with code 1." 1>&2
             RETURN=1
         fi
         ;;
