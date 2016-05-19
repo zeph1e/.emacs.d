@@ -113,6 +113,11 @@ if [ -z "$SERVER_RUNNING" ]; then
     fi
 fi
 
+# emacs was launched just before, iconify it; require frame-cmds package
+if [ -n "$EMACS_LAUNCHED" ]; then
+    $EMACSCLIENT -e "(iconify-frame)"
+fi
+
 # choosing options for the running environment
 RUNNING_AS=`[ -n "$SERVER_RUNNING" ] && \
             $EMACSCLIENT -e "(process-get server-process :as)"`
