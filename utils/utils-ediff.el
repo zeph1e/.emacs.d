@@ -25,9 +25,7 @@
 (defun my:ediff-cmd (file-a file-b)
   (add-hook 'ediff-quit-hook #'(lambda ()
                                  (dolist (buf (list ediff-buffer-A ediff-buffer-B))
-                                   (with-current-buffer buf
-                                     (unless (buffer-modified-p)
-                                       (kill-buffer (current-buffer)))))
+                                   (kill-buffer-if-not-modified buf))
                                  (my:ediff-cmd-cleanup-frame)))
   (my:ediff-cmd-register-frame (selected-frame))
   (ediff-files file-a file-b))
@@ -35,9 +33,7 @@
 (defun my:emerge-cmd (file-a file-b file-out)
   (add-hook 'ediff-quit-hook #'(lambda ()
                                  (dolist (buf (list ediff-buffer-A ediff-buffer-B ediff-buffer-C))
-                                   (with-current-buffer buf
-                                     (unless (buffer-modified-p)
-                                       (kill-buffer (current-buffer)))))
+                                   (kill-buffer-if-not-modified buf))
                                  (my:ediff-cmd-cleanup-frame)))
   (my:ediff-cmd-register-frame (selected-frame))
   (ediff-merge-files file-a file-b nil file-out))
@@ -45,9 +41,7 @@
 (defun my:emerge-with-ancestor-cmd (file-a file-b file-out file-ancestor)
   (add-hook 'ediff-quit-hook #'(lambda ()
                                  (dolist (buf (list ediff-buffer-A ediff-buffer-B ediff-buffer-C))
-                                   (with-current-buffer buf
-                                     (unless (buffer-modified-p)
-                                       (kill-buffer (current-buffer)))))
+                                   (kill-buffer-if-not-modified buf))
                                  (my:ediff-cmd-cleanup-frame)))
   (my:ediff-cmd-register-frame (selected-frame))
   (ediff-merge-files-with-ancestor file-a file-b file-ancestor nil file-out))
