@@ -9,6 +9,9 @@ ido.last
 server/*
 elpa/*
 url/*
+backups/*
 .*
 bookmarks
 tramp
+projectile*
+recentf
