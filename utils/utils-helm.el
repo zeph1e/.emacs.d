@@ -37,6 +37,46 @@
 (helm-autoresize-mode 1)
 (helm-projectile-on)
 
+;; reconfigure helm autoresize max height by window configuration
+(defvar my:helm-original-autoresize-max-height nil
+  "The variable to keep default value of helm-autoresize-max-height")
+
+(defconst my:helm-reconfigure-autoresize-ratio [ 1 1 0.7 0.5 0.3 ]
+  "Resize ratio depends on vertical split")
+
+(defun my:get-window-vertically-split-times (&optional win-tree)
+  "Detect how many times windows are splitted vertically."
+  (let ((tree (or win-tree (car (window-tree)))))
+    (if (not (listp tree)) 0
+      (let* ((vert (car tree))
+             (childs (cddr tree))
+             (len (length childs))
+             (times 0))
+        (dolist (c childs)
+          (when (and c (listp c))
+            (setq times (+ times (my:get-window-vertically-split-times c)))))
+        (setq times (if vert (+ len times) times))
+        times))))
+
+(defun my:helm-reconfigure-autoresize-max ()
+  "Reconfigure maximum height of helm on current window
+configuration. If windows were laid vertically, max height
+of helm would be shrinked."
+  (setq my:helm-original-autoresize-max-height helm-autoresize-max-height)
+  (let* ((vert (my:get-window-vertically-split-times))
+         (ratio (condition-case nil
+                    (aref my:helm-reconfigure-autoresize-ratio vert)
+                  (error (aref my:helm-reconfigure-autoresize-ratio
+                          (1- (length my:helm-reconfigure-autoresize-ratio))))))
+         (calculated-max-height (truncate (* helm-autoresize-max-height ratio))))
+    (setq helm-autoresize-max-height (max calculated-max-height helm-autoresize-min-height 5))))
+
+(defun my:helm-reset-autoresize-max ()
+  (setq helm-autoresize-max-height my:helm-original-autoresize-max-height))
+
+(add-hook 'helm-before-initialize-hook 'my:helm-reconfigure-autoresize-max)
+(add-hook 'helm-cleanup-hook 'my:helm-reset-autoresize-max)
+
 ;; http://emacs.stackexchange.com/questions/2563/helm-search-within-buffer-feature
 (defconst my:helm-follow-sources
   '(helm-source-occur
