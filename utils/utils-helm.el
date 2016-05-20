@@ -15,7 +15,7 @@
   (define-key map (kbd "M-b") 'helm-previous-source))
 
 (setq helm-split-window-preferred-function 'helm-split-window-default-fn
-      helm-move-to-line-cycle-in-source t
+      helm-move-to-line-cycle-in-source nil
       helm-ff-search-library-in-sexp t
       helm-scroll-amount 8
       helm-ff-file-name-history-use-recentf t
