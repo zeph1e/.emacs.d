@@ -24,7 +24,8 @@
 
       ;; projectile
       projectile-enable-caching t
-      projectile-file-exists-remote-cache-expire (* 10 60)
+      projectile-file-exists-remote-cache-expire (* 10 60) ; 10 mininutes
+      projectile-file-exists-local-cache-expire (* 7 24 60 60) ; a week
       projectile-completion-system 'helm
       projectile-switch-project 'helm-projectile)
 
