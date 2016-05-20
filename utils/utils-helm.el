@@ -10,7 +10,7 @@
 (let ((map helm-map))
   (define-key map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
   (define-key map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB work in terminal
-  (define-key map (kbd "C-z") 'helm-select-action)
+  (define-key map (kbd "C-j") 'helm-select-action)
   (define-key map (kbd "M-f") 'helm-next-source)
   (define-key map (kbd "M-b") 'helm-previous-source))
 
