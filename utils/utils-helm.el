@@ -42,7 +42,7 @@
 (defvar my:helm-original-autoresize-max-height nil
   "The variable to keep default value of helm-autoresize-max-height")
 
-(defconst my:helm-reconfigure-autoresize-ratio [ 1 1 0.7 0.5 0.3 ]
+(defconst my:helm-reconfigure-autoresize-ratio [ 1 0.7 0.5 0.3 ]
   "Resize ratio depends on vertical split")
 
 (defun my:get-window-vertically-split-times (&optional win-tree)
@@ -56,7 +56,7 @@
         (dolist (c childs)
           (when (and c (listp c))
             (setq times (+ times (my:get-window-vertically-split-times c)))))
-        (setq times (if vert (+ len times) times))
+        (setq times (if vert (+ (1- len) times) times))
         times))))
 
 (defun my:helm-reconfigure-autoresize-max ()
