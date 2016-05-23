@@ -208,6 +208,11 @@
       (add-hook 'markdown-mode-hook mode)
 )))
 
+;; disable hl-mode for shell/term/eshell
+(add-hook 'shell-mode-hook (lambda () (setq-local global-hl-line-mode nil)))
+(add-hook 'eshell-mode-hook (lambda () (setq-local global-hl-line-mode nil)))
+(add-hook 'term-mode-hook (lambda () (setq-local global-hl-line-mode nil)))
+
 ;; file associations
 (add-to-list 'auto-mode-alist '("\\.vbs\\'" . basic-mode))
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
