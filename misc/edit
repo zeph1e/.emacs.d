@@ -1,8 +1,8 @@
 #!/bin/sh
 EMACSCLIENT="emacsclient"
-SERVER_RUNNING=`$EMACSCLIENT -e "(server-running-p)"`
+SERVER_RUNNING=`$EMACSCLIENT -e "(server-running-p)" 2> /dev/null`
 if [ -z "$SERVER_RUNNING" ]; then
-    exec emacs -mm $@ &
+    exec emacs -mm $@ 2> /dev/null &
     exit 0
 fi
 
