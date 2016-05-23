@@ -311,7 +311,9 @@ which taking an argument.")
             (setq-local truncate-partial-width-windows t)
             (define-key term-raw-map (kbd "M-<left>") 'my:term-select-prev-ansi-term)
             (define-key term-raw-map (kbd "M-<right>") 'my:term-select-next-ansi-term)
-            (define-key term-raw-map (kbd "C-c /") 'my:term-list-popup)))
+            (define-key term-raw-map (kbd "C-c /") 'my:term-list-popup)
+            (define-key term-raw-map (kbd "C-j") 'term-line-mode)
+            (define-key term-mode-map (kbd "C-j") 'term-char-mode)))
 
 ;; For hot-key functions
 (defun my:term-switch-to-buffer (buffer-or-name)
