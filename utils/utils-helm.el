@@ -11,8 +11,12 @@
   (define-key map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
   (define-key map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB work in terminal
   (define-key map (kbd "C-j") 'helm-select-action)
-  (define-key map (kbd "M-f") 'helm-next-source)
-  (define-key map (kbd "M-b") 'helm-previous-source))
+  (define-key map (kbd "M-.") 'helm-next-source)
+  (define-key map (kbd "M-,") 'helm-previous-source))
+
+(let ((map helm-ag-map))
+  (define-key map (kbd "M-.") 'helm-ag--next-file)
+  (define-key map (kbd "M-,") 'helm-ag--previous-file))
 
 (setq helm-split-window-preferred-function 'helm-split-window-default-fn
       helm-move-to-line-cycle-in-source nil
@@ -21,6 +25,10 @@
       helm-ff-file-name-history-use-recentf t
       helm-M-x-fuzzy-match t
       helm-split-window-in-side-p t
+
+      ;; helm-ag
+      helm-ag-insert-at-point 'thing-at-point
+      helm-ag-fuzzy-match t
 
       ;; projectile
       projectile-enable-caching t
@@ -81,6 +89,7 @@ of helm would be shrinked."
 ;; http://emacs.stackexchange.com/questions/2563/helm-search-within-buffer-feature
 (defconst my:helm-follow-sources
   '(helm-source-occur
+    helm-ag-source
     helm-source-grep)
   "List of sources for which helm-follow-mode should be enabled")
 

@@ -76,6 +76,8 @@
 (el-get-bundle  google-c-style)
 (el-get-bundle  google-translate)
 (el-get-bundle  helm)
+(el-get-bundle  helm-ag)
+(el-get-bundle  helm-cmd-t)
 (el-get-bundle  helm-descbinds)
 (el-get-bundle  helm-projectile)
 (el-get-bundle  helm-ls-git)

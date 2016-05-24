@@ -106,11 +106,11 @@
     (define-key map (kbd "C-h a") 'helm-apropos)
     (define-key map (kbd "C-h b") 'helm-descbinds)
     (define-key map (kbd "M-r") 'helm-occur)
+    (define-key map (kbd "C-M-r") 'helm-ag)
     (define-key map (kbd "M-R") 'helm-grep-do-git-grep)
     (define-key map (kbd "M-g s") 'helm-google-suggest)
-
-    ;; helm-ls-git-ls
     (define-key map (kbd "M-t") 'helm-ls-git-ls)
+    (define-key map (kbd "M-T") 'helm-cmd-t)
 
     ;; keep original M-x
     (define-key map (kbd "M-X") 'execute-extended-command)
