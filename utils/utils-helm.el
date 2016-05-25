@@ -6,6 +6,7 @@
 (require 'helm)
 (require 'helm-config)
 (require 'helm-projectile)
+(require 'helm-ag)
 
 (let ((map helm-map))
   (define-key map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
