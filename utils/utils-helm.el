@@ -76,17 +76,19 @@
   "Reconfigure maximum height of helm on current window
 configuration. If windows were laid vertically, max height
 of helm would be shrinked."
-  (setq my:helm-original-autoresize-max-height helm-autoresize-max-height)
+  (setq my:helm-original-autoresize-max-height (or my:helm-original-autoresize-max-height
+                                                   helm-autoresize-max-height))
   (let* ((vert (my:get-window-vertically-split-times))
          (ratio (condition-case nil
                     (aref my:helm-reconfigure-autoresize-ratio vert)
                   (error (aref my:helm-reconfigure-autoresize-ratio
                           (1- (length my:helm-reconfigure-autoresize-ratio))))))
-         (calculated-max-height (truncate (* helm-autoresize-max-height ratio))))
+         (calculated-max-height (truncate (* my:helm-original-autoresize-max-height ratio))))
     (setq helm-autoresize-max-height (max calculated-max-height helm-autoresize-min-height 5))))
 
 (defun my:helm-reset-autoresize-max ()
-  (setq helm-autoresize-max-height my:helm-original-autoresize-max-height))
+  (setq helm-autoresize-max-height my:helm-original-autoresize-max-height)
+  (setq my:helm-original-autoresize-max-height nil))
 
 (add-hook 'helm-before-initialize-hook 'my:helm-reconfigure-autoresize-max)
 (add-hook 'helm-cleanup-hook 'my:helm-reset-autoresize-max)
