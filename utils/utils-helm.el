@@ -15,6 +15,10 @@
   (define-key map (kbd "M-.") 'helm-next-source)
   (define-key map (kbd "M-,") 'helm-previous-source))
 
+;; avoid replacing binding with the feature what I don't use
+(let ((map helm-projectile-find-file-map))
+  (define-key map (kbd "M-.") 'helm-next-source))
+
 (let ((map helm-ag-map))
   (define-key map (kbd "M-.") 'helm-ag--next-file)
   (define-key map (kbd "M-,") 'helm-ag--previous-file))
