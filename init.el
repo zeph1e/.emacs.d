@@ -32,6 +32,10 @@
   (let ((warning-minimum-level :emergency)) ; a kinda tricky way to suppress warning
     (require 'server)
     (unless (server-running-p)
+      ;; http://stackoverflow.com/questions/885793/emacs-error-when-calling-server-start
+      (when (and (>= emacs-major-version 23)
+                 (equal window-system 'w32))
+        (defun server-ensure-safe-dir (dir) "Noop" t))
       (server-start) ; start server
       (when (processp server-process)
           (process-put server-process :as (cond ((daemonp) 'daemon)
