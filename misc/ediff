@@ -22,6 +22,27 @@
 # (defvar my:ediff-frame nil)
 # (make-variable-frame-local 'my:ediff-frame)
 #
+# (defun my:command-line-diff (switch)
+#   (let* ((file-a (pop command-line-args-left))
+#          (file-b (pop command-line-args-left)))
+#     (add-hook 'ediff-quit-hook 'kill-emacs)
+#     (ediff-files file-a file-b)))
+#
+# (defun my:command-line-merge (switch)
+#   (let* ((file-a (pop command-line-args-left))
+#          (file-b (pop command-line-args-left))
+#          (file-out (pop command-line-args-left))
+#          (file-ancestor (pop command-line-args-left)))
+#     (add-hook 'ediff-quit-hook 'kill-emacs)
+#     (if (and file-ancestor
+#              (file-exists-p file-ancestor)
+#              (file-readable-p file-ancestor))
+#         (ediff-merge-files-with-ancestor file-a file-b file-ancestor nil file-out)
+#       (ediff-merge-files file-a file-b nil file-out))))
+#
+# (add-to-list 'command-switch-alist '("diff" . my:command-line-diff))
+# (add-to-list 'command-switch-alist '("merge" . my:command-line-merge))
+#
 # (defun my:ediff-cmd-register-frame (&optional frame)
 #   (setq my:ediff-frame (or frame (selected-frame))))
 #
@@ -39,15 +60,14 @@
 #   (my:ediff-cmd-register-frame (selected-frame))
 #   (ediff-files file-a file-b))
 #
-# (defun my:emerge-cmd (file-a file-b file-out)
+# (defun my:emerge-cmd (file-a file-b file-out &optional file-ancestor)
 #   (add-hook 'ediff-quit-hook #'my:ediff-cmd-cleanup-frame)
 #   (my:ediff-cmd-register-frame (selected-frame))
-#   (ediff-merge-files file-a file-b nil file-out))
-#
-# (defun my:emerge-with-ancestor-cmd (file-a file-b file-out file-ancestor)
-#   (add-hook 'ediff-quit-hook #'my:ediff-cmd-cleanup-frame)
-#   (my:ediff-cmd-register-frame (selected-frame))
-#   (ediff-merge-files-with-ancestor file-a file-b file-ancestor nil file-out))
+#   (if (and file-ancestor
+#            (file-exists-p file-ancestor)
+#            (file-readable-p file-ancestor))
+#       (ediff-merge-files-with-ancestor file-a file-b file-ancestor nil file-out)
+#     (ediff-merge-files file-a file-b nil file-out)))
 
 # command definitions
 EMACSCLIENT="emacsclient"
@@ -75,6 +95,23 @@ FILE_BASE=$4
 SERVER_RUNNING=`$EMACSCLIENT -e "(server-running-p)" 2> /dev/null`
 EMACS_LAUNCHED=
 if [ -z "$SERVER_RUNNING" ]; then
+    if [ -z "$DISPLAY" ]; then
+        # terminal; just launch emacs
+        if [ "$#" -eq 2 ]; then
+            exec emacs -diff $@
+        else
+            emacs -merge $@
+            if [ ! $($EGREP -c '^(<<<<<<<|=======|>>>>>>>|####### Ancestor)' $FILE_MERGED) = 0 ]; then
+                FILE_MERGEDSAVE=$($MKTEMP --tmpdir `$BASENAME $FILE_MERGED`.XXXXXXXXXX)
+                $CP $FILE_MERGED $FILE_MERGEDSAVE
+                echo "Oops! Conflict markers detected in $_MERGED." 1>&2
+                echo "Saved your changes to ${FILE_MERGEDSAVE}" 1>&2
+                echo "Exiting with code 1." 1>&2
+                exit 1
+            fi
+            exit 0
+        fi
+    fi
     exec emacs -mm 2> /dev/null &
     RETRY=10
     while [ $RETRY -gt 0 ]; do
@@ -151,12 +188,7 @@ case "$EDIFF_MODE" in
         ;;
     merge)
         # http://stackoverflow.com/questions/1817370/using-ediff-as-git-mergetool
-        if [ -r "$FILE_BASE" ]; then
-            EDIFF_FUNC="my:emerge-with-ancestor-cmd"
-        else
-            EDIFF_FUNC="my:emerge-cmd"
-        fi
-        $EMACSCLIENT $OPT -e "($EDIFF_FUNC `for var in $@; do echo \\\"$var\\\"; done`)"
+        $EMACSCLIENT $OPT -e "(my:emerge-cmd `for var in $@; do echo \\\"$var\\\"; done`)"
         RETURN=$?
         if [ ! $($EGREP -c '^(<<<<<<<|=======|>>>>>>>|####### Ancestor)' $FILE_MERGED) = 0 ]; then
             FILE_MERGEDSAVE=$($MKTEMP --tmpdir `$BASENAME $FILE_MERGED`.XXXXXXXXXX)
