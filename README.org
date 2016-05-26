@@ -4,28 +4,30 @@ This repository contains the emacs configuration currently I'm using. It is bein
 
 ** Prerequisite
 
+ - aspell for flyspell
  - git / mercurial to download packages
- - cscope for ascope and ascope-ext
+ - cscope for ascope and xcscope
  - gnuplot, the graphing utility
  - nodejs / npm for web-beautify
  - markdown for markdown-preview
  - JRE for plantuml
  - texlive (on Ubuntu) for PDF export from org-mode
  - ImageMagick for screenshot
+ - The Silver Searcher for AG integration
+ - plink (Windows only)
 
 Run following command on Ubuntu:
 
-: $ sudo apt-get install git qt5-qmake mercurial cscope gnuplot nodejs-legacy \
+: $ sudo apt-get install git qt5-qmake cscope gnuplot nodejs-legacy \
 :   npm markdown openjdk-7-jre texlive-latex-recommended texlive-latex-extra \
-:   texlive-fonts-recommended texlive-base texlive-latex-base imagemagick
+:   texlive-fonts-recommended texlive-base texlive-latex-base imagemagick \
+:   silversearcher-ag
 
 *** Emacs and Git version
 
 If you're willing to use emacs 24.4 or later, magit 2.X will be installed and it doesn't work with earlier version of git. You need to install git version 1.9.4 or later. Otherwise, if you're stuck with emacs version 24.3 or earlier, magit 1.X will be installed and the git version will not make a problem.
 
-Anyway I'm using emacs version 24.3 and (mainly) 24.5. Since tested version is so limited, altough I'm trying to keep compatibility within emacs version 24.X, this might make a problem in other versions.
-
-Version 23 is not supported, completely. Why don't you move your heavy asses to later version?
+Now I use version 24.5 only. So you might have problems with this configurations on earlier than 24.5.
 
 *** Compiler
 
@@ -41,67 +43,6 @@ $ git clone git@github.com:zeph1e/.emacs.d.git ~/
 #+END_SRC
 
 All of rest packages are installed while launching emacs after that.
-
-** Packages
-
-I use [[https://github.com/dimitri/el-get][el-get]] as package manager. This is great one. If you're already using MELPA or ELPA, I recommend you to try [[https://github.com/dimitri/el-get][el-get]].
-
-*** Development & Languages
-
- - [[http://emacswiki.org/emacs/ascope.el][ascope]] : A cscope integration (lighter than xcscope)
- - [[https://github.com/zeph1e/ascope-ext][ascope-ext]] : An ascope extension
- - [[https://github.com/auto-complete/auto-complete][auto-complete]] : Typing auto-completion extension
- - [[http://www.cx4a.org/pub/auto-complete-emacs-lisp.el][auto-complete-emacs-lisp]] : Auto-complete sources for emacs lisp
- - [[https://github.com/mooz/auto-complete-c-headers][auto-complete-c-headers]] : An auto-complete source for C/C++ header files
- - [[http://www.emacswiki.org/emacs/basic.el][basic]] : major mode for editing basic and visual basic code
- - [[https://github.com/zeph1e/franca-idl.el][franca-idl]] : A major mode for franca idl
- - [[http://google-styleguide.googlecode.com/svn/trunk/google-c-style.el][google-c-style]] : Google's C/C++ style for c-mode
- - [[https://github.com/mooz/js2-mode#readme][js2-mode]] : An improved JavaScript editing mode
- - [[http://mihai.bazon.net/projects/editing-javascript-with-emacs-js2-mode/js2-highlight-vars-mode/js2-highlight-vars.el][js2-highlight-vars]] : Variable occurrencies highlighting for js2 mode
- - [[https://github.com/magnars/js2-refactor.el.git][js2-refactor]] : A collection of small refactoring functions
- - [[https://github.com/joshwnj/json-mode.git][json-mode]] : Major mode for editing JSON files.
- - [[https://qmake-mode.googlecode.com/hg/][qmake-mode]] : Qmake mode for Emacs
- - [[https://github.com/cataska/qml-mode][qml-mode]] : Qt Declarative UI (QML) mode for Emacs
- - [[https://github.com/yasuyk/web-beautify][web-beautify]] : Web-beautify is a formatting package of HTML, CSS and JavaScript/JSON for Emacs
- - [[https://github.com/capitaomorte/yasnippet.git][yasnippet]] : YASnippet is a template system for Emacs
-
-*** Graphing & Modeling
-
- - [[https://github.com/bruceravel/gnuplot-mode.git][gnuplot-mode]] : Drive gnuplot from within emacs
- - [[https://github.com/zwz/plantuml-mode.git][plantuml-mode]] : Major mode for PlantUML
-
-*** Version control
-
- - [[https://github.com/magit/magit][magit]] : An emacs git integration
-
-*** Documentation & Presentation
-
- - [[http://jblevins.org/projects/markdown-mode/][markdown]] : Major mode to edit Markdown files in Emacs
- - [[https://github.com/ancane/markdown-preview-mode.git][markdown-preview]] : Markdown preview mode
- - [[http://orgmode.org/][org-mode]] : Org-mode is powerful authoring tool in Emacs
- - [[https://github.com/rlister/org-present.git][org-present]] : Minimalist presentation tool for org-mode
- - [[http://www.emacswiki.org/emacs/org-publish.el][org-publish]] : Publish related org-mode files as a website
- - [[http://www.emacswiki.org/emacs/org-readme.el][org-readme]] : Integrates Readme.org and commentary/chage-logs
- - [[https://github.com/yjwen/org-reveal.git][org-reveal]] : Exports org-mode contents to reveal.js HTML presentation
-
-*** Editing Tools
-
- - [[https://github.com/syohex/emacs-ac-ispell][ac-ispell]] : ispell/aspell completion source for auto-complete
- - [[http://www.emacswiki.org/emacs/iedit.el][iedit]] : Edit multiple regions with the same content simulaneously
- - [[https://github.com/magnars/multiple-cursors.el.git][multiple-cursors]] : An experiment in adding multiple cursors to emacs
- - [[http://www.emacswiki.org/emacs/redo+.el][redo+]] : Redo/undo system for Emacs
- - [[https://github.com/atykhonov/google-translate.git][google-translate]] : Emacs interface to Google Translate
-
-*** Theme
-
- - [[http://www.nongnu.org/color-theme/][color-theme]] : An emacs color theme engine with 50 color themes
- - [[https://github.com/ccharles/Tomorrow-Theme.git][color-theme-tomorrow]] : A color theme using Chris Charles's tomorrow color scheme
-
-*** Misc.
-
- - [[http://homepage1.nifty.com/bmonkey/emacs/index.html][iman]] : Call man & info viewers with completion
- - [[https://github.com/nonsequitur/smex.git][smex]] : M-x interface with Ido-style fuzzy matching
- - [[http://www.emacswiki.org/emacs/windcycle][windcycle]] : A simple window management for emacs
 
 ** License
 
