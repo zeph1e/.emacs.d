@@ -16,8 +16,8 @@
   (define-key map (kbd "M-,") 'helm-previous-source))
 
 ;; avoid replacing binding with the feature what I don't use
-(let ((map helm-projectile-find-file-map))
-  (define-key map (kbd "M-.") 'helm-next-source))
+(define-key helm-find-files-map (kbd "M-.") 'helm-next-source)
+(define-key helm-projectile-find-file-map (kbd "M-.") 'helm-next-source)
 
 (let ((map helm-ag-map))
   (define-key map (kbd "M-.") 'helm-ag--next-file)
@@ -46,6 +46,7 @@
 ;; replace projectile prefix key
 (let ((map projectile-mode-map))
   (define-key map projectile-keymap-prefix nil)
+  (define-key map (kbd "C-x C-p") 'projectile-command-map)
   (define-key map (kbd "C-x p") 'projectile-command-map))
 
 (projectile-global-mode)
