@@ -3,6 +3,7 @@
 ;; Written by Yunsik Jang <doomsday@kldp.org>
 ;; You can use/modify/redistribute this freely
 
+(require 'utils-helm)
 (require 'utils-keybinding)
 (require 'utils-screenshot)
 
@@ -36,6 +37,8 @@
   (when (executable-find "plink")
     (require 'tramp)
     (setq-default tramp-default-method "plink"))
+
+  (setq projectile-indexing-method 'alien)
 
   )
 
