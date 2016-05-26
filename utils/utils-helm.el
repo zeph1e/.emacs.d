@@ -40,6 +40,7 @@
       projectile-file-exists-remote-cache-expire (* 7 24 60 60) ; a week
       projectile-file-exists-local-cache-expire (* 7 24 60 60) ; a week
       projectile-completion-system 'helm
+      projectile-switch-project-action 'projectile-find-file-dwim
       projectile-switch-project 'helm-projectile)
 
 ;; replace projectile prefix key
