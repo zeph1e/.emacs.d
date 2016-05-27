@@ -89,8 +89,7 @@ of helm would be shrinked."
     (setq helm-autoresize-max-height (max calculated-max-height helm-autoresize-min-height 5))))
 
 (defun my:helm-reset-autoresize-max ()
-  (setq helm-autoresize-max-height my:helm-original-autoresize-max-height)
-  (setq my:helm-original-autoresize-max-height nil))
+  (setq helm-autoresize-max-height my:helm-original-autoresize-max-height))
 
 (add-hook 'helm-before-initialize-hook 'my:helm-reconfigure-autoresize-max)
 (add-hook 'helm-cleanup-hook 'my:helm-reset-autoresize-max)
