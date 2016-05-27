@@ -1,4 +1,4 @@
-;;; utils-xcscope.el
+;;; utils-cscope.el
 
 ;; Written by Yunsik Jang <doomsday@kldp.org>
 ;; You can use/modify/redistribute this freely
@@ -113,4 +113,4 @@
        ))
 )
 
-(provide 'utils-xcscope)
+(provide 'utils-cscope)
