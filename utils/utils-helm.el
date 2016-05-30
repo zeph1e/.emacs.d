@@ -12,16 +12,12 @@
   (define-key map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
   (define-key map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB work in terminal
   (define-key map (kbd "C-j") 'helm-select-action)
-  (define-key map (kbd "M-.") 'helm-next-source)
-  (define-key map (kbd "M-,") 'helm-previous-source))
-
-;; avoid replacing binding with the feature what I don't use
-(define-key helm-find-files-map (kbd "M-.") 'helm-next-source)
-(define-key helm-projectile-find-file-map (kbd "M-.") 'helm-next-source)
+  (define-key map (kbd "M-j") 'helm-next-source)
+  (define-key map (kbd "M-k") 'helm-previous-source))
 
 (let ((map helm-ag-map))
-  (define-key map (kbd "M-.") 'helm-ag--next-file)
-  (define-key map (kbd "M-,") 'helm-ag--previous-file))
+  (define-key map (kbd "M-j") 'helm-ag--next-file)
+  (define-key map (kbd "M-k") 'helm-ag--previous-file))
 
 (setq helm-split-window-preferred-function 'helm-split-window-default-fn
       helm-move-to-line-cycle-in-source nil
