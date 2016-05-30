@@ -44,7 +44,13 @@
     (define-key map (kbd "C-x <left>") 'my:switch-to-previous-frame)
 
     (define-key map (kbd "C-x -")     'split-window-vertically) ; Window Split key-bindings
-    (define-key map (kbd "C-x |")     'split-window-horizontally)
+    (define-key map (kbd "C-x \\")     'split-window-horizontally)
+    (define-key map (kbd "C-x _")     #'(lambda () (interactive)
+                                          (split-window-vertically)
+                                          (windmove-down)))
+    (define-key map (kbd "C-x |")     #'(lambda () (interactive)
+                                          (split-window-horizontally)
+                                          (windmove-right)))
 
     (define-key map (kbd "C-x x")     'delete-window) ; Window Close key-bindings
 
