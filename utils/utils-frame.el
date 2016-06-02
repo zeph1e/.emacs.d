@@ -6,7 +6,7 @@
 (defun my:make-new-frame ()
   (interactive)
   (and (yes-or-no-p "Create a new frame? ")
-       (select-frame (make-frame))))
+       (select-frame-set-input-focus (make-frame))))
 
 (defun my:delete-selected-frame ()
   (interactive)
@@ -15,10 +15,10 @@
 
 (defun my:switch-to-next-frame ()
   (interactive)
-  (select-frame (next-frame)))
+  (select-frame-set-input-focus (next-frame)))
 
 (defun my:switch-to-previous-frame ()
   (interactive)
-  (select-frame (previous-frame)))
+  (select-frame-set-input-focus (previous-frame)))
 
 (provide 'utils-frame)
