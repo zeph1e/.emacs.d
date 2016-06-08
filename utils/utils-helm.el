@@ -24,6 +24,7 @@
       helm-ff-search-library-in-sexp t
       helm-scroll-amount 8
       helm-ff-file-name-history-use-recentf t
+      helm-ff-auto-update-initial-value t
       helm-M-x-fuzzy-match t
       helm-split-window-in-side-p t
 
@@ -48,6 +49,20 @@
 (projectile-global-mode)
 (helm-autoresize-mode 1)
 (helm-projectile-on)
+
+
+;; Backspace goes to the upper folder if you are not inside a filename,
+;; and Return will select a file or navigate into the directory if it is one.
+;; http://emacsist.com/10477
+(defun my:helm-find-files-backspace-dwim ()
+  (interactive)
+  (if (looking-back "/" 1)
+      (call-interactively 'helm-find-files-up-one-level)
+    (delete-backward-char 1)))
+
+(define-key helm-read-file-map (kbd "<backspace>") 'my:helm-find-files-backspace-dwim)
+(define-key helm-find-files-map (kbd "<backspace>") 'my:helm-find-files-backspace-dwim)
+
 
 ;; reconfigure helm autoresize max height by window configuration
 (defvar my:helm-original-autoresize-max-height nil
