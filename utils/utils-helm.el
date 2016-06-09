@@ -54,14 +54,16 @@
 ;; Backspace goes to the upper folder if you are not inside a filename,
 ;; and Return will select a file or navigate into the directory if it is one.
 ;; http://emacsist.com/10477
-(defun my:helm-find-files-backspace-dwim ()
+(defun my:helm-find-files-backward-dwim ()
   (interactive)
   (if (looking-back "/" 1)
       (call-interactively 'helm-find-files-up-one-level)
     (delete-backward-char 1)))
 
-(define-key helm-read-file-map (kbd "<backspace>") 'my:helm-find-files-backspace-dwim)
-(define-key helm-find-files-map (kbd "<backspace>") 'my:helm-find-files-backspace-dwim)
+(define-key helm-read-file-map (kbd "<backspace>") 'my:helm-find-files-backward-dwim)
+(define-key helm-read-file-map (kbd "DEL") 'my:helm-find-files-backward-dwim)
+(define-key helm-find-files-map (kbd "<backspace>") 'my:helm-find-files-backward-dwim)
+(define-key helm-find-files-map (kbd "DEL") 'my:helm-find-files-backward-dwim)
 
 
 ;; reconfigure helm autoresize max height by window configuration
