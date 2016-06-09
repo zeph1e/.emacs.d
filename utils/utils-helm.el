@@ -24,7 +24,7 @@
       helm-ff-search-library-in-sexp t
       helm-scroll-amount 8
       helm-ff-file-name-history-use-recentf t
-      helm-ff-auto-update-initial-value t
+      helm-ff-auto-update-initial-value nil
       helm-M-x-fuzzy-match t
       helm-split-window-in-side-p t
 
