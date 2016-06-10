@@ -9,6 +9,7 @@
 
 (defconst my:safe-local-variables
   '((cscope-option-do-not-update-database . t)
+    (buffer-read-only . t)
     ))
 
 (setq safe-local-variable-values
