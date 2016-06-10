@@ -9,6 +9,13 @@
   "The remote paths need to search first")
 
 (eval-after-load 'tramp
-  `(add-to-list 'tramp-remote-path 'my:tramp-own-remote-path))
+  `(progn
+     (dolist (path my:tramp-own-remote-path)
+       (add-to-list 'tramp-remote-path path))
+
+     (when (executable-find "ssh")
+       (setq-default tramp-default-method "ssh"))
+
+     ))
 
 (provide 'utils-tramp)
