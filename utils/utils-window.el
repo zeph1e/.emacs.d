@@ -2,6 +2,7 @@
 
 ;; Written by Yunsik Jang <doomsday@kldp.org>
 ;; You can use/modify/redistribute this freely
+(require 'windmove)
 
 (defun my:buffer-up-copy()
   (interactive)
@@ -30,5 +31,30 @@
     (when (and (not (string= copied-buffer current-buffer)))
       (set-window-buffer copied-window current-buffer)
       (select-window current-window))))
+
+;; To use multi-monitor more usefully
+(defun my:move-window-or-frame-left (&optional arg)
+  (interactive "P")
+  (let ((other-window (windmove-find-other-window 'left arg nil)))
+    (if (and (display-graphic-p)
+             (null other-window)
+             (framep (next-frame)))
+        (progn
+          (select-frame-set-input-focus (next-frame))
+          (unless (window-at-side-p (selected-window) 'right)
+            (select-window (car (window-at-side-list (selected-frame) 'right)))))
+      (windmove-left arg))))
+
+(defun my:move-window-or-frame-right (&optional arg)
+  (interactive "P")
+  (let ((other-window (windmove-find-other-window 'right arg nil)))
+    (if (and (display-graphic-p)
+             (null other-window)
+             (framep (previous-frame)))
+        (progn
+          (select-frame-set-input-focus (previous-frame))
+          (unless (window-at-side-p (selected-window) 'left)
+            (select-window (car (window-at-side-list (selected-frame) 'left)))))
+      (windmove-right arg))))
 
 (provide 'utils-window)
