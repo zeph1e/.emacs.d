@@ -33,7 +33,7 @@
       (select-window current-window))))
 
 ;; To use multi-monitor more usefully
-(defun my:move-window-or-frame-left (&optional arg)
+(defun my:move-to-window-or-frame-left (&optional arg)
   (interactive "P")
   (let ((other-window (windmove-find-other-window 'left arg nil)))
     (if (and (display-graphic-p)
@@ -45,7 +45,7 @@
             (select-window (car (window-at-side-list (selected-frame) 'right)))))
       (windmove-left arg))))
 
-(defun my:move-window-or-frame-right (&optional arg)
+(defun my:move-to-window-or-frame-right (&optional arg)
   (interactive "P")
   (let ((other-window (windmove-find-other-window 'right arg nil)))
     (if (and (display-graphic-p)

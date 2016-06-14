@@ -19,8 +19,8 @@
     (define-key map (kbd "M-v") 'my:scroll-down-command)
 
     ;; windmove
-    (define-key map (kbd "S-<left>")  'my:move-window-or-frame-left)
-    (define-key map (kbd "S-<right>") 'my:move-window-or-frame-right)
+    (define-key map (kbd "S-<left>")  'my:move-to-window-or-frame-left)
+    (define-key map (kbd "S-<right>") 'my:move-to-window-or-frame-right)
     (define-key map (kbd "<select>")  'windmove-up) ; sometime, shift-up is sent as <select> to remote
     (define-key map (kbd "S-<up>")    'windmove-up)
     (define-key map (kbd "S-<down>")  'windmove-down)
