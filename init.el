@@ -171,7 +171,8 @@
 (show-paren-mode)
 (global-hl-line-mode t) ; highlight current line
 (tool-bar-mode -1)
-(unless (display-graphic-p) (menu-bar-mode -1))
+(cond ((display-graphic-p) (menu-bar-mode -1))
+      (t (mouse-avoidance-mode 'banish)))
 
 ;; el-doc
 (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
