@@ -95,4 +95,11 @@
      (ad-activate 'qml-indent-line)))
 
 (add-hook 'qml-mode-hook (lambda () (linum-mode)))
+
+;; to switch to terrible _p.h _p_p.h headers in Qt
+(eval-after-load 'find-file
+  (add-to-list 'cc-other-file-alist '("\\.cpp\\'" (".hpp" ".hh" ".h" "_p.h" "_p_p.h")))
+  (add-to-list 'cc-other-file-alist '("_p\\.h\\'" ("_p_p.h" ".cpp" ".cc" ".cxx")))
+  (add-to-list 'cc-other-file-alist '("_p_p\\.h\\'" (".cpp" ".cc" ".cxx"))))
+
 (provide 'utils-qt)
