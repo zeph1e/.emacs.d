@@ -97,9 +97,35 @@
 (add-hook 'qml-mode-hook (lambda () (linum-mode)))
 
 ;; to switch to terrible _p.h _p_p.h headers in Qt
+(defconst my:other-file-alist
+  '(("_p_p\\.h\\'" (".cpp" ".cc" ".cxx"))
+    ("_p\\.h\\'" ("_p_p.h" ".cpp" ".cc" ".cxx"))
+    ("\\.cpp\\'" (".hpp" ".hh" ".h" "_p.h" "_p_p.h"))
+
+    ;; original cc-find-file-alist
+    ("\\.cc\\'"  (".hh" ".h"))
+    ("\\.hh\\'"  (".cc" ".C"))
+
+    ("\\.c\\'"   (".h"))
+    ("\\.m\\'"   (".h"))
+    ("\\.h\\'"   (".c" ".cc" ".C" ".CC" ".cxx" ".cpp" ".m"))
+
+    ("\\.C\\'"   (".H"  ".hh" ".h"))
+    ("\\.H\\'"   (".C"  ".CC"))
+
+    ("\\.CC\\'"  (".HH" ".H"  ".hh" ".h"))
+    ("\\.HH\\'"  (".CC"))
+
+    ("\\.c\\+\\+\\'" (".h++" ".hh" ".h"))
+    ("\\.h\\+\\+\\'" (".c++"))
+
+    ("\\.cpp\\'" (".hpp" ".hh" ".h"))
+    ("\\.hpp\\'" (".cpp"))
+
+    ("\\.cxx\\'" (".hxx" ".hh" ".h"))
+    ("\\.hxx\\'" (".cxx"))))
+
 (eval-after-load 'find-file
-  (add-to-list 'cc-other-file-alist '("\\.cpp\\'" (".hpp" ".hh" ".h" "_p.h" "_p_p.h")))
-  (add-to-list 'cc-other-file-alist '("_p\\.h\\'" ("_p_p.h" ".cpp" ".cc" ".cxx")))
-  (add-to-list 'cc-other-file-alist '("_p_p\\.h\\'" (".cpp" ".cc" ".cxx"))))
+  (setq-default ff-other-file-alist 'my:other-file-alist))
 
 (provide 'utils-qt)
