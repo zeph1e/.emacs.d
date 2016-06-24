@@ -26,10 +26,10 @@
     (define-key map (kbd "S-<down>")  'windmove-down)
 
     ;; windcycle
-    (define-key map (kbd "C-<up>")    'my:buffer-up-swap) ; Switch window key-bindings
-    (define-key map (kbd "C-<down>")  'my:buffer-down-swap)
-    (define-key map (kbd "C-<right>") 'my:buffer-right-swap)
-    (define-key map (kbd "C-<left>")  'my:buffer-left-swap)
+    (define-key map (kbd "C-<up>")    'buffer-up-swap) ; Switch window key-bindings
+    (define-key map (kbd "C-<down>")  'buffer-down-swap)
+    (define-key map (kbd "C-<right>") 'buffer-right-swap)
+    (define-key map (kbd "C-<left>")  'buffer-left-swap)
 
     ;; util-window
     (define-key map (kbd "C-S-<up>")    'my:buffer-up-copy)
