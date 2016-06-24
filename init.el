@@ -74,6 +74,7 @@
 (el-get-bundle  fill-column-indicator)
 (el-get-bundle  flyspell-popup)
 (el-get-bundle  frame-cmds)
+(el-get-bundle  framemove) (setq framemove-hook-into-windmove t)
 (el-get-bundle  franca-idl)
 (el-get-bundle  grep-a-lot)
 (el-get-bundle  gnuplot-mode :build/windows-nt (progn nil)) (or (executable-find "gnuplot") (warn "GNUPlot is not installed"))
