@@ -65,8 +65,9 @@
                                       (my:whitespace-mode -1)
                                       (my:whitespace-mode t))))
     ;; revert files
-    (define-key map (kbd "<f5>") 'my:revert-all-buffers)
+    (define-key map (kbd "<f5>") (lambda () (interactive) (revert-buffer t t t)))
     (define-key map (kbd "C-<f5>") 'my:revert-local-buffers)
+    (define-key map (kbd "C-M-<f5>") 'my:revert-all-buffers)
 
     ;; tramp cleanup
     (define-key map (kbd "<f6>") (lambda () (interactive)
