@@ -83,10 +83,12 @@ minibuffer), then split the current window horizontally."
   (if my:whitespace-mode
       (progn
         (cond ((derived-mode-p 'prog-mode)
+               (hack-local-variables)
                (setq-local whitespace-line-column fill-column)
                (setq-local whitespace-style
                            '(face trailing lines-tail tabs tab-mark)))
               ((derived-mode-p 'text-mode)
+               (hack-local-variables)
                (setq-local whitespace-line-column fill-column)
                (setq-local whitespace-style
                            '(face trailing tabs tab-mark)))
