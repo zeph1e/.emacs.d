@@ -25,6 +25,12 @@
     (define-key map (kbd "S-<up>")    'windmove-up)
     (define-key map (kbd "S-<down>")  'windmove-down)
 
+    ;; framemove
+    (define-key map (kbd "M-<left>")  'fm-left-frame)
+    (define-key map (kbd "M-<right>") 'fm-right-frame)
+    (define-key map (kbd "M-<up>")    'fm-up-frame)
+    (define-key map (kbd "M-<down>")  'fm-down-frame)
+
     ;; windcycle
     (define-key map (kbd "C-<up>")    'buffer-up-swap) ; Switch window key-bindings
     (define-key map (kbd "C-<down>")  'buffer-down-swap)
