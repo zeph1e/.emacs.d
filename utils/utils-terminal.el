@@ -436,12 +436,74 @@ which taking an argument.")
       (setq-local my:term-list-parent-window nil)
       (setq-local my:term-list-parent-window-buffer nil))))
 
+
+(defun my:term-list-shortened-path (path max-len)
+  "Return shortened path."
+  (let* ((abbr-path (abbreviate-file-name path))
+         (components (split-string abbr-path "/"))
+         (front '(0)) (rear '(0)) overflow)
+
+    (if (<= (length abbr-path) max-len) abbr-path
+      (while (and components (null overflow))
+        (if (< (1- (length front)) (/ (1- (length rear)) 3))
+            (let* ((head (car components))
+                   (len (+ (car front) (car rear) ; front & rear string length
+                           (length head) ; string length
+                           (if (> (length components) 1) 3 0))) ; for ... string
+                   newcomp)
+              (if (< len max-len)
+                  (setq newcomp head)
+                (setq newcomp (substring head 0 (- len max-len)))
+                (setq overflow t)) ; set overflow
+
+              (when (and (stringp newcomp) (> (length newcomp) 0))
+                (setq front (nconc (list (+ (car front) (length head) 1))
+                                   (cdr front)
+                                   (list newcomp))))
+              (setq components (cdr components)))
+
+          (let* ((tail (car (last components)))
+                 (len (+ (car front) (car rear)
+                      (length tail)
+                      (if (> (length components) 1) 3 0)))
+                 newcomp)
+            (if (< len max-len)
+                (setq newcomp tail)
+              (setq newcomp (substring tail (- len max-len)))
+              (setq overflow t))
+
+              (when (and (stringp newcomp) (> (length newcomp) 0))
+                (setq rear (nconc (list (+ (car rear) (length tail) 1))
+                                  (list newcomp)
+                                  (cdr rear))))
+            (setq components (butlast components)))))
+
+      (format "%s%s%s"
+              (mapconcat (lambda (arg) arg) (cdr front) "/")
+              (if (null components) "/" "...")
+              (mapconcat (lambda (arg) arg) (cdr rear) "/")))))
+
+
 (defun my:term-list-format-buffer-name (&optional buffer-or-name)
   (let ((buffer (or (get-buffer buffer-or-name)
                     (current-buffer))))
     (with-current-buffer buffer
       ;; TODO: make this be fancy
-      (buffer-name buffer))))
+      (let* ((vec (and (file-remote-p default-directory)
+                       (tramp-dissect-file-name default-directory)))
+             (host (if vec (tramp-file-name-host vec) (system-name)))
+             (user (if vec (tramp-file-name-user vec) (user-real-login-name)))
+             (dir (if vec (tramp-file-name-localname vec) default-directory))
+             (ident (concat (if (stringp user) (format "%s@" user) "") host))
+             (ident-len 20)
+             (dir-len (- (window-width) (1+ ident-len))))
+        (format (format "%%-%ds %%-%ds"
+                        ident-len
+                        (if (> (length ident) ident-len)
+                            (- dir-len (- (length ident) ident-len))
+                          dir-len))
+                ident
+                (my:term-list-shortened-path dir dir-len))))))
 
 (defun my:term-list-popup ()
   (interactive)
