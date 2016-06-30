@@ -14,6 +14,8 @@
     (define-key map (kbd "M-B") (lambda (&optional arg) (interactive "p")
                                   (forward-symbol (- (or arg 1))))) ; backward-symbol doesn't exist
 
+    (define-key map (kbd "C-M-q") 'bury-buffer)
+
     ;; scroll to buffer beginning/end
     (define-key map (kbd "C-v") 'my:scroll-up-command)
     (define-key map (kbd "M-v") 'my:scroll-down-command)
