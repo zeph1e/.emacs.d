@@ -15,6 +15,7 @@
                                   (forward-symbol (- (or arg 1))))) ; backward-symbol doesn't exist
 
     (define-key map (kbd "C-M-q") 'bury-buffer)
+    (define-key map (kbd "C-S-M-q") 'unbury-buffer)
 
     ;; scroll to buffer beginning/end
     (define-key map (kbd "C-v") 'my:scroll-up-command)
