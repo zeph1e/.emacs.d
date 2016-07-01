@@ -107,11 +107,15 @@
   "Remote shell programs and its vector of command line options
 which taking an argument.")
 
+(defvar my:term-last-update nil
+  "Last updated time in the terminal.")
+(make-variable-buffer-local 'my:term-last-update)
+
 (defun my:term-init-remote-prompt ()
   (let* ((proc (get-buffer-process (current-buffer)))
          (filter (process-filter proc)))
     (term-send-string proc (format "export PS1=\"\\033AnSiTu \\u\n\\033AnSiTc \\w\n\\033AnSiTh %s\n$PS1\"\r\n" (or my:term-remote-hostname "`hostname`")))
-    (my:term-update-directory)))
+    (my:term-update)))
 
 (defun my:term-check-running-child-process ()
   (let* ((proc (get-buffer-process (current-buffer)))
@@ -222,8 +226,9 @@ which taking an argument.")
     (and (equal (my:term-switch-to-buffer  buffer) (current-buffer))
          (message "Switching to %S" (buffer-name buffer)))))
 
-(defun my:term-update-directory ()
+(defun my:term-update ()
   "Update buffer-name when directory is changed."
+  (setq my:term-last-update (current-time))
   (and (not (equal my:term-current-directory default-directory))
        (setq-local my:term-current-directory default-directory)
        (my:term-refresh-buffer-name)))
@@ -255,7 +260,7 @@ which taking an argument.")
 ;;
 ;; Try to update buffer-name with current directory
 (defadvice term-command-hook (after my:term-command-hook-adviced (string))
-  (my:term-update-directory))
+  (my:term-update))
 (ad-activate 'term-command-hook)
 
 (defadvice term-handle-ansi-terminal-messages
@@ -267,7 +272,7 @@ which taking an argument.")
       (setq handled t)
       (while (string-match "\032.+\n" ad-return-value) ;; ignore this only if ansi messages are handled
         (setq ad-return-value (replace-match "" t t ad-return-value)))
-      (my:term-update-directory))
+      (my:term-update))
     ;; user connected to remote and remote doesn't configured with eterm ansi messages
     (when (and my:term-need-init-remote
                (setq my:term-need-init-remote (not handled)))
@@ -306,13 +311,14 @@ which taking an argument.")
             (and (boundp 'yas-minor-mode) ; yas-expand is bound on tab!!!!
                  (setq-local yas-dont-activate t)
                  (yas-minor-mode -1))
-            (my:term-update-directory)
+            (my:term-update)
             (add-to-list 'my:term-buffer-list (current-buffer))
             (setq-local truncate-partial-width-windows t)
             (define-key term-raw-map (kbd "M-<left>") 'my:term-select-prev-ansi-term)
             (define-key term-raw-map (kbd "M-<right>") 'my:term-select-next-ansi-term)
             (define-key term-raw-map (kbd "C-c /") 'my:term-list-popup)
             (define-key term-raw-map (kbd "C-j") 'term-line-mode)
+            (define-key term-mode-map (kbd "C-c /") 'my:term-list-popup)
             (define-key term-mode-map (kbd "C-j") (lambda () (interactive)
                                                     (end-of-buffer)
                                                     (term-char-mode)))))
@@ -359,6 +365,26 @@ which taking an argument.")
 ;;
 ;; term-list-mode: a major mode for terminal listing popup
 ;;
+(defface my:term-list-color-local
+  '((t :foreground "cyan"))
+  "Used for local user@host in term list"
+  :group 'my:term)
+
+(defface my:term-list-color-remote
+  '((t :foreground "gold1"))
+  "Used for remote user@host in term list"
+  :group 'my:term)
+
+(defface my:term-list-color-directory
+  '((t :foreground "MediumOrchid1"))
+  "Used for directory in term list"
+  :group 'my:term)
+
+(defface my:term-list-color-time
+  '((t :foreground "chartreuse1"))
+  "Used for date in term list"
+  :group 'my:term)
+
 (defvar my:term-list-parent-window nil
   "A reference to the window which called this popup.")
 (make-variable-buffer-local 'my:term-list-parent-window)
@@ -436,53 +462,76 @@ which taking an argument.")
       (setq-local my:term-list-parent-window nil)
       (setq-local my:term-list-parent-window-buffer nil))))
 
+(defun my:term-list-truncate-string (string length &optional direction padding)
+  "Truncate string and add padding at the direction.
+direction can be one of 'front and 'rear"
+  (message "string:%S length:%d" string length)
+  (let ((padding (or padding "")))
+    (cond ((< (length string) length) string)
+          ((< length (length padding)) nil)
+          (t (if (eq direction 'front)
+                 (concat padding (substring string (+ (length padding) (- (length string) length))))
+               (concat (substring string 0 (- length (length padding))) padding))))))
 
 (defun my:term-list-shortened-path (path max-len)
   "Return shortened path."
   (let* ((abbr-path (abbreviate-file-name path))
          (components (split-string abbr-path "/"))
-         (front '(0)) (rear '(0)) overflow)
+         (front '(0)) (rear '(0))
+         overflow last-push)
 
     (if (<= (length abbr-path) max-len) abbr-path
       (while (and components (null overflow))
-        (if (< (1- (length front)) (/ (1- (length rear)) 3))
-            (let* ((head (car components))
-                   (len (+ (car front) (car rear) ; front & rear string length
-                           (length head) ; string length
-                           (if (> (length components) 1) 3 0))) ; for ... string
-                   newcomp)
-              (if (< len max-len)
-                  (setq newcomp head)
-                (setq newcomp (substring head 0 (- len max-len)))
-                (setq overflow t)) ; set overflow
+        (let* ((direction (if (< (1- (length front)) (/ (1- (length rear)) 2)) 'front 'rear))
+               (opposite (if (eq direction 'front) 'rear 'front))
+               (seed (cond ((eq direction 'front) (car components))
+                           ((eq direction 'rear) (car (last components)))))
+               (seed-len (length seed))
+               (cur-len (+ (car front) (car rear) ; string total length
+                           (- (length front) 2) (- (length rear) 2))) ; separator count
+               (last-component (= (length components) 1))
+               (remain (- max-len cur-len)) ; remained space
+               (truncated (my:term-list-truncate-string seed (- remain 2) opposite "..."))
+               new-component)
+          (setq new-component truncated)
+          (if (null new-component)
+              (progn
+                (cond ((eq last-push 'front)
+                       (setq seed (car (last front)))
+                       (setq seed-len (length seed))
+                       (setq remain (- (+ remain seed-len) 4))
+                       (setq truncated (concat (my:term-list-truncate-string seed remain) "..."))
+                       (setq front (nconc (list (+ (- (car front) seed-len) (length truncated)))
+                                          (cdr (butlast front))
+                                          (list truncated))))
+                      ((eq last-push 'rear)
+                       (setq seed (cadr rear))
+                       (setq seed-len (length seed))
 
-              (when (and (stringp newcomp) (> (length newcomp) 0))
-                (setq front (nconc (list (+ (car front) (length head) 1))
-                                   (cdr front)
-                                   (list newcomp))))
-              (setq components (cdr components)))
-
-          (let* ((tail (car (last components)))
-                 (len (+ (car front) (car rear)
-                      (length tail)
-                      (if (> (length components) 1) 3 0)))
-                 newcomp)
-            (if (< len max-len)
-                (setq newcomp tail)
-              (setq newcomp (substring tail (- len max-len)))
-              (setq overflow t))
-
-              (when (and (stringp newcomp) (> (length newcomp) 0))
-                (setq rear (nconc (list (+ (car rear) (length tail) 1))
-                                  (list newcomp)
-                                  (cdr rear))))
-            (setq components (butlast components)))))
-
+                       (setq remain (- (+ remain seed-len) 4))
+                       (setq truncated (concat "..." (my:term-list-truncate-string seed remain 'front)))
+                       (setq rear (nconc (list (+ (- (car rear) seed-len) (length truncated)))
+                                         (list truncated)
+                                         (cddr rear))))
+                      (t (error "Too small width to fill path")))
+                (setq overflow direction))
+            (cond ((eq direction 'front)
+                   (setq front (nconc (list (+ (car front) seed-len))
+                                      (cdr front)
+                                      (list new-component)))
+                   (setq components (cdr components)))
+                  ((eq direction 'rear)
+                   (setq rear (nconc (list (+ (car rear) seed-len))
+                                     (list new-component)
+                                     (cdr rear)))
+                   (setq components (butlast components))))
+            (if (> seed-len (length truncated))
+                (setq overflow direction))
+            (setq last-push direction))))
       (format "%s%s%s"
               (mapconcat (lambda (arg) arg) (cdr front) "/")
-              (if (null components) "/" "...")
+              "/"
               (mapconcat (lambda (arg) arg) (cdr rear) "/")))))
-
 
 (defun my:term-list-format-buffer-name (&optional buffer-or-name)
   (let ((buffer (or (get-buffer buffer-or-name)
@@ -496,14 +545,30 @@ which taking an argument.")
              (dir (if vec (tramp-file-name-localname vec) default-directory))
              (ident (concat (if (stringp user) (format "%s@" user) "") host))
              (ident-len 20)
-             (dir-len (- (window-width) (1+ ident-len))))
-        (format (format "%%-%ds %%-%ds"
+             (time-len 10)
+             (decoded-time (when my:term-last-update
+                             (decode-time my:term-last-update)))
+             (last-update (if decoded-time
+                              (format "[%02d:%02d]"
+                                      (nth 2 decoded-time)
+                                      (cadr decoded-time))))
+             (dir-len (- (window-width) (+ ident-len time-len))))
+        (format (format "%%-%ds%%-%ds%%%ds"
                         ident-len
                         (if (> (length ident) ident-len)
                             (- dir-len (- (length ident) ident-len))
-                          dir-len))
-                ident
-                (my:term-list-shortened-path dir dir-len))))))
+                          dir-len)
+                        time-len)
+                (propertize
+                 ident
+                 'face (if vec 'my:term-list-color-remote 'my:term-list-color-local))
+                (propertize
+                 (my:term-list-shortened-path dir dir-len)
+                 'face 'my:term-list-color-directory)
+                (propertize
+                 (if (stringp last-update) last-update "")
+                 'face 'my:term-list-color-time)
+                 )))))
 
 (defun my:term-list-popup ()
   (interactive)
