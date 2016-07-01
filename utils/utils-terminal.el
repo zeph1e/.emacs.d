@@ -540,9 +540,10 @@ direction can be one of 'front and 'rear"
       (let* ((vec (and (file-remote-p default-directory)
                        (tramp-dissect-file-name default-directory)))
              (host (if vec (tramp-file-name-host vec) (system-name)))
-             (user (if vec (tramp-file-name-user vec) (user-real-login-name)))
+             (user (or (and vec (tramp-file-name-user vec))
+                           (user-real-login-name)))
              (dir (if vec (tramp-file-name-localname vec) default-directory))
-             (ident (concat (if (stringp user) (format "%s@" user) "") host))
+             (ident (format "%s@%s"user host))
              (ident-len 20)
              (time-len 10)
              (decoded-time (when my:term-last-update
