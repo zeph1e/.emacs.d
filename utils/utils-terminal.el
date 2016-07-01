@@ -465,7 +465,6 @@ which taking an argument.")
 (defun my:term-list-truncate-string (string length &optional direction padding)
   "Truncate string and add padding at the direction.
 direction can be one of 'front and 'rear"
-  (message "string:%S length:%d" string length)
   (let ((padding (or padding "")))
     (cond ((< (length string) length) string)
           ((< length (length padding)) nil)
