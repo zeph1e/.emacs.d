@@ -21,6 +21,7 @@
   inhibit-startup-message t ; no startup message
   linum-format "%4d\u2502"
   default-input-method "korean-hangul390"
+  default-korean-keyboard "3" ; 3 beolsik
   ;; coding-system-for-read 'utf-8
 )
 
