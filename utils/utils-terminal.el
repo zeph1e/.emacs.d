@@ -365,22 +365,22 @@ which taking an argument.")
 ;;
 ;; term-list-mode: a major mode for terminal listing popup
 ;;
-(defface my:term-list-color-local
+(defface my:term-list-face-local
   '((t :foreground "cyan"))
   "Used for local user@host in term list"
   :group 'my:term)
 
-(defface my:term-list-color-remote
+(defface my:term-list-face-remote
   '((t :foreground "gold1"))
   "Used for remote user@host in term list"
   :group 'my:term)
 
-(defface my:term-list-color-directory
+(defface my:term-list-face-directory
   '((t :foreground "MediumOrchid1"))
   "Used for directory in term list"
   :group 'my:term)
 
-(defface my:term-list-color-time
+(defface my:term-list-face-time
   '((t :foreground "chartreuse1"))
   "Used for date in term list"
   :group 'my:term)
@@ -572,13 +572,13 @@ direction can be one of 'front and 'rear"
                         time-len)
                 (propertize
                  ident
-                 'face (if vec 'my:term-list-color-remote 'my:term-list-color-local))
+                 'face (if vec 'my:term-list-face-remote 'my:term-list-face-local))
                 (propertize
                  (my:term-list-shortened-path dir dir-len)
-                 'face 'my:term-list-color-directory)
+                 'face 'my:term-list-face-directory)
                 (propertize
                  (if (stringp last-update) last-update "")
-                 'face 'my:term-list-color-time)
+                 'face 'my:term-list-face-time)
                  )))))
 
 (defun my:term-list-popup ()
