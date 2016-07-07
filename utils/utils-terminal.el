@@ -385,6 +385,11 @@ which taking an argument.")
   "Used for date in term list"
   :group 'my:term)
 
+(defface my:term-list-face-selection
+  '((t :background "RoyalBlue4"))
+  "Used for selection in term list"
+  :group 'my:term)
+
 (defvar my:term-list-parent-window nil
   "A reference to the window which called this popup.")
 (make-variable-buffer-local 'my:term-list-parent-window)
@@ -408,18 +413,24 @@ which taking an argument.")
 
 (define-derived-mode my:term-list-mode fundamental-mode ""
   (use-local-map my:term-list-keymap)
+  (beginning-of-buffer)
+  (set (make-local-variable 'my:term-list-overlay)
+       (make-overlay (point-at-bol) (point-at-eol)))
+  (overlay-put my:term-list-overlay 'face 'my:term-list-face-selection)
   (set (make-local-variable 'buffer-read-only) t))
 
 (defun my:term-list-next ()
   (interactive)
   (forward-line)
   (beginning-of-line)
+  (move-overlay my:term-list-overlay (point-at-bol) (point-at-eol))
   (my:term-list-show))
 
 (defun my:term-list-prev ()
   (interactive)
   (forward-line -1)
   (beginning-of-line)
+  (move-overlay my:term-list-overlay (point-at-bol) (point-at-eol))
   (my:term-list-show))
 
 (defun my:term-list-select ()
@@ -591,7 +602,8 @@ direction can be one of 'front and 'rear"
       (setq my:term-list-window-configuration (current-window-configuration))
       (goto-char (point-min)))
     (select-window (display-buffer popup-buffer '(display-buffer-below-selected)))
-    (fit-window-to-buffer (selected-window) 15 5)
+    (shrink-window-if-larger-than-buffer (selected-window))
+    ;; (fit-window-to-buffer (selected-window) 15); 5)
     (setq popup-height (window-height))
     (setq parent-height (- parent-height (window-height)))
     (with-selected-window parent-window
