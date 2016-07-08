@@ -44,33 +44,34 @@
     (setq buffer-file-coding-system (intern cs))
     (set-buffer-modified-p t)))
 
-;; revert all buffers that are visiting a file: from http://emacswiki.org/emacs/RevertBuffer
+(defun my:revert-this-buffer (&optional buffer-or-name)
+  "Refreshes this buffer from its respective file."
+  (interactive)
+  (let ((buffer (get-buffer (or buffer-or-name (current-buffer)))))
+    (when (and (bufferp buffer)
+               (buffer-file-name buffer)
+               (file-exists-p (buffer-file-name buffer)))
+      (with-current-buffer buffer
+        (when (or (not (buffer-modified-p))
+                  (save-window-excursion
+                    (my:display-buffer-modification buffer)
+                    (yes-or-no-p (format "Buffer %s modified; discard the changes? "
+                                         (buffer-name buffer)))))
+          (revert-buffer t t t)
+          (message "Refreshed buffer: %s." (buffer-name buffer)))))))
+
 (defun my:revert-all-buffers ()
   "Refreshes all open buffers from their respective files."
   (interactive)
   (dolist (buf (buffer-list))
     (with-current-buffer buf
-      (when (and (buffer-file-name) (file-exists-p (buffer-file-name)) (not (buffer-modified-p)))
-        (revert-buffer t t t) )))
+      (my:revert-this-buffer buf)))
   (message "Refreshed all opened files."))
 
-(defun my:revert-local-buffers ()
-  "Refreshes only local buffers from their respective files."
-  (interactive)
-  (dolist (buf (buffer-list))
-    (with-current-buffer buf
-      (when (and (buffer-file-name)
-                 (file-exists-p (buffer-file-name))
-                 (not (file-remote-p (buffer-file-name (current-buffer))))
-                 (not (buffer-modified-p)))
-        (revert-buffer t t t))))
-  (message "Refreshed opened local files."))
-
 (defun my:display-buffer-modification (&optional buffer-or-name)
-  (let* ((buffer (or (and buffer-or-name (get-buffer buffer-or-name))
-                     (current-buffer)))
+  (let* ((buffer (get-buffer (or buffer-or-name (current-buffer))))
          (diff-switches "-urN")
-         (file-name (buffer-file-name buffer)))
+         (file-name (and (bufferp buffer) (buffer-file-name buffer))))
     (display-buffer buffer '(display-buffer-same-window))
     (delete-other-windows)
     (diff (if (file-exists-p file-name) file-name null-device) buffer nil 'noasync)))
