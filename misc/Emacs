@@ -1,0 +1,5 @@
+#!/bin/sh
+
+unset GTK_IM_MODULE
+unset XMODIFIERS
+exec emacs-24.5 $@
