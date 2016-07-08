@@ -192,8 +192,11 @@ Key bindings:
                   (if (and (processp server-process)
                            (not (and (equal (process-get server-process :terminal)
                                             (frame-terminal))
-                                     (equal (process-get server-process :frame)
-                                            (selected-frame)))))
+                                     (or
+                                      (equal (process-get server-process :frame)
+                                             (selected-frame))
+                                      (member (selected-frame)
+                                              (process-get server-process :children))))))
                       (save-buffers-kill-terminal ARG)
                   (error "C-x C-c is disabled. Use M-x kill-emacs instead."))))
 (provide 'utils-keybinding)

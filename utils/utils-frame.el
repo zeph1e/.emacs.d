@@ -6,7 +6,19 @@
 (defun my:make-new-frame ()
   (interactive)
   (and (yes-or-no-p "Create a new frame? ")
-       (select-frame-set-input-focus (make-frame))))
+       (let ((frame (make-frame))
+             (children (process-get server-process :children)))
+         (and (framep frame)
+              (server-running-p)
+              (processp server-process)
+              (eq (process-get server-process :frame) (selected-frame))
+              (process-put server-process :children (add-to-list 'children frame)))
+         (select-frame-set-input-focus frame))))
+
+(add-hook 'delete-frame-hook
+          #'(lambda (frame)
+              (process-put server-process :children
+                           (remove frame (process-get server-process :chiledren)))))
 
 (defun my:delete-selected-frame ()
   (interactive)
