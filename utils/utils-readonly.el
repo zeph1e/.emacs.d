@@ -50,7 +50,8 @@
 ;; https://www.emacswiki.org/emacs/BufferLocalKeys
 (defun buffer-local-set-key (key func)
       (interactive "KSet key on this buffer: \naCommand: ")
-      (let ((name (format "%s-magic" (buffer-name))))
+      (let ((name (format "%s-magic-%s" (buffer-name)
+                          (format-time-string "%Y%m%d-%H%M%S"))))
         (eval
          `(define-minor-mode ,(intern name)
             "Automagically built minor mode to define buffer-local keys."))
