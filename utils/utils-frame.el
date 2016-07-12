@@ -11,14 +11,15 @@
          (and (framep frame)
               (server-running-p)
               (processp server-process)
-              (eq (process-get server-process :frame) (selected-frame))
+              (or (eq (process-get server-process :frame) (selected-frame))
+                  (member (selected-frame) (process-get server-process :children)))
               (process-put server-process :children (add-to-list 'children frame)))
          (select-frame-set-input-focus frame))))
 
 (add-hook 'delete-frame-hook
           #'(lambda (frame)
               (process-put server-process :children
-                           (remove frame (process-get server-process :chiledren)))))
+                           (remove frame (process-get server-process :children)))))
 
 (defun my:delete-selected-frame ()
   (interactive)
