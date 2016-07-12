@@ -7,7 +7,7 @@
 
 (define-c-style "kernel" "linux" 4 t)
 
-(define-c-style "webkit" "google" 4 nil
+(define-c-style "webkit" "linux" 4 nil
   :innamespace 0
   :access-label -
   :case-label 0
