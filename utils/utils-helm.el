@@ -32,6 +32,16 @@
       helm-ag-insert-at-point 'thing-at-point
       helm-ag-fuzzy-match t
 
+      ;; helm-bookmark
+      helm-bookmark-default-filtered-sources '(helm-source-bookmark-files&dirs
+                                               helm-source-bookmark-helm-find-files
+                                               helm-source-bookmark-info
+                                               helm-source-bookmark-gnus
+                                               helm-source-bookmark-man
+                                               helm-source-bookmark-images
+                                               helm-source-bookmark-w3m
+                                               helm-source-bookmark-uncategorized)
+
       ;; projectile
       projectile-enable-caching t
       projectile-file-exists-remote-cache-expire (* 7 24 60 60) ; a week
