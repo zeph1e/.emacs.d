@@ -617,7 +617,8 @@ direction can be one of 'front and 'rear"
     (setq parent-height (- parent-height (window-height)))
     (with-selected-window parent-window
       (enlarge-window (- parent-height (window-height))))
-    (enlarge-window (- popup-height (window-height)))))
+    (enlarge-window (- popup-height (window-height))))
+  (my:term-list-show))
 
 
 (provide 'utils-terminal)

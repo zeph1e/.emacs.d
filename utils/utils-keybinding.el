@@ -143,6 +143,7 @@
     ;; term
     (define-key map (kbd "C-x t") 'my:term-get-create)
     (define-key map (kbd "C-x y") 'my:term-get-recent)
+    (define-key map (kbd "C-x /") 'my:term-list-popup)
 
     ;; read-only
     (define-key map (kbd "C-x C-q") 'my:read-only-mode) ; override default key
