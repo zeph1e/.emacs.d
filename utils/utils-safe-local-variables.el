@@ -10,6 +10,7 @@
 (defconst my:safe-local-variables
   '((cscope-option-do-not-update-database . t)
     (buffer-read-only . t)
+    (eval . (google-set-c-style))
     ))
 
 (setq safe-local-variable-values

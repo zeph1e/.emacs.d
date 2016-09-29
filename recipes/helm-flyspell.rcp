@@ -1,0 +1,8 @@
+(:name helm-flyspell
+       :description "Helm extension for correcting words with Flyspell"
+       :website "https://github.com/pronobis/helm-flyspell"
+       :type github
+       :pkgname "pronobis/helm-flyspell"
+       :post-init (eval-after-load 'flyspell
+                    '(progn
+                       (define-key flyspell-mode-map (kbd "C-M-$") #'helm-flyspell-correct))))

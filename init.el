@@ -66,6 +66,7 @@
 
 ;; (el-get-bundle  ascope)
 ;; (el-get-bundle  ascope-ext)
+(el-get-bundle  apache-mode)
 (el-get-bundle  auto-complete)
 (el-get-bundle  auto-complete-emacs-lisp)
 (el-get-bundle! auto-complete-c-headers)
@@ -86,6 +87,7 @@
 (el-get-bundle  helm-ag)
 (el-get-bundle  helm-cmd-t)
 (el-get-bundle  helm-descbinds)
+(el-get-bundle  helm-flyspell)
 (el-get-bundle  helm-projectile)
 (el-get-bundle  helm-ls-git)
 (el-get-bundle  iedit)
