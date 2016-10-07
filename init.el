@@ -137,6 +137,7 @@
 (el-get-bundle  qmake-mode)
 (el-get-bundle  qml-mode)
 (el-get-bundle! redo+)
+(el-get-bundle  rfcview)
 (el-get-bundle  screenshot) (or (executable-find "convert") (warn "ImageMagick is not installed"))
 (el-get-bundle  windcycle)
 (el-get-bundle  xcscope)
