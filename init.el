@@ -133,6 +133,7 @@
 (el-get-bundle  org-readme)
 (or (eq (plist-get (el-get-package-def 'org-mode) :type) 'builtin) (el-get-bundle org-reveal))
 (el-get-bundle  plantuml-mode)
+(el-get-bundle  powerline)
 (el-get-bundle  projectile)
 (el-get-bundle  qmake-mode)
 (el-get-bundle  qml-mode)
@@ -188,8 +189,15 @@
 ;; Minor modes to apply
 (defvar prog-minor-mode-list nil)
 (defvar text-minor-mode-list nil)
-(setq prog-minor-mode-list '(linum-mode my:whitespace-mode my:flyspell-mode))
-(setq text-minor-mode-list '(linum-mode my:whitespace-mode my:ac-ispell-ac-setup my:flyspell-mode))
+(setq prog-minor-mode-list '(linum-mode
+                             my:whitespace-mode
+                             my:flyspell-mode
+                             goto-address-prog-mode))
+(setq text-minor-mode-list '(linum-mode
+                             my:whitespace-mode
+                             my:ac-ispell-ac-setup
+                             my:flyspell-mode
+                             goto-address-mode))
 
 ;; enable minor modes for prog-mode(there's a case of that prog-mode is nil)
 (let (value)
