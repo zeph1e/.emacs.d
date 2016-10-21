@@ -53,7 +53,8 @@
       (let ((name (format "%s-magic" (buffer-name))))
         (eval
          `(define-minor-mode ,(intern name)
-            "Automagically built minor mode to define buffer-local keys."))
+            "Automagically built minor mode to define buffer-local keys."
+            :lighter ""))
         (let* ((mapname (format "%s-map" name))
                (map (intern mapname)))
           (unless (boundp (intern mapname))
@@ -77,6 +78,21 @@
       (dolist (key overwritten-keys)
         (buffer-local-set-key (kbd key) nil))
       (setq my:read-only-overridden-keys nil)))
+  ;; if buffer name was changed while it is in read-only state, the previous
+  ;; `magic' minor mode would be survived and make things be messed.
+  ;; We need to clear it.
+  (mapc (lambda (minor)
+          (let* ((active (ignore-errors
+                           (and (symbolp minor) (symbol-value minor) minor)))
+                 (name (and (symbolp active) (symbol-name active)))
+                 (magic (when (and (stringp name) (string-match "\\(.+\\)\-magic" name))
+                          (replace-match "\\1" nil nil name))))
+            (when (and (stringp magic)
+                       (not (string= (buffer-name) magic)))
+              (message "Deactivates old buffer-local-key mode: %S" minor)
+              (apply minor '(-1)))))
+        (mapcar #'car minor-mode-alist))
+
   (read-only-mode (if buffer-read-only 1 -1)))
 
 ;; add my:read-only-mode when the buffer-read-only is set
