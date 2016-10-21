@@ -243,6 +243,5 @@
 (add-to-list 'auto-mode-alist '("\\.qml\\'" . qml-mode))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; customized options
-(put 'upcase-region 'disabled nil)
-(put 'downcase-region 'disabled nil)
-(put 'narrow-to-region 'disabled nil)
+(setq custom-file "~/.emacs.d/custom.el")
+(load custom-file)
