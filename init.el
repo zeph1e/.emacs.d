@@ -200,34 +200,33 @@
                              goto-address-mode))
 
 ;; enable minor modes for prog-mode(there's a case of that prog-mode is nil)
-(let (value)
-  (dolist (mode prog-minor-mode-list value)
-    (if (fboundp 'prog-mode) (add-hook 'prog-mode-hook mode)
-      (if (fboundp 'cc-mode)
-          (add-hook 'cc-mode-hook mode)
-        (add-hook 'c-mode-hook mode)
-        (add-hook 'c++-mode-hook mode)
-        (add-hook 'objc-mode-hook mode)
-        (add-hook 'java-mode-hook mode)
-        (add-hook 'idl-mode-hook mode))
-      (add-hook 'emacs-lisp-mode-hook mode)
-      (add-hook 'python-mode-hook mode)
-      (add-hook 'ruby-mode-hook mode)
-      (add-hook 'perl-mode-hook mode)
-      (add-hook 'js-mode-hook mode)
-      (add-hook 'sh-mode-hook mode))
-    (add-hook 'qmake-mode-hook mode) ; not in prog-mode
-    (if (fboundp 'basic-mode)
-        (add-hook 'basic-mode-hook mode))
-))
+(mapc (lambda (mode)
+        (if (fboundp 'prog-mode) (add-hook 'prog-mode-hook mode)
+          (if (fboundp 'cc-mode)
+              (add-hook 'cc-mode-hook mode)
+            (add-hook 'c-mode-hook mode)
+            (add-hook 'c++-mode-hook mode)
+            (add-hook 'objc-mode-hook mode)
+            (add-hook 'java-mode-hook mode)
+            (add-hook 'idl-mode-hook mode))
+          (add-hook 'emacs-lisp-mode-hook mode)
+          (add-hook 'python-mode-hook mode)
+          (add-hook 'ruby-mode-hook mode)
+          (add-hook 'perl-mode-hook mode)
+          (add-hook 'js-mode-hook mode)
+          (add-hook 'sh-mode-hook mode))
+        (add-hook 'qmake-mode-hook mode) ; not in prog-mode
+        (if (fboundp 'basic-mode)
+            (add-hook 'basic-mode-hook mode)))
+      prog-minor-mode-list)
+
 
 ;; enable minor modes for text-mode
-(let (value)
-  (dolist (mode text-minor-mode-list value)
-    (if (functionp 'text-mode) (add-hook 'text-mode-hook mode)
-      (add-hook 'org-mode-hook mode)
-      (add-hook 'markdown-mode-hook mode)
-)))
+(mapc (lambda (mode)
+        (if (functionp 'text-mode) (add-hook 'text-mode-hook mode)
+          (add-hook 'org-mode-hook mode)
+          (add-hook 'markdown-mode-hook mode)))
+    text-minor-mode-list)
 
 ;; disable hl-mode for shell/term/eshell
 (add-hook 'shell-mode-hook (lambda () (setq-local global-hl-line-mode nil)))
@@ -241,7 +240,11 @@
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode)) ; C++, rather than C
 (add-to-list 'auto-mode-alist '("\\.\\(gp\\(i\\)?\\|plt\\)\\'" . gnuplot-mode))
 (add-to-list 'auto-mode-alist '("\\.qml\\'" . qml-mode))
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; customized options
+
+;; customization settings
 (setq custom-file "~/.emacs.d/custom.el")
+(unless (file-exists-p custom-file)
+  (with-temp-buffer
+    (insert ";;; custom.el --- local customization\n")
+    (write-file custom-file t)))
 (load custom-file)
