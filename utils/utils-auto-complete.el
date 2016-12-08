@@ -68,6 +68,8 @@
   '(progn
      (define-key ac-completing-map (kbd "C-n") 'ac-next)
      (define-key ac-completing-map (kbd "C-p") 'ac-previous)
+     (setq-default ac-sources (remove 'ac-source-words-in-same-mode-buffers
+                                      (cons ac-source-words-in-buffer ac-sources)))
      (ac-flyspell-workaround)
      (ac-linum-workaround)))
 
