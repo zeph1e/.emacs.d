@@ -27,13 +27,50 @@
           (set-face-attribute 'mode-line-buffer-id nil :foreground "gold"))))
   (color-theme-standard))
 
-(when (fboundp 'powerline-default-theme)
-  (powerline-default-theme))
+;; (when (fboundp 'powerline-default-theme)
+;;   (powerline-default-theme))
 
-;; (when (display-graphic-p)
-;;   (setq-default nyan-wavy-trail t)
-;;   (setq-default nyan-bar-length 10)
-;;   (nyan-mode 1)
-;;   (nyan-start-animation))
+;; my custom mode-line (inspired from emacs-fu)
+(defface my:mode-line-readonly-buffer-id
+  '((t :inherit mode-line-buffer-id :background "red"))
+  "Used for highlight readonly buffer")
+
+(setq-default
+ mode-line-format
+ (list
+  ;; buffer name
+  mode-line-front-space
+  (propertize "%Z " 'face 'mode-line-emphasis)
+  '(:eval (propertize "%b "
+                      'face (if buffer-read-only 'my:mode-line-readonly-buffer-id 'mode-line-buffer-id)
+                      'help-echo (buffer-file-name)))
+
+  (propertize "%02l" 'face 'font-lock-type-face)
+  ":"
+  (propertize "%02c" 'face 'font-lock-type-face)
+
+  ;; relative position, size of file
+  " ["
+  (propertize "%p" 'face 'font-lock-constant-face) ;; % above top
+  "/"
+  (propertize "%I" 'face 'font-lock-constant-face) ;; size
+  "]"
+
+  ;; the current major mode for the buffer.
+  " ["
+  '(:eval (propertize "%m" 'face 'font-lock-string-face))
+  "]"
+  ;; minor-mode-alist  ;; list of minor modes
+
+  " "
+  '(:eval (list (nyan-create)))
+
+  ))
+
+(when (display-graphic-p)
+  (setq-default nyan-wavy-trail t)
+  (setq-default nyan-bar-length 10)
+  (nyan-mode 1)
+  (nyan-start-animation))
 
 (provide 'utils-theme)
