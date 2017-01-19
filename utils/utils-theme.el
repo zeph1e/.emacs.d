@@ -38,13 +38,19 @@
 (setq-default
  mode-line-format
  (list
+  " "
+  ;; modified
+  '(:eval (propertize (if (buffer-modified-p) "*" " ")
+                      'face 'font-lock-variable-name-face))
+  " "
   ;; buffer name
-  mode-line-front-space
-  (propertize "%Z " 'face 'mode-line-emphasis)
-  '(:eval (propertize "%b "
+  '(:eval (propertize "%b"
                       'face (if buffer-read-only 'my:mode-line-readonly-buffer-id 'mode-line-buffer-id)
                       'help-echo (buffer-file-name)))
 
+  " "
+
+  ;; line/column
   (propertize "%02l" 'face 'font-lock-type-face)
   ":"
   (propertize "%02c" 'face 'font-lock-type-face)
