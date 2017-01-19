@@ -41,14 +41,11 @@
   " "
   ;; modified
   '(:eval (propertize (if (buffer-modified-p) "*" " ")
-                      'face 'font-lock-variable-name-face))
-  " "
+                      'face 'compilation-mode-line-fail))
   ;; buffer name
-  '(:eval (propertize "%b"
+  '(:eval (propertize " %b "
                       'face (if buffer-read-only 'my:mode-line-readonly-buffer-id 'mode-line-buffer-id)
                       'help-echo (buffer-file-name)))
-
-  " "
 
   ;; line/column
   (propertize "%02l" 'face 'font-lock-type-face)
@@ -56,17 +53,9 @@
   (propertize "%02c" 'face 'font-lock-type-face)
 
   ;; relative position, size of file
-  " ["
-  (propertize "%p" 'face 'font-lock-constant-face) ;; % above top
-  "/"
-  (propertize "%I" 'face 'font-lock-constant-face) ;; size
-  "]"
+  " [%p/%I] [%m] "
 
-  ;; the current major mode for the buffer.
-  " ["
-  '(:eval (propertize "%m" 'face 'font-lock-string-face))
-  "]"
-  ;; minor-mode-alist  ;; list of minor modes
+  '("" mode-line-process)
 
   " "
   '(:eval (list (nyan-create)))
@@ -75,7 +64,7 @@
 
 (when (display-graphic-p)
   (setq-default nyan-wavy-trail t)
-  (setq-default nyan-bar-length 10)
+  ;; (setq-default nyan-bar-length 10)
   (nyan-mode 1)
   (nyan-start-animation))
 
