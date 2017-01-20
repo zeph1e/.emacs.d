@@ -38,22 +38,46 @@
 (setq-default
  mode-line-format
  (list
-  " "
+  " %I "
   ;; modified
-  '(:eval (propertize (if (buffer-modified-p) "*" " ")
+  '(:eval (propertize (if (buffer-modified-p) "* " "  ")
                       'face 'compilation-mode-line-fail))
+  ;; relative position, size of file
+
   ;; buffer name
-  '(:eval (propertize " %b "
+  '(:eval (propertize " %20b "
                       'face (if buffer-read-only 'my:mode-line-readonly-buffer-id 'mode-line-buffer-id)
                       'help-echo (buffer-file-name)))
 
+  " "
   ;; line/column
   (propertize "%02l" 'face 'font-lock-type-face)
   ":"
   (propertize "%02c" 'face 'font-lock-type-face)
 
-  ;; relative position, size of file
-  " [%p/%I] [%m] "
+  " "
+  (propertize "%16m"
+              'face 'font-lock-keywords
+              'help-echo
+              (mapconcat
+               (lambda (minor-mode)
+                 (let* ((minor (car minor-mode))
+                        (lighterexp (cadr minor-mode))
+                        (lighter (cond ((and (symbolp lighterexp)
+                                             (boundp lighterexp))
+                                        (symbol-value lighterexp))
+                                       ((stringp lighterexp) lighterexp)
+                                       (t (format "%s" lighterexp))))
+                        (active (ignore-errors
+                                  (and (symbolp minor)
+                                       (symbol-value minor)
+                                       minor))))
+                   (when active
+                     (if (and (listp lighter) (plist-get lighter :eval))
+                         (eval (plist-get lighter :eval))
+                       lighter))))
+               minor-mode-alist
+               ""))
 
   '("" mode-line-process)
 
