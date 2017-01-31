@@ -233,6 +233,66 @@ which taking an argument.")
        (setq-local my:term-current-directory default-directory)
        (my:term-refresh-buffer-name)))
 
+(defun my:term-shortened-path (path max-len)
+  "Return shortened path."
+  (let* ((abbr-path (abbreviate-file-name path))
+         (components (split-string abbr-path "/"))
+         (front '(0)) (rear '(0))
+         overflow last-push)
+
+    (if (<= (length abbr-path) max-len) abbr-path
+      (while (and components (null overflow))
+        (let* ((direction (if (< (1- (length front)) (/ (1- (length rear)) 2)) 'front 'rear))
+               (opposite (if (eq direction 'front) 'rear 'front))
+               (seed (cond ((eq direction 'front) (car components))
+                           ((eq direction 'rear) (car (last components)))))
+               (seed-len (length seed))
+               (cur-len (+ (car front) (car rear) ; string total length
+                           (- (length front) 2) (- (length rear) 2))) ; separator count
+               (last-component (= (length components) 1))
+               (remain (- max-len cur-len)) ; remained space
+               (truncated (my:term-list-truncate-string seed (- remain 2) opposite "..."))
+               new-component)
+          (setq new-component truncated)
+          (if (null new-component)
+              (progn
+                (cond ((eq last-push 'front)
+                       (setq seed (car (last front)))
+                       (setq seed-len (length seed))
+                       (setq remain (- (+ remain seed-len) 4))
+                       (setq truncated (concat (my:term-list-truncate-string seed remain) "..."))
+                       (setq front (nconc (list (+ (- (car front) seed-len) (length truncated)))
+                                          (cdr (butlast front))
+                                          (list truncated))))
+                      ((eq last-push 'rear)
+                       (setq seed (cadr rear))
+                       (setq seed-len (length seed))
+
+                       (setq remain (- (+ remain seed-len) 4))
+                       (setq truncated (concat "..." (my:term-list-truncate-string seed remain 'front)))
+                       (setq rear (nconc (list (+ (- (car rear) seed-len) (length truncated)))
+                                         (list truncated)
+                                         (cddr rear))))
+                      (t (error "Too small width to fill path")))
+                (setq overflow direction))
+            (cond ((eq direction 'front)
+                   (setq front (nconc (list (+ (car front) seed-len))
+                                      (cdr front)
+                                      (list new-component)))
+                   (setq components (cdr components)))
+                  ((eq direction 'rear)
+                   (setq rear (nconc (list (+ (car rear) seed-len))
+                                     (list new-component)
+                                     (cdr rear)))
+                   (setq components (butlast components))))
+            (if (> seed-len (length truncated))
+                (setq overflow direction))
+            (setq last-push direction))))
+      (format "%s%s%s"
+              (mapconcat (lambda (arg) arg) (cdr front) "/")
+              "/"
+              (mapconcat (lambda (arg) arg) (cdr rear) "/")))))
+
 ;; to notify current major mode or directory is switched by changing its buffer name
 (defun my:term-refresh-buffer-name (&optional buffer)
   (let* ((buf (or buffer (current-buffer)))
@@ -248,8 +308,8 @@ which taking an argument.")
                                (split-string (replace-match "\\1 \\2" t nil default-directory))))
          (seed (format "*%s[%s]*" mode (or (and remote-directory
                                                 (concat (car remote-directory) ":"
-                                                        (abbreviate-file-name (cadr remote-directory))))
-                                           (abbreviate-file-name default-directory))))
+                                                        (my:term-shortened-path (cadr remote-directory) 24)))
+                                           (my:term-shortened-path default-directory 32))))
          (candidate (concat seed ident)))
     (or (equal candidate bufname)
         (rename-buffer (generate-new-buffer-name seed)))))
@@ -492,66 +552,6 @@ direction can be one of 'front and 'rear"
                  (concat padding (substring string (+ (length padding) (- (length string) length))))
                (concat (substring string 0 (- length (length padding))) padding))))))
 
-(defun my:term-list-shortened-path (path max-len)
-  "Return shortened path."
-  (let* ((abbr-path (abbreviate-file-name path))
-         (components (split-string abbr-path "/"))
-         (front '(0)) (rear '(0))
-         overflow last-push)
-
-    (if (<= (length abbr-path) max-len) abbr-path
-      (while (and components (null overflow))
-        (let* ((direction (if (< (1- (length front)) (/ (1- (length rear)) 2)) 'front 'rear))
-               (opposite (if (eq direction 'front) 'rear 'front))
-               (seed (cond ((eq direction 'front) (car components))
-                           ((eq direction 'rear) (car (last components)))))
-               (seed-len (length seed))
-               (cur-len (+ (car front) (car rear) ; string total length
-                           (- (length front) 2) (- (length rear) 2))) ; separator count
-               (last-component (= (length components) 1))
-               (remain (- max-len cur-len)) ; remained space
-               (truncated (my:term-list-truncate-string seed (- remain 2) opposite "..."))
-               new-component)
-          (setq new-component truncated)
-          (if (null new-component)
-              (progn
-                (cond ((eq last-push 'front)
-                       (setq seed (car (last front)))
-                       (setq seed-len (length seed))
-                       (setq remain (- (+ remain seed-len) 4))
-                       (setq truncated (concat (my:term-list-truncate-string seed remain) "..."))
-                       (setq front (nconc (list (+ (- (car front) seed-len) (length truncated)))
-                                          (cdr (butlast front))
-                                          (list truncated))))
-                      ((eq last-push 'rear)
-                       (setq seed (cadr rear))
-                       (setq seed-len (length seed))
-
-                       (setq remain (- (+ remain seed-len) 4))
-                       (setq truncated (concat "..." (my:term-list-truncate-string seed remain 'front)))
-                       (setq rear (nconc (list (+ (- (car rear) seed-len) (length truncated)))
-                                         (list truncated)
-                                         (cddr rear))))
-                      (t (error "Too small width to fill path")))
-                (setq overflow direction))
-            (cond ((eq direction 'front)
-                   (setq front (nconc (list (+ (car front) seed-len))
-                                      (cdr front)
-                                      (list new-component)))
-                   (setq components (cdr components)))
-                  ((eq direction 'rear)
-                   (setq rear (nconc (list (+ (car rear) seed-len))
-                                     (list new-component)
-                                     (cdr rear)))
-                   (setq components (butlast components))))
-            (if (> seed-len (length truncated))
-                (setq overflow direction))
-            (setq last-push direction))))
-      (format "%s%s%s"
-              (mapconcat (lambda (arg) arg) (cdr front) "/")
-              "/"
-              (mapconcat (lambda (arg) arg) (cdr rear) "/")))))
-
 (defun my:term-list-format-buffer-name (&optional buffer-or-name)
   (let ((buffer (or (get-buffer buffer-or-name)
                     (current-buffer))))
@@ -583,7 +583,7 @@ direction can be one of 'front and 'rear"
                  ident
                  'face (if vec 'my:term-list-face-remote 'my:term-list-face-local))
                 (propertize
-                 (my:term-list-shortened-path dir dir-len)
+                 (my:term-shortened-path dir dir-len)
                  'face 'my:term-list-face-directory)
                 (propertize
                  (if (stringp last-update) last-update "")
