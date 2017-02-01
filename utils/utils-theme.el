@@ -56,8 +56,8 @@
   (propertize "%02c" 'face 'font-lock-type-face)
 
   " "
-  (propertize "%16m"
-              'face 'font-lock-keywords
+  (propertize "%m"
+              'face 'bold
               'help-echo
               (mapconcat
                (lambda (minor-mode)
