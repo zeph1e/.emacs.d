@@ -192,7 +192,8 @@
 (setq prog-minor-mode-list '(linum-mode
                              my:whitespace-mode
                              my:flyspell-mode
-                             goto-address-prog-mode))
+                             goto-address-prog-mode
+                             vc-mode))
 (setq text-minor-mode-list '(linum-mode
                              my:whitespace-mode
                              my:ac-ispell-ac-setup
