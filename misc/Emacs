@@ -1,5 +1,16 @@
 #!/bin/sh
 
-unset GTK_IM_MODULE
-unset XMODIFIERS
-exec emacs-24.5 $@
+EMACS_CANDIDATES="emacs emacs-24 emacs-24.5"
+for candidate in $EMACS_CANDIDATES; do
+    for cmd in $(whereis $candidate); do
+        if [ -x "$cmd" ]; then
+            unset GTK_IM_MODULE
+            unset XMODIFIERS
+            exec $cmd $@
+            return 0
+        fi
+    done
+done
+
+echo 1>&2 "No emacs command"
+return 1
