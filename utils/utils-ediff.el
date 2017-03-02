@@ -57,4 +57,12 @@
       (ediff-merge-files-with-ancestor file-a file-b file-ancestor nil file-out)
     (ediff-merge-files file-a file-b nil file-out)))
 
+;; ediff help functions
+(defun my:ediff-copy-both-to-C ()
+  (interactive)
+  (ediff-copy-diff ediff-current-difference nil 'C nil
+                   (concat
+                    (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
+                    (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
+(add-hook 'ediff-keymap-setup-hook (lambda () (define-key ediff-mode-map "c" 'my:ediff-copy-both-to-C)))
 (provide 'utils-ediff)

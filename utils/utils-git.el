@@ -10,4 +10,12 @@
         (vc-git--out-ok "rev-parse" "--short" rev)
         (buffer-substring-no-properties (point-min) (1- (point-max)))))))
 
+(defadvice magit-ediff-resolve (after my:magit-ediff-resolve (file))
+  "Advice function for magit-ediff-resolve to disable read only."
+  (magit-with-toplevel
+    (let ((buffer (find-file-noselect file)))
+      (with-current-buffer buffer
+        (setq-local buffer-read-only nil)))))
+(ad-activate 'magit-ediff-resolve)
+
 (provide 'utils-git)
