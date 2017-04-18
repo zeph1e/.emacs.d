@@ -145,12 +145,8 @@
 (el-get-bundle  xcscope)
 (el-get-bundle  yasnippet) (yas-global-mode t)
 (el-get-bundle  web-beautify)
-(if (eq system-type 'windows-nt) ; windows
-    (progn
-      (el-get-bundle builtin:org-mode) (el-get-bundle org-mode)) ; just use builtin on windows
-  (el-get-bundle  planner)  ; not-windows
-  (el-get-bundle  muse)
-  (el-get-bundle  remember))
+(when (eq system-type 'windows-nt) ; windows
+  (el-get-bundle builtin:org-mode) (el-get-bundle org-mode)) ; just use builtin on windows
 (el-get 'sync)
 
 ;; load files in utils/
