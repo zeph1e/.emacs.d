@@ -67,7 +67,6 @@
 ;; (el-get-bundle  ascope)
 ;; (el-get-bundle  ascope-ext)
 (el-get-bundle  apache-mode)
-(el-get-bundle  basic)
 (el-get-bundle  company-mode)
 (el-get-bundle  company-c-headers)
 (el-get-bundle  company-dict)
@@ -179,6 +178,7 @@
 (global-hl-line-mode t) ; highlight current line
 (tool-bar-mode -1)
 (add-hook 'after-init-hook 'global-company-mode)
+(add-hook 'after-init-hook 'company-statistics-mode)
 (cond ((display-graphic-p) (menu-bar-mode -1))
       (t (mouse-avoidance-mode 'banish)))
 
