@@ -2,7 +2,7 @@
 
 EMACS_CANDIDATES="emacs-24.5 emacs-24 emacs"
 for candidate in $EMACS_CANDIDATES; do
-    for cmd in $(whereis $candidate); do
+    for cmd in $(which $candidate); do
         if [ -x "$cmd" ]; then
             unset GTK_IM_MODULE
             unset XMODIFIERS

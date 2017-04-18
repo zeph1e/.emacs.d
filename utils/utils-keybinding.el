@@ -131,8 +131,8 @@
     (define-key map (kbd "M-X") 'execute-extended-command)
 
     ;; auto-complete
-    (define-key map (kbd "C-;") 'auto-complete)
-    (define-key map (kbd "C-:") 'ac-complete-with-helm)
+    (define-key map (kbd "C-;") 'company-complete)
+    (define-key map (kbd "C-:") 'helm-company)
 
     ;; magit
     (define-key map (kbd "C-x RET C-s") 'magit-status)

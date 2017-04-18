@@ -13,16 +13,16 @@
           (daemonp))
     (setq my:can-theme my:use-theme))
 
-(defconst my:theme-function 'color-theme-tomorrow-night-eighties)
+(defconst my:theme 'tomorrow-night-eighties)
 
 (if my:can-theme
     (let ((envtheme (getenv "EMACS_THEME")))
       (if (and (stringp envtheme) ; if emacs theme is set, apply that theme to all frames
                (string-match "\\`color-theme-" envtheme)
-               (functionp (intern envtheme)))
-          (funcall (intern envtheme))
-        (when (functionp my:theme-function)
-          (funcall my:theme-function)
+               (boundp (quote (intern envtheme))))
+          (load-theme (intern envtheme))
+        (when (and (boundp 'my:theme) (symbolp my:theme))
+          (load-theme my:theme t)
           (set-face-attribute 'mode-line nil :background "olive drab" :foreground "white")
           (set-face-attribute 'mode-line-buffer-id nil :foreground "gold"))))
   (color-theme-standard))
