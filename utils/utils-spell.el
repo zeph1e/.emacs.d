@@ -7,13 +7,6 @@
       ;; force the English dictionary, support Camel Case spelling check (tested with aspell 0.6)
       ispell-extra-args '("--sug-mode=ultra" "--lang=en_US" "--run-together" "--run-together-limit=5" "--run-together-min=2"))
 
-;; check ac-ispell is available
-(define-minor-mode my:ac-ispell-ac-setup
-  "Check availability before ac-ispell-ac-setup call."
-  nil nil nil
-  (require 'ispell)
-  (and (executable-find ispell-program-name) (ac-ispell-ac-setup)))
-
 (define-minor-mode my:flyspell-mode
   "Enable flyspell-mode."
   :variable my:flyspell-mode

@@ -193,7 +193,6 @@
                              vc-mode))
 (setq text-minor-mode-list '(linum-mode
                              my:whitespace-mode
-                             my:ac-ispell-ac-setup
                              my:flyspell-mode
                              goto-address-mode))
 
