@@ -71,6 +71,7 @@
 (el-get-bundle  company-c-headers)
 (el-get-bundle  company-dict)
 (el-get-bundle  company-statistics)
+(el-get-bundle  company-web)
 (or (fboundp 'erc) (el-get-bundle  erc))
 (el-get-bundle  fill-column-indicator)
 (el-get-bundle  flyspell-popup)
@@ -145,6 +146,7 @@
 (el-get-bundle  xcscope)
 (el-get-bundle  yasnippet) (yas-global-mode t)
 (el-get-bundle  web-beautify)
+(el-get-bundle  web-mode)
 (when (eq system-type 'windows-nt) ; windows
   (el-get-bundle builtin:org-mode) (el-get-bundle org-mode)) ; just use builtin on windows
 (el-get 'sync)
@@ -237,6 +239,7 @@
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode)) ; C++, rather than C
 (add-to-list 'auto-mode-alist '("\\.\\(gp\\(i\\)?\\|plt\\)\\'" . gnuplot-mode))
 (add-to-list 'auto-mode-alist '("\\.qml\\'" . qml-mode))
+(add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
 
 ;; customization settings
 (setq custom-file "~/.emacs.d/custom.el")
