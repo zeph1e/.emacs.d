@@ -124,8 +124,7 @@
     (define-key map (kbd "C-M-r") 'helm-ag)
     (define-key map (kbd "M-R") 'helm-grep-do-git-grep)
     (define-key map (kbd "M-g s") 'helm-google-suggest)
-    (define-key map (kbd "M-t") 'helm-ls-git-ls)
-    (define-key map (kbd "M-T") 'helm-cmd-t)
+    (define-key map (kbd "M-t") 'helm-cmd-t)
 
     ;; keep original M-x
     (define-key map (kbd "M-X") 'execute-extended-command)

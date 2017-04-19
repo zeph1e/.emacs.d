@@ -69,7 +69,6 @@
 (el-get-bundle  apache-mode)
 (el-get-bundle  company-mode)
 (el-get-bundle  company-c-headers)
-(el-get-bundle  company-dict)
 (el-get-bundle  company-statistics)
 (el-get-bundle  company-tern)
 (el-get-bundle  company-web)
@@ -90,7 +89,6 @@
 (el-get-bundle  helm-descbinds)
 (el-get-bundle  helm-flyspell)
 (el-get-bundle  helm-projectile)
-(el-get-bundle  helm-ls-git)
 (el-get-bundle  iedit)
 (el-get-bundle  iman)
 (el-get-bundle  js2-mode)
@@ -178,8 +176,9 @@
 (tool-bar-mode -1)
 (add-hook 'after-init-hook 'global-company-mode)
 (add-hook 'after-init-hook 'company-statistics-mode)
-(cond ((display-graphic-p) (menu-bar-mode -1))
-      (t (mouse-avoidance-mode 'banish)))
+(when (display-graphic-p)
+  (menu-bar-mode -1)
+  (mouse-avoidance-mode 'banish))
 
 ;; el-doc
 (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
