@@ -1,4 +1,4 @@
-;;; Utils-company.el
+;;; utils-company.el
 
 ;; Written by Yunsik Jang <doomsday@kldp.org>
 ;; You can use/modify/redistribute this freely

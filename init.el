@@ -134,7 +134,6 @@
 (or (eq (plist-get (el-get-package-def 'org-mode) :type) 'builtin) (el-get-bundle org-reveal))
 (el-get-bundle  plantuml-mode)
 (el-get-bundle  popup)
-(el-get-bundle  powerline)
 (el-get-bundle  projectile)
 (el-get-bundle  qmake-mode)
 (el-get-bundle  qml-mode)
@@ -215,8 +214,7 @@
           (add-hook 'js-mode-hook mode)
           (add-hook 'sh-mode-hook mode))
         (add-hook 'qmake-mode-hook mode) ; not in prog-mode
-        (if (fboundp 'basic-mode)
-            (add-hook 'basic-mode-hook mode)))
+        )
       prog-minor-mode-list)
 
 
