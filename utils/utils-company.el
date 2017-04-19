@@ -16,4 +16,11 @@
                                 '(web-mode-hook))
 (my:add-company-backend-to-hook company-web-html sgml-mode
                                 '(sgml-mode-hook html-mode-hook))
+(my:add-company-backend-to-hook company-css web-mode
+                                '(web-mode-hook))
+(my:add-company-backend-to-hook company-tern web-mode
+                                '(web-mode-hook) (tern-mode t))
+(my:add-company-backend-to-hook company-tern js2-mode
+                                '(js2-mode-hook) (tern-mode t))
+
 (provide 'utils-company)
