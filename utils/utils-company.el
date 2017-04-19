@@ -3,24 +3,56 @@
 ;; Written by Yunsik Jang <doomsday@kldp.org>
 ;; You can use/modify/redistribute this freely
 
-(defmacro my:add-company-backend-to-hook (backend lib hooks &rest body)
-  "Macro to add company backends to certain mode hook."
-  `(eval-after-load (quote ,lib)
-     (dolist (hook ,hooks)
-       (add-hook hook (lambda ()
-                        ,@body
-                        (add-to-list (make-local-variable `company-backends)
-                                     (quote ,backend)))))))
+(defmacro my:install-company-backends (backend hook &rest body)
+  "Add company backends to hooks
 
-(my:add-company-backend-to-hook company-web-html web-mode
-                                '(web-mode-hook))
-(my:add-company-backend-to-hook company-web-html sgml-mode
-                                '(sgml-mode-hook html-mode-hook))
-(my:add-company-backend-to-hook company-css web-mode
-                                '(web-mode-hook))
-(my:add-company-backend-to-hook company-tern web-mode
-                                '(web-mode-hook) (tern-mode t))
-(my:add-company-backend-to-hook company-tern js2-mode
-                                '(js2-mode-hook) (tern-mode t))
+\(fn COMPANY-BACKEND HOOK INIT-BODY...)"
+  `(add-hook (quote ,hook)
+               (lambda ()
+                 (add-to-list (make-local-variable `company-backends)
+                              (quote ,backend))
+                 ,@body
+                 )))
+
+(eval-after-load 'company
+  '(progn
+     (setq-default company-backends
+                   '(company-capf company-files
+                     (company-keywords company-yasnippet)
+                     (company-dabbrev-code company-gtags company-etags company-abbrev)
+                     company-dabbrev))
+
+     ;; Add keys company-active-map
+     (let ((map company-active-map))
+       (define-key map (kbd "C-p") 'company-select-previous)
+       (define-key map (kbd "C-n") 'company-select-next)
+       (define-key map (kbd "C-v") 'company-next-page)
+       (define-key map (kbd "M-v") 'company-previous-page))
+
+     ;; install company backends to certain major modes
+     ;; spell
+     (my:install-company-backends company-ispell prog-mode-hook)
+     (my:install-company-backends company-ispell text-mode-hook)
+
+     ;; web
+     (my:install-company-backends company-web-html web-mode-hook)
+     (my:install-company-backends company-web-html sgml-mode-hook)
+     (my:install-company-backends company-css web-mode-hook)
+     (my:install-company-backends company-tern web-mode-hook (tern-mode t))
+     (my:install-company-backends company-tern js2-mode-hook (tern-mode t))
+     (my:install-company-backends company-nxml nxml-mode-hook)
+
+     ;; lisp
+     (my:install-company-backends company-elisp emacs-lisp-mode-hook)
+     (my:install-company-backends company-elisp lisp-interaction-mode-hook)
+     (my:install-company-backends company-elisp ielm-mode-hook)
+
+     ;; C/C++
+     (my:install-company-backends company-c-headers c-mode-hook)
+     (my:install-company-backends company-c-headers c++-mode-hook)
+     (my:install-company-backends company-c-headers objc-mode-hook)
+
+     ))
+
 
 (provide 'utils-company)
