@@ -238,7 +238,7 @@
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode)) ; C++, rather than C
 (add-to-list 'auto-mode-alist '("\\.\\(gp\\(i\\)?\\|plt\\)\\'" . gnuplot-mode))
 (add-to-list 'auto-mode-alist '("\\.qml\\'" . qml-mode))
-(add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 
 ;; customization settings
 (setq custom-file "~/.emacs.d/custom.el")
