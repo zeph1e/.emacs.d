@@ -21,16 +21,20 @@
               (error nil))
       (when (and (boundp 'my:theme) (symbolp my:theme))
         (load-theme my:theme t)
-        (set-face-attribute 'mode-line nil :background "olive drab" :foreground "white")
+        (set-face-attribute 'mode-line nil
+                            :background "olive drab"
+                            :foreground "white"
+                            :box `(:line-width 2 :color "dim gray"))
+        (set-face-attribute 'mode-line-inactive nil
+                            :box `(:line-width 2 :color ,(face-attribute
+                                                          'mode-line-inactive
+                                                          :background)))
         (set-face-attribute 'mode-line-buffer-id nil :foreground "gold")))
   (color-theme-standard))
 
-;; (when (fboundp 'powerline-default-theme)
-;;   (powerline-default-theme))
-
 ;; my custom mode-line (inspired from emacs-fu)
 (defface my:mode-line-readonly-buffer-id
-  '((t :inherit mode-line-buffer-id :background "red"))
+  '((t :inherit mode-line-buffer-id :background "red" :foreground "yellow"))
   "Used for highlight readonly buffer")
 
 (setq-default
@@ -54,29 +58,7 @@
   (propertize "%02c" 'face 'font-lock-type-face)
 
   " "
-  (propertize "%m"
-              'face 'bold
-              'help-echo
-              (mapconcat
-               (lambda (minor-mode)
-                 (let* ((minor (car minor-mode))
-                        (lighterexp (cadr minor-mode))
-                        (lighter (cond ((and (symbolp lighterexp)
-                                             (boundp lighterexp))
-                                        (symbol-value lighterexp))
-                                       ((stringp lighterexp) lighterexp)
-                                       (t (format "%s" lighterexp))))
-                        (active (ignore-errors
-                                  (and (symbolp minor)
-                                       (symbol-value minor)
-                                       minor))))
-                   (when active
-                     (if (and (listp lighter) (plist-get lighter :eval))
-                         (eval (plist-get lighter :eval))
-                       lighter))))
-               minor-mode-alist
-               ""))
-
+  (propertize "%m" 'face 'bold)
   '("" mode-line-process)
 
   " "
@@ -84,15 +66,15 @@
   " %p "
   '(:eval (propertize (if vc-mode
                           (let ((file (buffer-file-name (current-buffer))))
-                            (format "%s:%s"
-                                    (vc-backend file)
+                            (format "%s[%s]"
+                                    vc-mode
                                     (vc-working-revision file))) "")
                       'face '(:foreground "sky blue" :weight bold)))
   ))
 
 (when (display-graphic-p)
   (setq-default nyan-wavy-trail t)
-  ;; (setq-default nyan-bar-length 10)
+  (setq-default nyan-bar-length 24)
   (nyan-mode 1)
   (nyan-start-animation))
 
