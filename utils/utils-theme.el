@@ -48,7 +48,9 @@
 
   ;; buffer name
   '(:eval (propertize " %20b "
-                      'face (if buffer-read-only 'my:mode-line-readonly-buffer-id 'mode-line-buffer-id)
+                      'face (if buffer-read-only
+                                'my:mode-line-readonly-buffer-id
+                              'mode-line-buffer-id)
                       'help-echo (buffer-file-name)))
 
   " "
@@ -56,7 +58,11 @@
   (propertize "%02l" 'face 'font-lock-type-face)
   ":"
   (propertize "%02c" 'face 'font-lock-type-face)
-
+  " "
+  '(:eval (propertize (if current-input-method-title
+                          current-input-method-title
+                        "ENG")
+                      'face '(:height 0.8)))
   " "
   (propertize "%m" 'face 'bold)
   '("" mode-line-process)
@@ -65,7 +71,7 @@
   '(:eval (list (nyan-create)))
   " %p "
   '(:eval (propertize (if vc-mode vc-mode "")
-                      'face '(:foreground "sky blue" :weight bold)))
+                      'face '(:foreground "sky blue" :height 0.9 :weight bold)))
   ))
 
 (when (display-graphic-p)
