@@ -64,11 +64,7 @@
   " "
   '(:eval (list (nyan-create)))
   " %p "
-  '(:eval (propertize (if vc-mode
-                          (let ((file (buffer-file-name (current-buffer))))
-                            (format "%s[%s]"
-                                    vc-mode
-                                    (vc-working-revision file))) "")
+  '(:eval (propertize (if vc-mode vc-mode "")
                       'face '(:foreground "sky blue" :weight bold)))
   ))
 
