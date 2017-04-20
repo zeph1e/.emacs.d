@@ -117,6 +117,7 @@
     (define-key map (kbd "M-y") 'helm-show-kill-ring)
     (define-key map (kbd "C-x C-f") 'helm-find-files)
     (define-key map (kbd "C-x r b") 'helm-filtered-bookmarks)
+    (define-key map (kbd "C-x r i") 'helm-register)
     (define-key map (kbd "C-x b") 'helm-mini)
     (define-key map (kbd "C-h a") 'helm-apropos)
     (define-key map (kbd "C-h b") 'helm-descbinds)
@@ -125,6 +126,7 @@
     (define-key map (kbd "M-R") 'helm-grep-do-git-grep)
     (define-key map (kbd "M-g s") 'helm-google-suggest)
     (define-key map (kbd "M-t") 'helm-cmd-t)
+    (define-key map (kbd "C-x C-SPC") 'helm-all-mark-rings)
 
     ;; keep original M-x
     (define-key map (kbd "M-X") 'execute-extended-command)

@@ -122,6 +122,10 @@ of helm would be shrinked."
   `(helm-source-occur
     helm-ag-source
     helm-source-grep
+    helm-source-grep-git
+    helm-source-grep-ag
+    helm-source-global-mark-ring
+    helm-source-mark-ring
     ,@helm-bookmark-default-filtered-sources
     )
   "List of sources for which helm-follow-mode should be enabled")
