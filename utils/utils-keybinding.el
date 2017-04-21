@@ -63,6 +63,9 @@
 
     (define-key map (kbd "C-x x")     'delete-window) ; Window Close key-bindings
 
+    (define-key map (kbd "C-{") 'shrink-window-horizontally)
+    (define-key map (kbd "C-}") 'enlarge-window-horizontally)
+
     (define-key map (kbd "C-x C-o") 'ff-find-other-file)
 
     ;; set-fill-column updates whitespace-mode's lines-tail highlight
