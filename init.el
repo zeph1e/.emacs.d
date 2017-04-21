@@ -67,6 +67,7 @@
 ;; (el-get-bundle  ascope)
 ;; (el-get-bundle  ascope-ext)
 (el-get-bundle  apache-mode)
+(el-get-bundle  command-log-mode)
 (el-get-bundle  company-mode)
 (el-get-bundle  company-c-headers)
 (el-get-bundle  company-statistics)
