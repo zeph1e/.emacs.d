@@ -5,6 +5,13 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; basic options
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
+
 (set-language-environment "Korean")
 (setq-default
   show-paren-mode t
@@ -64,9 +71,12 @@
     (eval-print-last-sexp)))
 (add-to-list 'el-get-recipe-path "~/.emacs.d/recipes")
 
-;; (el-get-bundle  ascope)
-;; (el-get-bundle  ascope-ext)
+;; packages required to be insecure
+(let ((el-get-allow-insecure t))
+  (el-get-bundle queue)) ; required for cider but having some problem in installation
+
 (el-get-bundle  apache-mode)
+(el-get-bundle  cider)
 (el-get-bundle  command-log-mode)
 (el-get-bundle  company-mode)
 (el-get-bundle  company-c-headers)
@@ -80,7 +90,9 @@
 (el-get-bundle  framemove) (setq framemove-hook-into-windmove t)
 (el-get-bundle  franca-idl)
 (el-get-bundle  grep-a-lot)
-(el-get-bundle  gnuplot-mode :build/windows-nt (progn nil)) (or (executable-find "gnuplot") (warn "GNUPlot is not installed"))
+(if (executable-find "gnuplot")
+    (el-get-bundle  gnuplot-mode :build/windows-nt (progn nil))
+  (warn "GNUPlot is not installed"))
 (el-get-bundle  google-c-style)
 (el-get-bundle  google-translate)
 (el-get-bundle  helm)
@@ -128,10 +140,14 @@
 (el-get-bundle! markdown-preview-mode)
 (el-get-bundle  multiple-cursors)
 (el-get-bundle  nyan-mode)
+(if (eq system-type 'windows-nt) ; windows
+    (el-get-bundle builtin:org-mode) ; just use builtin on windows
+  (el-get-bundle org-mode))
 (el-get-bundle  org-present)
 (el-get-bundle  org-publish)
 (el-get-bundle  org-readme)
-(or (eq (plist-get (el-get-package-def 'org-mode) :type) 'builtin) (el-get-bundle org-reveal))
+(or (eq (plist-get (el-get-package-def 'org-mode) :type) 'builtin)
+    (el-get-bundle org-reveal))
 (el-get-bundle  plantuml-mode)
 (el-get-bundle  popup)
 (el-get-bundle  projectile)
@@ -139,16 +155,16 @@
 (el-get-bundle  qml-mode)
 (el-get-bundle! redo+)
 (el-get-bundle  rfcview)
-(el-get-bundle  screenshot) (or (executable-find "convert") (warn "ImageMagick is not installed"))
+(if (executable-find "convert")
+    (el-get-bundle  screenshot)
+  (warn "ImageMagick is not installed"))
 (el-get-bundle  tern)
 (el-get-bundle  tomorrow-theme)
 (el-get-bundle  windcycle)
 (el-get-bundle  xcscope)
-(el-get-bundle  yasnippet) (yas-global-mode t)
+(el-get-bundle  yasnippet)
 (el-get-bundle  web-beautify)
 (el-get-bundle  web-mode)
-(when (eq system-type 'windows-nt) ; windows
-  (el-get-bundle builtin:org-mode) (el-get-bundle org-mode)) ; just use builtin on windows
 (el-get 'sync)
 
 ;; load files in utils/
@@ -175,6 +191,7 @@
 (show-paren-mode)
 (global-hl-line-mode t) ; highlight current line
 (tool-bar-mode -1)
+(yas-global-mode t)
 (add-hook 'after-init-hook 'global-company-mode)
 (add-hook 'after-init-hook 'company-statistics-mode)
 (when (display-graphic-p)
