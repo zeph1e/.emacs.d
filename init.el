@@ -105,6 +105,7 @@
 (el-get-bundle  helm-projectile)
 (el-get-bundle  iedit)
 (el-get-bundle  iman)
+(el-get-bundle  javadoc-lookup)
 (el-get-bundle  js2-mode)
 (el-get-bundle  js2-highlight-vars)
 (el-get-bundle  js2-refactor)

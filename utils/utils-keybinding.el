@@ -152,6 +152,9 @@
     ;; read-only
     (define-key map (kbd "C-x C-q") 'my:read-only-mode) ; override default key
     (define-key map (kbd "<f12>") 'my:read-only-mode)
+
+    ;; javadoc
+    (define-key map (kbd "C-h j") 'javadoc-lookup)
     map)
   "global key mode keymap")
 
