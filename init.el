@@ -196,9 +196,8 @@
 (yas-global-mode t)
 (add-hook 'after-init-hook 'global-company-mode)
 (add-hook 'after-init-hook 'company-statistics-mode)
-(when (display-graphic-p)
-  (menu-bar-mode -1)
-  (mouse-avoidance-mode 'banish))
+(menu-bar-mode -1)
+
 
 ;; el-doc
 (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
