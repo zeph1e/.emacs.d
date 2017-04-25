@@ -17,7 +17,7 @@
 (eval-after-load 'company
   '(progn
      (setq-default company-backends
-                   '(company-capf company-files
+                   '(company-capf company-files company-ispell
                      (company-keywords company-yasnippet)
                      (company-dabbrev-code company-gtags company-etags company-abbrev)
                      company-dabbrev))
@@ -30,10 +30,6 @@
        (define-key map (kbd "M-v") 'company-previous-page))
 
      ;; install company backends to certain major modes
-     ;; spell
-     (my:install-company-backends company-ispell prog-mode-hook)
-     (my:install-company-backends company-ispell text-mode-hook)
-
      ;; web
      (my:install-company-backends company-web-html web-mode-hook)
      (my:install-company-backends company-web-html sgml-mode-hook)
