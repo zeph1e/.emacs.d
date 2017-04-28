@@ -2,7 +2,7 @@
 Type=Application
 Name=EmacsClient
 MimeType=text/plane
-Exec=/home/ysjang/.local/bin/edit %F
+Exec=edit %F
 NoDisplay=true
 StartupNotify=false
 Icon=emacs
