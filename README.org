@@ -19,7 +19,7 @@ This repository contains the emacs configuration currently I'm using. It is bein
 Run following command on Ubuntu:
 
 : $ sudo apt-get install git qt5-qmake cscope gnuplot nodejs-legacy \
-:   npm markdown openjdk-7-jre texlive-latex-recommended texlive-latex-extra \
+:   npm markdown default-jre texlive-latex-recommended texlive-latex-extra \
 :   texlive-fonts-recommended texlive-base texlive-latex-base imagemagick \
 :   silversearcher-ag
 
