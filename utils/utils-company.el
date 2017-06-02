@@ -16,10 +16,15 @@
 
 (eval-after-load 'company
   '(progn
+     (setq-default company-ispell-available t)
      (setq-default company-backends
-                   '(company-capf company-files company-ispell
-                     (company-keywords company-yasnippet)
-                     (company-dabbrev-code company-gtags company-etags company-abbrev)
+                   '(my:company-ispell company-capf
+                     (company-yasnippet
+                      company-dabbrev-code
+                      company-gtags
+                      company-etags
+                      :with company-keywords)
+                     company-files
                      company-dabbrev))
 
      ;; Add keys company-active-map
@@ -53,5 +58,18 @@
      (my:install-company-backends company-anaconda python-mode-hook)
      ))
 
+
+(defun my:company-ispell (command &optional arg &rest ignored)
+  "`company-ispell' wrapper to enable it only for text."
+  (interactive (list 'interactive))
+  (let ((face (face-at-point))
+        (face-to-activate '(font-lock-doc-face
+                            font-lock-comment-face
+                            font-lock-string-face
+                            flyspell-duplicate
+                            flyspell-incorrect)))
+    (when (or (derived-mode-p 'text-mode)
+            (member face face-to-activate))
+      (company-ispell command arg ignored))))
 
 (provide 'utils-company)
