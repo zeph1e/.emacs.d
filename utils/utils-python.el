@@ -4,8 +4,8 @@
 ;; You can use/modify/redistribute this freely.
 
 ;; rather to use python3.x
-(setq python-shell-interpreter (or (executable-find "python3")
-                                   "python"))
+(setq python-shell-interpreter
+      (or (executable-find "python3") "python"))
 
 ;; anaconda-mode settings
 
