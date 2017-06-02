@@ -111,17 +111,19 @@
 
 (with-eval-after-load 'company-c-headers
   (setq-default company-c-headers-path-system
-                (my:flatten
-                 (list company-c-headers-path-system
-                       (mapcar (lambda (s) (my:company-find-headers-subdir
-                                            s "[A-Za-z0-9-_]+\\-[0-9.]+"))
-                               company-c-headers-path-system)
-                       (my:company-find-headers-std "c")
-                       (my:company-find-headers-std "c++")
-                       (my:company-find-headers-qt)
-                       (mapcar (lambda (s) (my:company-find-headers-subdir
-                                            s "Qt[A-za-z]+"))
-                               (my:company-find-headers-qt))))))
+                (delete-dups
+                 (my:flatten
+                  (list (mapcar (lambda (s) (string-remove-suffix "/" s))
+                                company-c-headers-path-system)
+                        (mapcar (lambda (s) (my:company-find-headers-subdir
+                                             s "[A-Za-z0-9-_]+\\-[0-9.]+"))
+                                company-c-headers-path-system)
+                        (my:company-find-headers-std "c")
+                        (my:company-find-headers-std "c++")
+                        (my:company-find-headers-qt)
+                        (mapcar (lambda (s) (my:company-find-headers-subdir
+                                             s "Qt[A-za-z]+"))
+                                (my:company-find-headers-qt)))))))
 
 
 (provide 'utils-company)
