@@ -16,6 +16,14 @@
 (add-hook 'python-mode-hook 'anaconda-mode)
 (add-hook 'python-mode-hook 'anaconda-eldoc-mode)
 
+(defadvice python-shell-send-buffer (after my:python-shell-send-buffer)
+  "Advice function for `python-shell-send-buffer' to show python buffer."
+  (interactive)
+  (let ((buffer-name (format "*%s*" python-shell-buffer-name)))
+    (when (null (get-buffer-window buffer-name))
+      (display-buffer buffer-name))))
+(ad-activate 'python-shell-send-buffer)
+
 ;; A workaround for emacs bug in python-shell-completion-native-try (fixed in 25.2rc)
 ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=25753#44
 (with-eval-after-load 'python

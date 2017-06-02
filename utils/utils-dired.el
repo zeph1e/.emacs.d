@@ -64,17 +64,4 @@ Key bindings:
   nil nil my:dired-mode-keymap)
 (add-hook 'dired-mode-hook 'my:dired-mode)
 
-;; (define-minor-mode my:magit-branch-mode
-;; "Show git branch if it's in git controlled directory."
-;;   nil nil nil
-;;   (add-to-list 'mode-line-position '(:eval
-;;     (let ((branch
-;;       (with-temp-buffer
-;;         (if (= (process-file "git" nil t nil "rev-parse" "--abbrev-ref" "HEAD") 0)
-;; 	  (unless (= (point-min) (point-max))
-;; 	    (goto-char (point-min))
-;; 	    (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))))
-;;       (if branch (format "GIT[%s]" branch)))) 'append))
-;; (add-hook 'dired-after-readin-hook 'my:magit-branch-mode)
-
 (provide 'utils-dired)
