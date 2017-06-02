@@ -75,6 +75,9 @@
 (let ((el-get-allow-insecure t))
   (el-get-bundle queue)) ; required for cider but having some problem in installation
 
+(if (executable-find "pip")
+    (el-get-bundle  anaconda-mode)
+  (warn "pip is not installed"))
 (el-get-bundle  apache-mode)
 (el-get-bundle  cider)
 (el-get-bundle  command-log-mode)
