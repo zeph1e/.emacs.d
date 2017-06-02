@@ -72,4 +72,56 @@
             (member face face-to-activate))
       (company-ispell command arg ignored))))
 
+;;
+;; company-c-headers settings
+;;
+(defun my:flatten (x)
+  (cond ((null x) nil)
+        ((listp x) (append (my:flatten (car x)) (my:flatten (cdr x))))
+        (t (list x))))
+
+(defun my:filter-list (condp list)
+  (delq nil (mapcar (lambda (x) (and (funcall condp x) x)) list)))
+
+(defun my:company-find-headers-qt ()
+  "Find include paths of qt headers."
+  (when (executable-find "qmake")
+    (split-string
+     (shell-command-to-string "qmake -query QT_INSTALL_HEADERS"))))
+
+(defun my:company-find-headers-std (lang)
+  "Find compiler specific include paths."
+  (let ((compiler (or (getenv "CC")
+                      (executable-find "gcc")
+                      (and (interactive-p)
+                           (error "No compiler found!")))))
+    (with-temp-buffer
+      (when (zerop (call-process compiler nil (current-buffer) nil
+                                 (concat "-x" (downcase lang))
+                                 "-E" "-v" "-"))
+        (my:filter-list (lambda (s) (and (string-prefix-p "/" s)
+                                         (file-directory-p s)))
+                        (mapcar 'string-trim
+                                (split-string (buffer-string) "\n")))))))
+
+(defun my:company-find-headers-subdir (parent-directory pattern)
+  "Searches sub-directories to add to include path."
+  (my:filter-list 'file-directory-p
+                  (directory-files parent-directory t pattern)))
+
+(with-eval-after-load 'company-c-headers
+  (setq-default company-c-headers-path-system
+                (my:flatten
+                 (list company-c-headers-path-system
+                       (mapcar (lambda (s) (my:company-find-headers-subdir
+                                            s "[A-Za-z0-9-_]+\\-[0-9.]+"))
+                               company-c-headers-path-system)
+                       (my:company-find-headers-std "c")
+                       (my:company-find-headers-std "c++")
+                       (my:company-find-headers-qt)
+                       (mapcar (lambda (s) (my:company-find-headers-subdir
+                                            s "Qt[A-za-z]+"))
+                               (my:company-find-headers-qt))))))
+
+
 (provide 'utils-company)

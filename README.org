@@ -10,18 +10,19 @@ This repository contains the emacs configuration currently I'm using. It is bein
  - gnuplot, the graphing utility
  - nodejs / npm for web-beautify
  - markdown for markdown-preview
- - JRE for plantuml
+ - JRE for plantuml and cider
  - texlive (on Ubuntu) for PDF export from org-mode
  - ImageMagick for screenshot
  - The Silver Searcher for AG integration
+ - Pip for anaconda-mode
  - plink (Windows only)
 
 Run following command on Ubuntu:
 
-: $ sudo apt-get install git qt5-qmake cscope gnuplot nodejs-legacy \
+: $ sudo apt-get install git qt5-default qt5-qmake cscope gnuplot nodejs-legacy \
 :   npm markdown default-jre texlive-latex-recommended texlive-latex-extra \
 :   texlive-fonts-recommended texlive-base texlive-latex-base imagemagick \
-:   silversearcher-ag
+:   silversearcher-ag python-pip
 
 *** Emacs and Git version
 
