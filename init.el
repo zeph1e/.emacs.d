@@ -76,7 +76,9 @@
   (el-get-bundle queue)) ; required for cider but having some problem in installation
 
 (if (executable-find "pip")
-    (el-get-bundle  anaconda-mode)
+    (progn
+      (el-get-bundle anaconda-mode)
+      (el-get-bundle company-anaconda))
   (warn "pip is not installed"))
 (el-get-bundle  apache-mode)
 (el-get-bundle  cider)

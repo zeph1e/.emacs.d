@@ -10,7 +10,7 @@
   `(add-hook (quote ,hook)
                (lambda ()
                  (add-to-list (make-local-variable `company-backends)
-                              (quote ,backend))
+                              (quote (,backend :with company-capf)))
                  ,@body
                  )))
 
@@ -49,6 +49,8 @@
      (my:install-company-backends company-c-headers c++-mode-hook)
      (my:install-company-backends company-c-headers objc-mode-hook)
 
+     ;; python
+     (my:install-company-backends company-anaconda python-mode-hook)
      ))
 
 
