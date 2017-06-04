@@ -93,6 +93,7 @@
   "Find compiler specific include paths."
   (let ((compiler (or (getenv "CC")
                       (executable-find "gcc")
+                      (executable-find "clang")
                       (and (interactive-p)
                            (error "No compiler found!")))))
     (with-temp-buffer
@@ -101,7 +102,7 @@
                                  "-E" "-v" "-"))
         (my:filter-list (lambda (s) (and (string-prefix-p "/" s)
                                          (file-directory-p s)))
-                        (mapcar 'string-trim
+                        (mapcar (lambda (s) (file-truename (string-trim s)))
                                 (split-string (buffer-string) "\n")))))))
 
 (defun my:company-find-headers-subdir (parent-directory pattern)
