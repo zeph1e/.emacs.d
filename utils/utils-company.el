@@ -107,15 +107,17 @@
 
 (defun my:company-find-headers-subdir (parent-directory pattern)
   "Searches sub-directories to add to include path."
-  (my:filter-list 'file-directory-p
-                  (directory-files parent-directory t pattern)))
+  (when (file-directory-p parent-directory)
+    (my:filter-list 'file-directory-p
+                    (directory-files parent-directory t pattern))))
 
 (with-eval-after-load 'company-c-headers
   (setq-default company-c-headers-path-system
                 (delete-dups
                  (my:flatten
                   (list (mapcar (lambda (s) (string-remove-suffix "/" s))
-                                company-c-headers-path-system)
+                                (my:filter-list 'file-directory-p
+                                                company-c-headers-path-system))
                         (mapcar (lambda (s) (my:company-find-headers-subdir
                                              s "[A-Za-z0-9-_]+\\-[0-9.]+"))
                                 company-c-headers-path-system)
