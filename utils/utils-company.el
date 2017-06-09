@@ -62,7 +62,7 @@
 (defun my:company-ispell (command &optional arg &rest ignored)
   "`company-ispell' wrapper to enable it only for text."
   (interactive (list 'interactive))
-  (let ((face (face-at-point))
+  (let ((face (face-at-point 'word))
         (face-to-activate '(font-lock-doc-face
                             font-lock-comment-face
                             font-lock-string-face
