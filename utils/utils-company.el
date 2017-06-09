@@ -69,7 +69,11 @@
                             flyspell-duplicate
                             flyspell-incorrect)))
     (when (or (derived-mode-p 'text-mode)
-            (member face face-to-activate))
+              (member face face-to-activate)
+              (when (eq (face-at-point 'word) 'whitespace-trailing)
+                (save-excursion
+                  (backward-word)
+                  (member (face-at-point 'word) face-to-activate))))
       (company-ispell command arg ignored))))
 
 ;;
