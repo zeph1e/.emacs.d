@@ -97,4 +97,9 @@ minibuffer), then split the current window horizontally."
         (whitespace-mode t))
     (whitespace-mode -1)))
 
+(with-eval-after-load 'fill-column-indicator
+  (setq fci-rule-color "maroon4")
+  (setq fci-rule-column nil)
+  (setq fci-rule-width 1))
+
 (provide 'utils-editor)

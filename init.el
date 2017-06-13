@@ -217,11 +217,13 @@
 (setq prog-minor-mode-list '(linum-mode
                              my:whitespace-mode
                              my:flyspell-mode
+                             fci-mode
                              goto-address-prog-mode
                              vc-mode))
 (setq text-minor-mode-list '(linum-mode
                              my:whitespace-mode
                              my:flyspell-mode
+                             fci-mode
                              goto-address-mode))
 
 ;; enable minor modes for prog-mode(there's a case of that prog-mode is nil)

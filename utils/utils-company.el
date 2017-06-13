@@ -132,5 +132,9 @@
                                              s "Qt[A-za-z]+"))
                                 (my:company-find-headers-qt)))))))
 
+(defun my:company-fci-workaround (command)
+  (cond ((string= command "show") (turn-off-fci-mode))
+        ((string= command "hide") (turn-on-fci-mode))))
+(advice-add 'company-call-frontends :before #'my:company-fci-workaround)
 
 (provide 'utils-company)
