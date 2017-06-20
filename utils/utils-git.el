@@ -18,4 +18,7 @@
         (setq-local buffer-read-only nil)))))
 (ad-activate 'magit-ediff-resolve)
 
+;; handle URL in git-revision
+(add-hook 'magit-revision-mode-hook 'goto-address-mode)
+
 (provide 'utils-git)
