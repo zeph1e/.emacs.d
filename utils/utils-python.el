@@ -36,4 +36,13 @@
        (get-buffer-process (current-buffer))
        nil "_"))))
 
+;; python key map settings
+(with-eval-after-load 'python
+  (let ((map python-mode-map))
+    (define-key map (kbd "C-c C-.") 'python-indent-shift-right)
+    (define-key map (kbd "C-c C-,") 'python-indent-shift-left)
+    ;; in term, C-,/C-. will not be delivered
+    (define-key map (kbd "C-c .") 'python-indent-shift-right)
+    (define-key map (kbd "C-c ,") 'python-indent-shift-left)))
+
 (provide 'utils-python)
