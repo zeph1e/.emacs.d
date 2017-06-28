@@ -137,13 +137,13 @@ minibuffer), then split the current window horizontally."
 (defconst my:clipboard-copy-cmd-candidates
   '((darwin . "pbcopy")
     (cygwin . "putclip")
-    (gnu/linux . ("xsel" . "-i")))
+    (gnu/linux . ("xsel" . "-ib")))
   "Candidate commands to copy region to system-wide clipboard in CUI-mode.")
 
 (defconst my:clipboard-paste-cmd-candidates
   '((darwin . "pbpaste")
     (cygwin . "getclip")
-    (gnu/linux . "xsel"))
+    (gnu/linux . ("xsel". "-ob")))
   "Candidate command to paste text from system-wide clipboard in CUI-mode.")
 
 (defun my:clipboard--get-cmd-internal (candidate-alist)
