@@ -97,12 +97,6 @@ minibuffer), then split the current window horizontally."
         (whitespace-mode t))
     (whitespace-mode -1)))
 
-(with-eval-after-load 'fill-column-indicator
-  (setq fci-handle-truncate-lines nil)
-  (setq fci-rule-color "maroon4")
-  (setq fci-rule-column nil)
-  (setq fci-rule-width 1))
-
 ;; Disable fci-mode if the window is smaller than fill-column
 (defvar my:fci-mode-suppressed nil)
 (make-local-variable 'my:fci-mode-suppressed)
@@ -113,16 +107,12 @@ minibuffer), then split the current window horizontally."
 (defvar my:fci-selected-window nil
   "Selected window to trace changes in window selection.")
 
-(defun my:suppress-fci-mode-in-narrow-window (&optional frame-or-window)
-  (let* ((window (cond ((framep frame-or-window)
-                        (with-selected-frame frame-or-window
-                          (selected-window)))
-                       ((windowp frame-or-window) frame-or-window)
-                       ((null frame-or-window)
-                             (selected-window))))
+(defun my:suppress-fci-mode-in-narrow-window ()
+  (let* ((window (selected-window))
          (width (window-body-width window)))
     (with-current-buffer (window-buffer window)
-      (if fci-mode
+      (if (and (boundp fci-mode)
+               fci-mode)
           (when (and (null fci-handle-truncate-lines)
                      (<= width (1+ fill-column)))
             (setq my:fci-mode-suppressed t)
@@ -131,8 +121,14 @@ minibuffer), then split the current window horizontally."
           (setq my:fci-mode-suppressed nil)
           (turn-on-fci-mode))))))
 
-(add-hook 'window-configuration-change-hook
-          'my:suppress-fci-mode-in-narrow-window)
+;; Setting fci-mode variables
+(with-eval-after-load 'fill-column-indicator
+  (setq fci-handle-truncate-lines nil)
+  (setq fci-rule-color "maroon4")
+  (setq fci-rule-column nil)
+  (setq fci-rule-width 1)
+  (add-hook 'window-configuration-change-hook
+            'my:suppress-fci-mode-in-narrow-window))
 
 ;; share clipboard even in terminal
 ;; http://blog.binchen.org/posts/copypaste-in-emacs.html
