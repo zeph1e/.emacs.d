@@ -107,24 +107,32 @@ minibuffer), then split the current window horizontally."
 (defvar my:fci-mode-suppressed nil)
 (make-local-variable 'my:fci-mode-suppressed)
 
-(defun my:suppress-fci-mode-in-narrow-window (frame-or-window)
+(defvar my:fci-selected-frame nil
+  "Selected frame to trace changes in frame selection.")
+
+(defvar my:fci-selected-window nil
+  "Selected window to trace changes in window selection.")
+
+(defun my:suppress-fci-mode-in-narrow-window (&optional frame-or-window)
   (let* ((window (cond ((framep frame-or-window)
                         (with-selected-frame frame-or-window
                           (selected-window)))
-                       ((windowp frame-or-window) frame-or-window)))
+                       ((windowp frame-or-window) frame-or-window)
+                       ((null frame-or-window)
+                             (selected-window))))
          (width (window-body-width window)))
     (with-current-buffer (window-buffer window)
       (if fci-mode
-          (when (<= width (1+ fill-column))
+          (when (and (null fci-handle-truncate-lines)
+                     (<= width (1+ fill-column)))
             (setq my:fci-mode-suppressed t)
             (turn-off-fci-mode))
         (when my:fci-mode-suppressed
           (setq my:fci-mode-suppressed nil)
           (turn-on-fci-mode))))))
 
-(add-to-list 'window-size-change-functions
-             'my:suppress-fci-mode-in-narrow-window)
-
+(add-hook 'window-configuration-change-hook
+          'my:suppress-fci-mode-in-narrow-window)
 
 ;; share clipboard even in terminal
 ;; http://blog.binchen.org/posts/copypaste-in-emacs.html
