@@ -155,6 +155,11 @@
 
     ;; javadoc
     (define-key map (kbd "C-h j") 'javadoc-lookup)
+
+    ;; copy & paste to clipboard
+    (define-key map (kbd "C-z C-z") #'my:copy-to-clipboard)
+    (define-key map (kbd "C-z C-y") #'my:paste-from-clipboard)
+
     map)
   "global key mode keymap")
 

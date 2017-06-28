@@ -103,4 +103,111 @@ minibuffer), then split the current window horizontally."
   (setq fci-rule-column nil)
   (setq fci-rule-width 1))
 
+;; Disable fci-mode if the window is smaller than fill-column
+(defvar my:fci-mode-suppressed nil)
+(make-local-variable 'my:fci-mode-suppressed)
+
+(defun my:suppress-fci-mode-in-narrow-window (frame-or-window)
+  (let* ((window (cond ((framep frame-or-window)
+                        (with-selected-frame frame-or-window
+                          (selected-window)))
+                       ((windowp frame-or-window) frame-or-window)))
+         (width (window-body-width window)))
+    (with-current-buffer (window-buffer window)
+      (if fci-mode
+          (when (<= width (1+ fill-column))
+            (setq my:fci-mode-suppressed t)
+            (turn-off-fci-mode))
+        (when my:fci-mode-suppressed
+          (setq my:fci-mode-suppressed nil)
+          (turn-on-fci-mode))))))
+
+(add-to-list 'window-size-change-functions
+             'my:suppress-fci-mode-in-narrow-window)
+
+
+;; share clipboard even in terminal
+;; http://blog.binchen.org/posts/copypaste-in-emacs.html
+(defvar my:clipboard-copy-cmd nil
+  "Clipboard integration command to share system clipboard in CUI-mode.")
+
+(defvar my:clipboard-paste-cmd nil
+  "Clipboard integration command to share system clipboard in CUI-mode.")
+
+(defconst my:clipboard-copy-cmd-candidates
+  '((darwin . "pbcopy")
+    (cygwin . "putclip")
+    (gnu/linux . ("xsel" . "-i")))
+  "Candidate commands to copy region to system-wide clipboard in CUI-mode.")
+
+(defconst my:clipboard-paste-cmd-candidates
+  '((darwin . "pbpaste")
+    (cygwin . "getclip")
+    (gnu/linux . "xsel"))
+  "Candidate command to paste text from system-wide clipboard in CUI-mode.")
+
+(defun my:clipboard--get-cmd-internal (candidate-alist)
+  (let ((candidate (assoc system-type candidate-alist))
+        executable
+        args)
+    (unless candidate
+      (error (format "Unsupported system-type %s" system-type)))
+    (cond ((listp (cdr candidate))
+           (setq executable (cadr candidate))
+           (setq args (cddr candidate)))
+          ((stringp (cdr candidate))
+           (setq executable (cdr candidate)))
+          (t (error (format "Unrecognized command : %s"
+                            (cdr candidate)))))
+    (unless (executable-find executable)
+      (error (format "Unable to find an executable : %s"
+                     executable)))
+    (cdr candidate)))
+
+(defun my:clipboard-get-cmd (type)
+  "Return clipboard copy & paste command."
+  (cond ((eq type 'copy)
+         (or my:clipboard-copy-cmd
+             (setq my:clipboard-copy-cmd
+                   (my:clipboard--get-cmd-internal
+                    my:clipboard-copy-cmd-candidates))))
+        ((eq type 'paste)
+         (or my:clipboard-paste-cmd
+             (setq my:clipboard-paste-cmd
+                   (my:clipboard--get-cmd-internal
+                    my:clipboard-paste-cmd-candidates))))
+        (t (error (format "Unsupported command type : %s" type)))))
+
+(defun my:copy-to-clipboard ()
+  "Copy selected region into clipboard."
+  (interactive)
+  (when (region-active-p)
+    (if (and (display-graphic-p) x-select-enable-clipboard)
+        (x-set-selection 'CLIPBOARD
+                         (buffer-substring (region-beginning) (region-end)))
+      (let* ((cmd (my:clipboard-get-cmd 'copy))
+             (exec (if (listp cmd) (car cmd) cmd))
+             (arg (if (listp cmd) (cdr cmd)))
+             (args (list (region-beginning)
+                         (region-end)
+                         exec nil 0 nil)))
+        (when arg
+          (setq args (append args (list arg))))
+        (apply #'call-process-region args)))
+    (deactivate-mark)))
+
+(defun my:paste-from-clipboard ()
+  "Paste text from clipboard."
+  (interactive)
+  (insert
+   (if (and (display-graphic-p) x-select-enable-clipboard)
+       (x-get-selection 'CLIPBOARD)
+     (or (let* ((cmd (my:clipboard-get-cmd 'paste))
+                (exec (if (listp cmd) (car cmd) cmd))
+                (arg (if (listp cmd) (cdr cmd)))
+                (args (list exec nil (current-buffer) nil)))
+           (with-temp-buffer
+             (apply #'call-process args)
+             (buffer-string)) "")))))
+
 (provide 'utils-editor)
