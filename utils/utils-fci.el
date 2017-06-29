@@ -78,7 +78,9 @@
   (add-hook 'buffer-list-update-hook
             'my:fci-activate-focused)
   (add-to-list 'window-size-change-functions
-               'my:fci-activate-focused))
+               'my:fci-activate-focused)
+  (add-hook 'focus-in-hook
+            'my:fci-activate-focused))
 
 
 (provide 'utils-fci)
