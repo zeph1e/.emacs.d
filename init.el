@@ -31,6 +31,12 @@
   (setq coding-system-for-write 'utf-8))
 
 (ignore-errors
+  (when (display-graphic-p)
+    (let ((korean-font "NanumGothicCoding-10"))
+      (set-face-font 'default "Lucida Console-10")
+      (set-fontset-font "fontset-default" '(#x1100 . #xffdc) korean-font)
+      (set-fontset-font "fontset-default" '(#xe0bc . #xf66e) korean-font)))
+
   (let ((warning-minimum-level :emergency)) ; a kinda tricky way to suppress warning
     (require 'server)
     (unless (server-running-p)
@@ -40,26 +46,15 @@
         (defun server-ensure-safe-dir (dir) "Noop" t))
       (server-start) ; start server
       (when (processp server-process)
-          (process-put server-process :as (cond ((daemonp) 'daemon)
-                                                 ((display-graphic-p) 'gui)
-                                                 (t 'tty)))
-          (process-put server-process :terminal (frame-terminal))
-          (process-put server-process :frame (selected-frame))
-          (process-put server-process :children '()))))
-  (when (display-graphic-p)
-    (let ((korean-font "NanumGothicCoding-10"))
-      (set-face-font 'default "Lucida Console-10")
-      (set-fontset-font "fontset-default" '(#x1100 . #xffdc) korean-font)
-      (set-fontset-font "fontset-default" '(#xe0bc . #xf66e) korean-font))))
+        (process-put server-process :as (cond ((daemonp) 'daemon)
+                                              ((display-graphic-p) 'gui)
+                                              (t 'tty)))
+        (process-put server-process :terminal (frame-terminal))
+        (process-put server-process :frame (selected-frame))
+        (process-put server-process :children '())))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; package initialization
-
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
-(package-initialize)
 
 ;; el-get initialization
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
@@ -86,7 +81,6 @@
 (el-get-bundle  company-mode)
 (el-get-bundle  company-c-headers)
 (el-get-bundle  company-statistics)
-(el-get-bundle  company-tern)
 (el-get-bundle  company-web)
 (or (fboundp 'erc) (el-get-bundle  erc))
 (el-get-bundle  fill-column-indicator)
@@ -166,15 +160,18 @@
     (el-get-bundle  screenshot)
   (warn "ImageMagick is not installed"))
 (if (executable-find "npm")
-    (el-get-bundle  tern)
+    (progn
+      (el-get-bundle  company-tern)
+      (el-get-bundle  tern)
+      (el-get-bundle  web-beautify))
   (warn "npm is not being installed"))
 (el-get-bundle  tomorrow-theme)
 (el-get-bundle  windcycle)
 (el-get-bundle  xcscope)
 (el-get-bundle  yasnippet)
-(el-get-bundle  web-beautify)
 (el-get-bundle  web-mode)
 (el-get 'sync)
+(package-initialize)
 
 ;; load files in utils/
 (when (file-exists-p "~/.emacs.d/utils")
