@@ -69,10 +69,12 @@
 
 ;; Setting fci-mode variables
 (with-eval-after-load 'fill-column-indicator
-  (setq fci-handle-truncate-lines nil)
-  (setq fci-rule-color "maroon4")
-  (setq fci-rule-column nil)
-  (setq fci-rule-width 1)
+  (setq fci-handle-truncate-lines nil
+        fci-rule-color "maroon4"
+        fci-rule-column nil
+        fci-rule-width 1)
+
+  ;; adding hooks to enable fci only in selected window's buffer
   (add-hook 'window-configuration-change-hook
             'my:fci-activate-focused)
   (add-hook 'buffer-list-update-hook
