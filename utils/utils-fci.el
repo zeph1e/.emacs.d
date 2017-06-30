@@ -6,8 +6,11 @@
 ;; Disable fci-mode if the window is smaller than fill-column
 (defvar my:fci-mode-suppressed nil)
 
-(defvar my:fci-selected-window nil
-  "Selected window to trace changes in window selection.")
+(defvar my:fci-previous-window nil
+  "Previous window to trace changes in window selection.")
+
+(defvar my:fci-previous-buffer nil
+  "Previous buffer to trace change in selected window's buffer.")
 
 (defun my:fci-narrow-window-p (window-or-frame)
   (let* ((window (cond ((framep window-or-frame)
@@ -53,19 +56,30 @@
          (window (cond ((windowp frame-or-window) frame-or-window)
                        (t (with-selected-frame frame
                             (selected-window)))))
-         (buffer-to-clear  (unless (or (null my:fci-selected-window)
-                                       (eq my:fci-selected-window window))
-                             (window-buffer my:fci-selected-window))))
-    ;; clear fci-overlays in background buffer
+         (buffer-to-clear
+          (when (and (windowp my:fci-previous-window)
+                     (buffer-live-p my:fci-previous-buffer)
+                     (or (not (eq my:fci-previous-window window))
+                         (not (eq my:fci-previous-buffer
+                                  (window-buffer window)))))
+            my:fci-previous-buffer)))
+    ;; Suppress fci in background buffer
     (when (and (bufferp buffer-to-clear)
-               (not (eq buffer-to-clear (window-buffer (selected-window)))))
+               (not (eq buffer-to-clear (window-buffer window))))
       (with-current-buffer buffer-to-clear
         (my:fci-suppress)))
-    (if (and (eq my:fci-selected-window window)
+    ;; Handle when widows size got narrowed too much or widen enough
+    (if (and (eq my:fci-previous-window window)
              (my:fci-narrow-window-p window))
         (my:fci-suppress)
       (my:fci-activate))
-    (setq my:fci-selected-window window)))
+
+    ;; Only record the focus changes in fci-aware buffers
+    (with-current-buffer (window-buffer window)
+      (when (or my:fci-mode-suppressed
+                fci-mode)
+        (setq my:fci-previous-window window
+              my:fci-previous-buffer (current-buffer))))))
 
 ;; Setting fci-mode variables
 (with-eval-after-load 'fill-column-indicator
