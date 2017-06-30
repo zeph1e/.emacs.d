@@ -94,14 +94,22 @@
   (warn "GNUPlot is not installed"))
 (el-get-bundle  google-c-style)
 (el-get-bundle  google-translate)
-(el-get-bundle  helm)
+(el-get-bundle  helm
+  :build
+  (("sed" "-i"
+    "s/mode-line-in-non-selected-window/mode-line-in-non-selected-window t/"
+    "helm-elisp.el" "helm.el")
+   ("sed" "-i"
+    "s:^ELPA_DIR:LOADPATH\\ +=\\ -L\\ \\$(HOME)/.emacs.d/el-get/emacs-async\\nELPA_DIR:g"
+    "Makefile")
+   ("make")))
 (el-get-bundle  helm-ag)
 (el-get-bundle  helm-cider)
 (el-get-bundle  helm-cmd-t)
 (el-get-bundle  helm-company)
 (el-get-bundle  helm-descbinds)
 (el-get-bundle  helm-flyspell)
-(el-get-bundle  helm-projectile)
+(el-get-bundle  helm-projectile :checkout "1af5979")
 (el-get-bundle  iedit)
 (el-get-bundle  iman)
 (el-get-bundle  javadoc-lookup)
