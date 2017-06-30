@@ -89,7 +89,7 @@
 (el-get-bundle  helm
   :build
   `(("sed" "-i"
-     "s/mode-line-in-non-selected-window/mode-line-in-non-selected-windows t/g"
+     "s/mode-line-in-non-selected-windows//g"
      "helm-elisp.el" "helm.el")
     ("make" ,(format "ASYNC_ELPA_DIR=%s"
                      (el-get-package-directory 'emacs-async)))))
