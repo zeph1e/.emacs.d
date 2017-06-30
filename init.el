@@ -15,7 +15,7 @@
   )
 
 (setq
-  truncate-partial-width-windows nil ; do not wrap
+  truncate-partial-width-windows nil ; do not truncate
   visible-bell t ; ring a visible bell
   make-backup-files nil ; no backup files
   inhibit-startup-screen t ; no startup screen
@@ -70,11 +70,6 @@
 (let ((el-get-allow-insecure t))
   (el-get-bundle queue)) ; required for cider but having some problem in installation
 
-(if (executable-find "pip")
-    (progn
-      (el-get-bundle anaconda-mode)
-      (el-get-bundle company-anaconda))
-  (warn "pip is not installed"))
 (el-get-bundle  apache-mode)
 (el-get-bundle  cider)
 (el-get-bundle  command-log-mode)
@@ -89,9 +84,6 @@
 (el-get-bundle  framemove) (setq framemove-hook-into-windmove t)
 (el-get-bundle  franca-idl)
 (el-get-bundle  grep-a-lot)
-(if (executable-find "gnuplot")
-    (el-get-bundle  gnuplot-mode :build/windows-nt (progn nil))
-  (warn "GNUPlot is not installed"))
 (el-get-bundle  google-c-style)
 (el-get-bundle  google-translate)
 (el-get-bundle  helm
@@ -164,22 +156,34 @@
 (el-get-bundle  qml-mode)
 (el-get-bundle! redo+)
 (el-get-bundle  rfcview)
-(if (executable-find "convert")
-    (el-get-bundle  screenshot)
-  (warn "ImageMagick is not installed"))
-(if (executable-find "npm")
-    (progn
-      (el-get-bundle  company-tern)
-      (el-get-bundle  tern)
-      (el-get-bundle  web-beautify))
-  (warn "npm is not being installed"))
 (el-get-bundle  tomorrow-theme)
 (el-get-bundle  windcycle)
 (el-get-bundle  xcscope)
 (el-get-bundle  yasnippet)
 (el-get-bundle  web-mode)
+
+;; packages, depends on external binaries
+(if (executable-find "gnuplot") ; gnuplot
+    (el-get-bundle  gnuplot-mode :build/windows-nt (progn nil))
+  (warn "GNUPlot is not installed"))
+(if (or (executable-find "animate") ; image magick
+        (executable-find "magick"))
+    (el-get-bundle  screenshot)
+  (warn "ImageMagick is not installed"))
+(if (executable-find "npm") ; node-js npm
+    (progn
+      (el-get-bundle  company-tern)
+      (el-get-bundle  tern)
+      (el-get-bundle  web-beautify))
+  (warn "npm is not being installed"))
+(if (executable-find "pip") ; python pip
+    (progn
+      (el-get-bundle anaconda-mode)
+      (el-get-bundle company-anaconda))
+  (warn "pip is not installed"))
+
 (el-get 'sync)
-(package-initialize)
+(package-initialize) ; package-initialize should be placed after el-get
 
 ;; load files in utils/
 (when (file-exists-p "~/.emacs.d/utils")
