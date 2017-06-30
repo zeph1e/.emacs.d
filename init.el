@@ -88,13 +88,11 @@
 (el-get-bundle  google-translate)
 (el-get-bundle  helm
   :build
-  (("sed" "-i"
-    "s/mode-line-in-non-selected-window/mode-line-in-non-selected-window t/"
-    "helm-elisp.el" "helm.el")
-   ("sed" "-i"
-    "s:^ELPA_DIR:LOADPATH\\ +=\\ -L\\ \\$(HOME)/.emacs.d/el-get/emacs-async\\nELPA_DIR:g"
-    "Makefile")
-   ("make")))
+  `(("sed" "-i"
+     "s/mode-line-in-non-selected-window/mode-line-in-non-selected-windows t/g"
+     "helm-elisp.el" "helm.el")
+    ("make" ,(format "ASYNC_ELPA_DIR=%s"
+                     (el-get-package-directory 'emacs-async)))))
 (el-get-bundle  helm-ag)
 (el-get-bundle  helm-cider)
 (el-get-bundle  helm-cmd-t)
