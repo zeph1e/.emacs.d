@@ -98,6 +98,8 @@
                 (apply orig-fun args)
               (turn-on-fci-mode)))
         (error "trap"))
+    ;; raise buffer-read-only signal again
+    (buffer-read-only (signal 'buffer-read-only (list (current-buffer))))
     (error (apply orig-fun args))))
 (advice-add 'flyspell-popup-correct :around #'my:flyspell-fci-workaround)
 
