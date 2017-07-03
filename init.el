@@ -35,8 +35,9 @@
     (let ((korean-font "NanumGothicCoding-10"))
       (set-face-font 'default "Lucida Console-10")
       (set-fontset-font "fontset-default" '(#x1100 . #xffdc) korean-font)
-      (set-fontset-font "fontset-default" '(#xe0bc . #xf66e) korean-font)))
+      (set-fontset-font "fontset-default" '(#xe0bc . #xf66e) korean-font))))
 
+(ignore-errors
   (let ((warning-minimum-level :emergency)) ; a kinda tricky way to suppress warning
     (require 'server)
     (unless (server-running-p)
