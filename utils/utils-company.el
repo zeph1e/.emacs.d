@@ -132,23 +132,4 @@
                                              s "Qt[A-za-z]+"))
                                 (my:company-find-headers-qt)))))))
 
-(defun my:company-fci-workaround (command)
-  (cond ((string= command "show") (turn-off-fci-mode))
-        ((string= command "hide") (turn-on-fci-mode))))
-(advice-add 'company-call-frontends :before #'my:company-fci-workaround)
-
-
-;; Fix the problem of distorted popup of flyspell-popup-correct
-(defun my:flyspell-fci-workaround (orig-fun &rest args)
-  (condition-case nil
-      (if fci-mode
-          (progn
-            (turn-off-fci-mode)
-            (unwind-protect
-                (apply orig-fun args)
-              (turn-on-fci-mode)))
-        (error "trap"))
-    (error (apply orig-fun args))))
-(advice-add 'flyspell-popup-correct :around #'my:flyspell-fci-workaround)
-
 (provide 'utils-company)
