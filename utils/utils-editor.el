@@ -162,9 +162,7 @@ minibuffer), then split the current window horizontally."
              (args (list (region-beginning)
                          (region-end)
                          exec nil 0 nil)))
-        (when arg
-          (setq args (append args (list arg))))
-        (apply #'call-process-region args)))
+        (apply #'call-process-region (append args (when arg (list arg))))))
     (deactivate-mark)))
 
 (defun my:paste-from-clipboard ()
