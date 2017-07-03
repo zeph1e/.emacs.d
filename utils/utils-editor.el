@@ -181,4 +181,11 @@ minibuffer), then split the current window horizontally."
              (apply #'call-process args)
              (buffer-string)) "")))))
 
+(defun my:suppress-input-method-in-minibuffer ()
+  "Turn off input-method in minibuffer when it is in setup."
+  (when (and (minibuffer-window-active-p (selected-window))
+             current-input-method)
+    (deactivate-input-method)))
+(add-hook 'minibuffer-setup-hook 'my:suppress-input-method-in-minibuffer)
+
 (provide 'utils-editor)
