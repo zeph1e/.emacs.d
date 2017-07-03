@@ -89,6 +89,9 @@
 (advice-add 'company-call-frontends :before #'my:company-fci-workaround)
 
 ;; Fix the problem of distorted popup of flyspell-popup-correct
+(define-error 'my:flyspell-fci-workaround-trap
+  "A custom signal to run trap in my:flyspell-fci-workaround.")
+
 (defun my:flyspell-fci-workaround (orig-fun &rest args)
   (condition-case nil
       (if fci-mode
@@ -97,10 +100,8 @@
             (unwind-protect
                 (apply orig-fun args)
               (turn-on-fci-mode)))
-        (error "trap"))
-    ;; raise buffer-read-only signal again
-    (buffer-read-only (signal 'buffer-read-only (list (current-buffer))))
-    (error (apply orig-fun args))))
+        (signal 'my:flyspell-fci-workaround-trap nil))
+    (my:flyspell-fci-workaround-trap (apply orig-fun args))))
 (advice-add 'flyspell-popup-correct :around #'my:flyspell-fci-workaround)
 
 ;; Setting fci-mode variables
