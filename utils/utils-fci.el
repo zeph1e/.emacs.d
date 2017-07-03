@@ -84,8 +84,8 @@
 
 ;; Fix the problem of distorted popup of company
 (defun my:company-fci-workaround (command)
-  (cond ((string= command "show") (turn-off-fci-mode))
-        ((string= command "hide") (turn-on-fci-mode))))
+  (cond ((string= command "show") (my:fci-suppress))
+        ((string= command "hide") (my:fci-activate))))
 (advice-add 'company-call-frontends :before #'my:company-fci-workaround)
 
 ;; Fix the problem of distorted popup of flyspell-popup-correct
