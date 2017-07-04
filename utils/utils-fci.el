@@ -81,12 +81,15 @@
         (setq my:fci-previous-window window
               my:fci-previous-buffer (current-buffer))))))
 
+(defun my:company-fci-workaround-suppress (&rest ignored)
+  (my:fci-suppress (current-buffer)))
 
-;; Fix the problem of distorted popup of company
-(defun my:company-fci-workaround (command)
-  (cond ((string= command "show") (my:fci-suppress))
-        ((string= command "hide") (my:fci-activate))))
-(advice-add 'company-call-frontends :before #'my:company-fci-workaround)
+(defun my:company-fci-workaround-reactivate (&rest ignored)
+  (my:fci-activate (current-buffer)))
+
+(add-hook 'company-completion-started-hook #'my:company-fci-workaround-suppress)
+(add-hook 'company-completion-finished-hook #'my:company-fci-workaround-reactivate)
+(add-hook 'company-completion-cancelled-hook #'my:company-fci-workaround-reactivate)
 
 ;; Fix the problem of distorted popup of flyspell-popup-correct
 (define-error 'my:flyspell-fci-workaround-trap
