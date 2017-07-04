@@ -69,17 +69,26 @@
   (message "Refreshed all opened files."))
 
 (defun my:display-buffer-modification (&optional buffer-or-name)
+  (interactive)
   (let* ((buffer (get-buffer (or buffer-or-name (current-buffer))))
          (diff-switches "-urN")
-         (file-name (and (bufferp buffer) (buffer-file-name buffer))))
-    (if (null file-name)
-        (error "Visiting buffer % doesn't have a name of file" buffer)
-      (display-buffer buffer '(display-buffer-same-window))
-      (delete-other-windows)
-      (diff (if (file-exists-p file-name)
-                file-name
-              null-device)
-            buffer nil 'noasync))))
+         (file-name (and (bufferp buffer) (buffer-file-name buffer)))
+         (args (list buffer diff-switches file-name)))
+    (if (called-interactively-p)
+        (save-window-excursion
+          (apply #'my:display-buffer-modification-internal args)
+          (read-char "Press any key to quit: "))
+      (apply #'my:display-buffer-modification-internal args))))
+
+(defun my:display-buffer-modification-internal (buffer diff-switches file-name)
+  (if (null file-name)
+      (error "Visiting buffer %S doesn't have a name of file" buffer)
+    (display-buffer buffer '(display-buffer-same-window))
+    (delete-other-windows)
+    (diff (if (file-exists-p file-name)
+              file-name
+            null-device)
+          buffer nil 'noasync)))
 
 (defadvice kill-buffer (around my:kill-buffer-modified (&optional buffer-or-name))
   "Adviced kill buffer to show diff with original file to verify the changes."
@@ -212,7 +221,7 @@ change the additional actions you can take on files."
                      (diff-switches "-urN"))
                 (display-buffer file-buffer '(display-buffer-same-window))
                 (delete-other-windows)
-                (diff file-buffer file-name nil 'noasync))
+                (diff file-buffer file-name nil 'noasync)
                 (with-current-buffer standard-output
                   (let ((switches dired-listing-switches))
                     (if (file-symlink-p file)

@@ -90,9 +90,6 @@
                                        (tramp-cleanup-all-buffers)
                                        (message "Cleaned all tramp buffers up"))))
 
-    ;; recover file
-    (define-key map (kbd "<f7>") #'recover-this-file)
-
     ;; flyspell-mode
     (define-key map (kbd "<f8>") 'my:flyspell-mode)
     (define-key map (kbd "C-<f8>") 'flyspell-buffer)
@@ -163,6 +160,10 @@
     (define-key map (kbd "C-z C-z") #'my:copy-to-clipboard)
     (define-key map (kbd "C-z C-y") #'my:paste-from-clipboard)
 
+    ;; modification control
+    (define-key map (kbd "C-z r") #'recover-this-file)
+    (define-key map (kbd "C-z d") #'my:display-buffer-modification)
+
     map)
   "global key mode keymap")
 
@@ -192,7 +193,7 @@ Key bindings:
              [mouse-7] [down-mouse-7] [drag-mouse-7] [double-mouse-7] [triple-mouse-7] ; wheel-tilt-right
              [mouse-8] [down-mouse-8] [drag-mouse-8] [double-mouse-8] [triple-mouse-8] ; back
              [mouse-9] [down-mouse-9] [drag-mouse-9] [double-mouse-9] [triple-mouse-9] ; forward
-             ,(kbd "C-z")
+             ,(kbd "C-z") ,(kbd "C-x C-z")
              ))
   (global-set-key k 'ignore))
 ;; unbind windcycle default
