@@ -72,9 +72,14 @@
   (let* ((buffer (get-buffer (or buffer-or-name (current-buffer))))
          (diff-switches "-urN")
          (file-name (and (bufferp buffer) (buffer-file-name buffer))))
-    (display-buffer buffer '(display-buffer-same-window))
-    (delete-other-windows)
-    (diff (if (file-exists-p file-name) file-name null-device) buffer nil 'noasync)))
+    (if (null file-name)
+        (error "Visiting buffer % doesn't have a name of file" buffer)
+      (display-buffer buffer '(display-buffer-same-window))
+      (delete-other-windows)
+      (diff (if (file-exists-p file-name)
+                file-name
+              null-device)
+            buffer nil 'noasync))))
 
 (defadvice kill-buffer (around my:kill-buffer-modified (&optional buffer-or-name))
   "Adviced kill buffer to show diff with original file to verify the changes."
@@ -182,6 +187,8 @@ change the additional actions you can take on files."
   ;; only rarely.
   ;; Not just because users often use the default.
   (interactive "FRecover file: ")
+  (when (null file)
+    (error "Visiting buffer %S doesn't have a name of file." (current-buffer)))
   (setq file (expand-file-name file))
   (if (auto-save-file-name-p (file-name-nondirectory file))
       (error "%s is an auto-save file" (abbreviate-file-name file)))
@@ -205,7 +212,7 @@ change the additional actions you can take on files."
                      (diff-switches "-urN"))
                 (display-buffer file-buffer '(display-buffer-same-window))
                 (delete-other-windows)
-                (diff file-buffer file-name nil 'noasync)
+                (diff file-buffer file-name nil 'noasync))
                 (with-current-buffer standard-output
                   (let ((switches dired-listing-switches))
                     (if (file-symlink-p file)

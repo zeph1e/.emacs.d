@@ -90,6 +90,9 @@
                                        (tramp-cleanup-all-buffers)
                                        (message "Cleaned all tramp buffers up"))))
 
+    ;; recover file
+    (define-key map (kbd "<f7>") #'recover-this-file)
+
     ;; flyspell-mode
     (define-key map (kbd "<f8>") 'my:flyspell-mode)
     (define-key map (kbd "C-<f8>") 'flyspell-buffer)
