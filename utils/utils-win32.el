@@ -28,7 +28,7 @@
     (set-fontset-font "fontset-default" '(#xe0bc . #xf66e) korean-font))
 
   (setq-default screenshot-schemes
-                '(("local" :dir "/d:/Pictures/")
+                '(("local" :dir "d:/Pictures/")
                   ("current-directory :dir default-directory")))
   (when (executable-find "aspell")
     (setq ispell-program-name "aspell")
