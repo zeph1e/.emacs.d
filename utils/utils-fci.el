@@ -62,7 +62,8 @@
                      (or (not (eq my:fci-previous-window window))
                          (not (eq my:fci-previous-buffer
                                   (window-buffer window)))))
-            my:fci-previous-buffer)))
+            my:fci-previous-buffer))
+         (buffer (window-buffer window)))
     ;; Suppress fci in background buffer
     (when (and (bufferp buffer-to-clear)
                (not (eq buffer-to-clear (window-buffer window))))
@@ -75,11 +76,12 @@
       (my:fci-activate))
 
     ;; Only record the focus changes in fci-aware buffers
-    (with-current-buffer (window-buffer window)
-      (when (or my:fci-mode-suppressed
-                fci-mode)
-        (setq my:fci-previous-window window
-              my:fci-previous-buffer (current-buffer))))))
+    (when (buffer-live-p buffer)
+      (with-current-buffer buffer
+        (when (or my:fci-mode-suppressed
+                  fci-mode)
+          (setq my:fci-previous-window window
+                my:fci-previous-buffer buffer))))))
 
 (defun my:company-fci-workaround-suppress (&rest ignored)
   (my:fci-suppress (current-buffer)))
