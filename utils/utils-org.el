@@ -99,14 +99,30 @@
 (eval-after-load 'ox-reveal
   '(progn
      (setq org-reveal-root "./.reveal.js")
-     (defadvice org-reveal-export-to-html (around org-reveal-export-to-html-and-copy-reveal activate compile)
-         (let* ((file-name ad-do-it)
-                (file-full-name (expand-file-name file-name))
-                (reveal-dir-name (concat (file-name-directory file-full-name) ".reveal.js/")))
-           (unless (file-exists-p reveal-dir-name)
-             (message "Copying reveal.js to target directory...")
-             (copy-directory reveal-local-repository reveal-dir-name))
-           file-name))))
+     (defadvice org-reveal-export-to-html
+         (around org-reveal-export-to-html-and-copy-reveal activate compile)
+
+       ;; get reveal.js submodule if it wasn't fetched
+       (unless (directory-files reveal-local-repository nil
+                                "^\\([^.]\\|\\.[^.]\\|\\.\\..\\)") ; empty
+         (message "Reveal.js is not yet fetched. Fetching...")
+         (let ((default-directory user-emacs-directory)
+               (git-cmdargs '(("submodule" "init")
+                              ("submodule" "update"))))
+           (dolist (args git-cmdargs)
+             (unless (zerop (apply #'call-process
+                                   (append '("git" nil nil nil) args)))
+               (error "Git command failed with args: %S" args)))
+           (message "Reveal.js fetched.")))
+
+       (let* ((file-name ad-do-it)
+              (file-full-name (expand-file-name file-name))
+              (reveal-dir-name (concat (file-name-directory file-full-name) ".reveal.js/")))
+         (unless (file-exists-p reveal-dir-name)
+           (message "Copying reveal.js to target directory...")
+           (copy-directory reveal-local-repository reveal-dir-name))
+         file-name))))
+
 (when (el-get-package-is-installed 'org-reveal)
   (defun org-reveal-update-reveal-js ()
     (interactive)
