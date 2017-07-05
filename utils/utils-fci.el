@@ -89,10 +89,6 @@
 (defun my:company-fci-workaround-reactivate (&rest ignored)
   (my:fci-activate (current-buffer)))
 
-(add-hook 'company-completion-started-hook #'my:company-fci-workaround-suppress)
-(add-hook 'company-completion-finished-hook #'my:company-fci-workaround-reactivate)
-(add-hook 'company-completion-cancelled-hook #'my:company-fci-workaround-reactivate)
-
 ;; Fix the problem of distorted popup of flyspell-popup-correct
 (define-error 'my:flyspell-fci-workaround-trap
   "A custom signal to run trap in my:flyspell-fci-workaround.")
@@ -107,7 +103,6 @@
               (turn-on-fci-mode)))
         (signal 'my:flyspell-fci-workaround-trap nil))
     (my:flyspell-fci-workaround-trap (apply orig-fun args))))
-(advice-add 'flyspell-popup-correct :around #'my:flyspell-fci-workaround)
 
 ;; Setting fci-mode variables
 (with-eval-after-load 'fill-column-indicator
@@ -124,7 +119,18 @@
   (add-to-list 'window-size-change-functions
                'my:fci-activate-focused)
   (add-hook 'focus-in-hook
-            'my:fci-activate-focused))
+            'my:fci-activate-focused)
+
+  ;; adding hooks to workaround company-fci problems
+  (add-hook 'company-completion-started-hook
+            #'my:company-fci-workaround-suppress)
+  (add-hook 'company-completion-finished-hook
+            #'my:company-fci-workaround-reactivate)
+  (add-hook 'company-completion-cancelled-hook
+            #'my:company-fci-workaround-reactivate)
+
+  ;; adding advice to workaround flyspell-fci problems
+  (advice-add 'flyspell-popup-correct :around #'my:flyspell-fci-workaround))
 
 
 (provide 'utils-fci)
