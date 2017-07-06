@@ -1,0 +1,8 @@
+(:name zerodark-theme
+       :description "A dark theme for Emacs, inspired from Niflheim and One Dark"
+       :website "https://github.com/NicolasPetton/zerodark-theme"
+       :type github
+       :depends (all-the-icons)
+       :minimum-emacs-version 24
+       :pkgname "NicolasPetton/zerodark-theme"
+       :post-init (add-to-list 'custom-theme-load-path default-directory))
