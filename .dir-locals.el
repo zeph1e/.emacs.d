@@ -5,5 +5,4 @@
                                (add-hook 'write-contents-functions
                                          #'(lambda ()
                                              (delete-trailing-whitespace)
-                                             nil))))
-                     (buffer-read-only . t))))
+                                             nil)))))))

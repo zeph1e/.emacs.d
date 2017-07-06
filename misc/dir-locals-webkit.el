@@ -3,6 +3,7 @@
          (c-basic-offset . 4)
          (fill-column . 120)))
  (c-mode . ((c-file-style . "webkit")
+            (eval . (require 'company-c-headers))
             (eval . (add-to-list 'company-c-headers-path-user
                                  (concat
                                   (file-name-directory
@@ -12,6 +13,7 @@
                                            (t "")))) "Source")))
             (buffer-read-only . t)))
  (c++-mode . ((c-file-style . "webkit")
+              (eval . (require 'company-c-headers))
               (eval . (add-to-list 'company-c-headers-path-user
                                    (concat
                                     (file-name-directory

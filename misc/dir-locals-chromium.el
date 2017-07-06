@@ -1,10 +1,11 @@
 ;; place this into chromium directory
 ((nil . ((indent-tabs-mode . nil)
          (c-basic-offset . 4)
-         (fill-column . 120)
+         (fill-column . 80)
          (cscope-option-do-not-update-database . t)))
  (c-mode . ((eval . (google-set-c-style))
             (eval . (require 'magit))
+            (eval . (require 'company-c-headers))
             (eval . (add-to-list 'company-c-headers-path-user
                                  (concat
                                   (file-name-directory
@@ -15,6 +16,7 @@
             (buffer-read-only . t)))
  (c++-mode . ((eval . (google-set-c-style))
               (eval . (require 'magit))
+              (eval . (require 'company-c-headers))
               (eval . (add-to-list 'company-c-headers-path-user
                                    (concat
                                     (file-name-directory
