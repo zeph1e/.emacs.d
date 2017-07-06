@@ -185,7 +185,7 @@
 (package-initialize) ; package-initialize should be placed after el-get
 
 ;; load files in utils/
-(let ((utils-dir "~/.emacs/d/utils"))
+(let ((utils-dir "~/.emacs.d/utils"))
   (when (file-exists-p utils-dir)
     (add-to-list 'load-path utils-dir)
     (dolist (filename (directory-files utils-dir))
