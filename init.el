@@ -185,14 +185,14 @@
 (package-initialize) ; package-initialize should be placed after el-get
 
 ;; load files in utils/
-(when (file-exists-p "~/.emacs.d/utils")
-  (add-to-list 'load-path "~/.emacs.d/utils")
-  (dolist (filename (directory-files "~/.emacs.d/utils"))
-    (when (and (not (file-symlink-p filename))
-               (not (file-directory-p filename))
-               (string-match "\\([^.]+\\).el\\'" filename))
-      (require (intern (match-string 1 filename))))))
-
+(let ((utils-dir "~/.emacs/d/utils"))
+  (when (file-exists-p utils-dir)
+    (add-to-list 'load-path utils-dir)
+    (dolist (filename (directory-files utils-dir))
+      (when (and (not (file-symlink-p filename))
+                 (not (file-directory-p filename))
+                 (string-match "\\([^.]+\\).el\\'" filename))
+        (require (intern (match-string 1 filename)))))))
 
 ;; temporary
 (when (file-exists-p "~/.emacs.d/slack/")
