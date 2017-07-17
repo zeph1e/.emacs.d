@@ -164,6 +164,9 @@
     (define-key map (kbd "C-z r") #'recover-this-file)
     (define-key map (kbd "C-z d") #'my:display-buffer-modification)
 
+    ;; ibuffer
+    (define-key map (kbd "C-x C-b") #'ibuffer)
+
     map)
   "global key mode keymap")
 
