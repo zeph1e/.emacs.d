@@ -4,7 +4,7 @@ SERVER_RUNNING=`$EMACSCLIENT -e "(server-running-p)" 2> /dev/null`
 if [ -z "$SERVER_RUNNING" ]; then
     unset GTK_IM_MODULE
     unset XMODIFIERS
-    exec emacs -mm $@
+    exec Emacs -mm $@
     exit 0
 fi
 
@@ -20,4 +20,4 @@ fi
 
 unset GTK_IM_MODULE
 unset XMODIFIERS
-exec $EMACSCLIENT $OPT --alternate-editor="emacs" "$@"
+exec $EMACSCLIENT $OPT --alternate-editor="Emacs" "$@"

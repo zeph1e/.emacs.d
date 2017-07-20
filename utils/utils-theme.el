@@ -29,7 +29,9 @@
                             :box `(:line-width 2 :color ,(face-attribute
                                                           'mode-line-inactive
                                                           :background)))
-        (set-face-attribute 'mode-line-buffer-id nil :foreground "gold")))
+        (set-face-attribute 'mode-line-buffer-id nil :foreground "gold")
+
+        (set-face-attribute 'highlight nil :background "DeepSkyBlue4")))
   (color-theme-standard))
 
 ;; my custom mode-line (inspired from emacs-fu)
