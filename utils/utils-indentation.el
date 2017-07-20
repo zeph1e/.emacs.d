@@ -3,14 +3,6 @@
 ;; Written by Yunsik Jang <doomsday@kldp.org>
 ;; You can use/modify/redistribute this freely.
 
-(defun my:c-lineup-first-column (langelem)
-  "Indent to the first column."
-  (let ((pos (cdr arg)))
-    (- (save-excursion
-         (goto-char pos)
-         (line-beginning-position))
-       pos)))
-
 (c-add-style "user"
              `((c-basic-offset . 2)
                (indent-tabs-mode . nil)
@@ -56,8 +48,9 @@
                 (inextern-lang . 0)
                 (func-decl-cont . ++)
                 (arglist-intro . ++)
-                (arglist-cont-nonempty . 0)
-                (label . my:c-lineup-first-column)
+                (arglist-cont . (c-lineup-argcont c-lineup-arglist))
+                (arglist-cont-nonempty . (c-lineup-argcont c-lineup-arglist))
+                (label . [0])
                 (case-label . +)
                 (member-init-intro . ++)
                 (statement-case-intro . +)
@@ -93,7 +86,7 @@
                    (python-mode . "python")
                    (other . "user"))
  c-basic-offset 4
- tab-width 8 ; tab width
+ tab-width 4 ; tab width
  indent-tabs-mode nil ; don't insert tabs in indent
  tab-always-indent nil)
 
