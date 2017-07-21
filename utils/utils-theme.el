@@ -42,7 +42,7 @@
 (setq-default
  mode-line-format
  (list
-  " %I "
+  " %I " ; buffer size
   ;; modified
   '(:eval (propertize (if (buffer-modified-p) "* " "  ")
                       'face 'compilation-mode-line-fail))
@@ -61,17 +61,22 @@
   ":"
   (propertize "%02c" 'face 'font-lock-type-face)
   " "
+  ;; input method
   '(:eval (propertize (if current-input-method-title
                           current-input-method-title
                         "ENG")
                       'face '(:height 0.8)))
   " "
+  ;; major mode
   (propertize "%m" 'face 'bold)
+  ;; process status; eg. compilation buffer
   '("" mode-line-process)
 
   " "
+  ;; nyan-mode!!!!!
   '(:eval (list (nyan-create)))
-  " %p "
+  " %p "        ; percent of buffer
+  ;; vc-mode
   '(:eval (propertize (if vc-mode vc-mode "")
                       'face '(:foreground "sky blue" :height 0.9 :weight bold)))
   ))
