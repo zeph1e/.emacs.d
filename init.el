@@ -71,6 +71,7 @@
 (let ((el-get-allow-insecure t))
   (el-get-bundle queue)) ; required for cider but having some problem in installation
 
+(el-get-bundle  arduino-mode)
 (el-get-bundle  apache-mode)
 (el-get-bundle  cider)
 (el-get-bundle  command-log-mode)
@@ -273,6 +274,7 @@
 (add-to-list 'auto-mode-alist '("\\.\\(gp\\(i\\)?\\|plt\\)\\'" . gnuplot-mode))
 (add-to-list 'auto-mode-alist '("\\.qml\\'" . qml-mode))
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.\\(pde\\|ino\\)$" . arduino-mode))
 
 ;; customization settings
 (setq custom-file "~/.emacs.d/custom.el")
