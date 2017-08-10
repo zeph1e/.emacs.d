@@ -22,11 +22,10 @@
     (define-key map (kbd "M-v") 'my:scroll-down-command)
 
     ;; windmove
-    (define-key map (kbd "S-<left>")  'windmove-left)
-    (define-key map (kbd "S-<right>") 'windmove-right)
-    (define-key map (kbd "<select>")  'windmove-up) ; sometime, shift-up is sent as <select> to remote
-    (define-key map (kbd "S-<up>")    'windmove-up)
-    (define-key map (kbd "S-<down>")  'windmove-down)
+    (define-key map (kbd "C-<left>")  'windmove-left)
+    (define-key map (kbd "C-<right>") 'windmove-right)
+    (define-key map (kbd "C-<up>")    'windmove-up)
+    (define-key map (kbd "C-<down>")  'windmove-down)
 
     ;; framemove
     (define-key map (kbd "M-<left>")  'fm-left-frame)
@@ -35,10 +34,11 @@
     (define-key map (kbd "M-<down>")  'fm-down-frame)
 
     ;; windcycle
-    (define-key map (kbd "C-<up>")    'buffer-up-swap) ; Switch window key-bindings
-    (define-key map (kbd "C-<down>")  'buffer-down-swap)
-    (define-key map (kbd "C-<right>") 'buffer-right-swap)
-    (define-key map (kbd "C-<left>")  'buffer-left-swap)
+    (define-key map (kbd "S-<up>")    'buffer-up-swap) ; Switch window key-bindings
+    (define-key map (kbd "<select>")  'buffer-up-swap) ; sometime, shift-up is sent as <select> to remote
+    (define-key map (kbd "S-<down>")  'buffer-down-swap)
+    (define-key map (kbd "S-<right>") 'buffer-right-swap)
+    (define-key map (kbd "S-<left>")  'buffer-left-swap)
 
     ;; util-window
     (define-key map (kbd "C-S-<up>")    'my:buffer-up-copy)
