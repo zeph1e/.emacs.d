@@ -47,18 +47,25 @@
 (defun my:revert-this-buffer (&optional buffer-or-name)
   "Refreshes this buffer from its respective file."
   (interactive)
-  (let ((buffer (get-buffer (or buffer-or-name (current-buffer)))))
+  (let ((buffer (get-buffer (or buffer-or-name (current-buffer))))
+        choice)
     (when (and (bufferp buffer)
                (buffer-file-name buffer)
                (file-exists-p (buffer-file-name buffer)))
       (with-current-buffer buffer
-        (when (or (not (buffer-modified-p))
+        (setq choice
+              (or (unless (buffer-modified-p) ?d)
                   (save-window-excursion
                     (my:display-buffer-modification buffer)
-                    (yes-or-no-p (format "Buffer %s modified; discard the changes? "
-                                         (buffer-name buffer)))))
-          (revert-buffer t t t)
-          (message "Refreshed buffer: %s." (buffer-name buffer)))))))
+                    (read-char-choice
+                     (format "Buffer %s modified; (d)iscard (s)ave or (q)uit? "
+                             (buffer-name buffer))
+                     '(?d ?q ?s)))))
+        (cond ((equal choice ?d)
+               (revert-buffer t t t)
+               (message "Refreshed buffer: %s." (buffer-name buffer)))
+              ((equal choice ?s)
+               (save-buffer)))))))
 
 (defun my:revert-all-buffers ()
   "Refreshes all open buffers from their respective files."
