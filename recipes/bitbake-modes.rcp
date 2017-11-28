@@ -1,0 +1,3 @@
+(:name bitbake-modes
+       :description "Major modes for bitbake and related files"
+       :type git :url "https://bitbucket.org/olanilsson/bitbake-modes.git")

@@ -4,8 +4,9 @@
 ;; You can use/modify/redistribute this freely.
 
 ;; rather to use python3.x
-(setq python-shell-interpreter
-      (or (executable-find "python3") "python"))
+;; (setq python-shell-interpreter
+;;       (or (executable-find "python3") "python"))
+(setq-default python-indent-offset 2)
 
 ;; anaconda-mode settings
 

@@ -73,6 +73,7 @@
 
 (el-get-bundle  arduino-mode)
 (el-get-bundle  apache-mode)
+(el-get-bundle  bitbake-modes)
 (el-get-bundle  cider)
 (el-get-bundle  command-log-mode)
 (el-get-bundle  company-mode)
@@ -88,6 +89,7 @@
 (el-get-bundle  grep-a-lot)
 (el-get-bundle  google-c-style)
 (el-get-bundle  google-translate)
+(el-get-bundle  gyp-mode)
 (el-get-bundle  helm
   :build
   `(("sed" "-i"

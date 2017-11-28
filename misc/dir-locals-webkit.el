@@ -1,7 +1,7 @@
 ;; place this into chromium/src/third_party/WebKit
 ((nil . ((indent-tabs-mode . nil)
          (c-basic-offset . 4)
-         (fill-column . 120)))
+         (fill-column . 80)))
  (c-mode . ((c-file-style . "webkit")
             (eval . (require 'company-c-headers))
             (eval . (add-to-list 'company-c-headers-path-user
