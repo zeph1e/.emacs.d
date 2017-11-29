@@ -125,11 +125,9 @@
 
 
 (defun sl/display-header ()
-  (setq header-line-format
-        (when (buffer-file-name)
+  (when (buffer-file-name)
+    (setq header-line-format
           `("" (:eval (sl/make-header))))))
-
-
 
 (add-hook 'buffer-list-update-hook
           'sl/display-header)
