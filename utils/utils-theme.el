@@ -22,7 +22,7 @@
       (when (and (boundp 'my:theme) (symbolp my:theme))
         (load-theme my:theme t)
         (set-face-attribute 'mode-line nil
-                            :background "olive drab"
+                            :background "DeepSkyBlue4"
                             :foreground "white"
                             :box `(:line-width 2 :color "dim gray"))
         (set-face-attribute 'mode-line-inactive nil
@@ -80,6 +80,60 @@
   '(:eval (propertize (if vc-mode vc-mode "")
                       'face '(:foreground "sky blue" :height 0.9 :weight bold)))
   ))
+
+;; header line displaying file path
+;; from EmacsWiki https://www.emacswiki.org/emacs/HeaderLine
+(defmacro with-face (str &rest properties)
+  `(propertize ,str 'face (list ,@properties)))
+
+(defun sl/make-header ()
+  (let* ((sl/full-header (abbreviate-file-name buffer-file-name))
+         (sl/header (file-name-directory sl/full-header))
+         (sl/drop-str "[...]"))
+    (if (> (length sl/full-header)
+           (window-body-width))
+        (if (> (length sl/header)
+               (window-body-width))
+            (progn
+              (concat (with-face sl/drop-str
+                                 :background "blue"
+                                 :weight 'bold
+                                 )
+                      (with-face (substring sl/header
+                                            (+ (- (length sl/header)
+                                                  (window-body-width))
+                                               (length sl/drop-str))
+                                            (length sl/header))
+                                 ;; :background "red"
+                                 :weight 'bold
+                                 )))
+          (concat (with-face sl/header
+                             ;; :background "red"
+                             :foreground "#8fb28f"
+                             :weight 'bold
+                             )))
+      (concat (with-face sl/header
+                         ;; :background "green"
+                         ;; :foreground "black"
+                         :weight 'bold
+                         :foreground "#8fb28f"
+                         )
+              (with-face (file-name-nondirectory buffer-file-name)
+                         :weight 'bold
+                         ;; :background "red"
+                         )))))
+
+
+(defun sl/display-header ()
+  (setq header-line-format
+        (when (buffer-file-name)
+          `("" (:eval (sl/make-header))))))
+
+
+
+(add-hook 'buffer-list-update-hook
+          'sl/display-header)
+
 
 (when (display-graphic-p)
   (setq-default nyan-wavy-trail t)
