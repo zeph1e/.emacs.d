@@ -67,7 +67,6 @@
     (define-key map (kbd "C-}") 'enlarge-window-horizontally)
 
     (define-key map (kbd "C-x C-o") 'ff-find-other-file)
-
     ;; set-fill-column updates whitespace-mode's lines-tail highlight
     (define-key map (kbd "C-x f") (lambda (arg)
                                     (interactive
@@ -141,8 +140,8 @@
     ;; magit
     (define-key map (kbd "C-x RET C-s") 'magit-status)
     (define-key map (kbd "C-x RET C-b") 'magit-blame)
-    (define-key map (kbd "C-x RET C-f") 'magit-log-buffer-file)
-    (define-key map (kbd "C-x RET C-l") (lambda () (interactive) (magit-log-head)))
+    (define-key map (kbd "C-x RET C-f") 'magit-find-file)
+    (define-key map (kbd "C-x RET C-l") 'magit-log-buffer-file)
 
     ;; term
     (define-key map (kbd "C-x t") 'my:term-get-create)
@@ -167,6 +166,7 @@
     ;; ibuffer
     (define-key map (kbd "C-x C-b") #'ibuffer)
 
+    (define-key map (kbd "C-x C-j") #'dired-jump)
     map)
   "global key mode keymap")
 
