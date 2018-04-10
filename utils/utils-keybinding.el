@@ -89,6 +89,11 @@
                                        (tramp-cleanup-all-buffers)
                                        (message "Cleaned all tramp buffers up"))))
 
+    ;; compile
+    (define-key map (kbd "<f7>") #'(lambda () (interactive)
+                                     (with-current-buffer
+                                         compilation-last-buffer
+                                       (recompile))))
     ;; flyspell-mode
     (define-key map (kbd "<f8>") 'my:flyspell-mode)
     (define-key map (kbd "C-<f8>") 'flyspell-buffer)
