@@ -91,9 +91,11 @@
 
     ;; compile
     (define-key map (kbd "<f7>") #'(lambda () (interactive)
-                                     (with-current-buffer
-                                         compilation-last-buffer
-                                       (recompile))))
+                                     (condition-case e
+                                         (with-current-buffer
+                                             compilation-last-buffer
+                                           (recompile))
+                                       (wrong-type-argument (error "Nothing to recompile")))))
     ;; flyspell-mode
     (define-key map (kbd "<f8>") 'my:flyspell-mode)
     (define-key map (kbd "C-<f8>") 'flyspell-buffer)
