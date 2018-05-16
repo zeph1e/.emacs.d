@@ -149,6 +149,7 @@
     (define-key map (kbd "C-x RET C-b") 'magit-blame)
     (define-key map (kbd "C-x RET C-f") 'magit-find-file)
     (define-key map (kbd "C-x RET C-l") 'magit-log-buffer-file)
+    (define-key map (kbd "C-x RET C-h") 'magit-log-head)
 
     ;; term
     (define-key map (kbd "C-x t") 'my:term-get-create)
