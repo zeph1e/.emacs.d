@@ -87,6 +87,7 @@
 (el-get-bundle  frame-cmds)
 (el-get-bundle  framemove) (setq framemove-hook-into-windmove t)
 (el-get-bundle  franca-idl)
+(el-get-bundle  glsl-mode)
 (el-get-bundle  grep-a-lot)
 (el-get-bundle  google-c-style)
 (el-get-bundle  google-translate)
