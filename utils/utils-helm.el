@@ -52,7 +52,6 @@
 
 ;; replace projectile prefix key
 (let ((map projectile-mode-map))
-  (define-key map projectile-keymap-prefix nil)
   (define-key map (kbd "C-x C-p") 'projectile-command-map)
   (define-key map (kbd "C-x p") 'projectile-command-map))
 

@@ -107,7 +107,6 @@
 (el-get-bundle  helm-flyspell)
 (el-get-bundle  helm-projectile :checkout "1af5979")
 (el-get-bundle  iedit)
-(el-get-bundle  iman)
 (el-get-bundle  javadoc-lookup)
 (el-get-bundle  js2-mode)
 (el-get-bundle  js2-highlight-vars)
