@@ -97,12 +97,13 @@
   (read-only-mode (if buffer-read-only 1 -1)))
 
 ;; add my:read-only-mode when the buffer-read-only is set
-(add-hook 'buffer-list-update-hook
+(add-hook 'read-only-mode-hook
           (lambda ()
             (with-current-buffer (current-buffer)
-              (when (and buffer-read-only
-                         (not (member major-mode my:read-only-mode-blacklist))
-                         (not (member 'my:read-only-mode minor-mode-list)))
-                (my:read-only-mode 1)))))
+              (if buffer-read-only
+                (when (and (not (member major-mode my:read-only-mode-blacklist))
+                           (not (member 'my:read-only-mode minor-mode-list)))
+                  (my:read-only-mode 1))
+                (my:read-only-mode 0)))))
 
 (provide 'utils-readonly)
