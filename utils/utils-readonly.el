@@ -97,13 +97,20 @@
   (read-only-mode (if buffer-read-only 1 -1)))
 
 ;; add my:read-only-mode when the buffer-read-only is set
-(add-hook 'read-only-mode-hook
-          (lambda ()
-            (with-current-buffer (current-buffer)
-              (if buffer-read-only
-                (when (and (not (member major-mode my:read-only-mode-blacklist))
-                           (not (member 'my:read-only-mode minor-mode-list)))
-                  (my:read-only-mode 1))
-                (my:read-only-mode 0)))))
+(defvar my:read-only-mode-toggle-prevent-reent nil
+  "Prevent reenterance from hooks")
+(defun my:read-only-mode-toggle ()
+  "Attach/detach my:read-only-mode to/from read-only buffers"
+  (unless my:read-only-mode-toggle-prevent-reent
+    (let ((my:read-only-mode-toggle-prevent-reent t))
+    (with-current-buffer (current-buffer)
+      (if buffer-read-only
+          (when (and (not (member major-mode my:read-only-mode-blacklist))
+                     (not (member 'my:read-only-mode minor-mode-list)))
+            (my:read-only-mode 1))
+        (my:read-only-mode 0))))))
+
+(add-hook 'buffer-list-update-hook 'my:read-only-mode-toggle)
+(add-hook 'read-only-mode-hook 'my:read-only-mode-toggle)
 
 (provide 'utils-readonly)
