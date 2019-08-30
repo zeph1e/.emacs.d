@@ -140,6 +140,7 @@
   (el-get-bundle magit-filenotify)
   (el-get-bundle magit-gerrit)) (setq magit-auto-revert-mode nil)
 (el-get-bundle  magit-gh-pulls)
+(el-get-bundle  magit-tramp)
 (el-get-bundle  markdown-mode)
 (el-get-bundle! markdown-preview-mode)
 (el-get-bundle  multiple-cursors)
