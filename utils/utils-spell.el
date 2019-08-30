@@ -5,7 +5,7 @@
 
 (setq ispell-program-name "aspell"
       ;; force the English dictionary, support Camel Case spelling check (tested with aspell 0.6)
-      ispell-extra-args '("--sug-mode=ultra" "--lang=en_US" "--run-together" "--run-together-limit=5" "--run-together-min=2"))
+      ispell-extra-args '("--sug-mode=fast" "--lang=en_US" "--run-together" "--run-together-limit=5" "--run-together-min=2"))
 
 (define-minor-mode my:flyspell-mode
   "Enable flyspell-mode."
