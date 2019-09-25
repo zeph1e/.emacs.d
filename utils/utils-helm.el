@@ -129,17 +129,33 @@ of helm would be shrinked."
     )
   "List of sources for which helm-follow-mode should be enabled")
 
+;; (defun my:helm-set-follow ()
+;;   "Enable helm-follow-mode for the sources specified in the list
+;; variable `my-helm-follow-sources'. This function is meant to
+;; be run during `helm-initialize' and should be added to the hook
+;; `helm-before-initialize-hook'."
+;;   (message "helm-soures: %s" helm-sources)
+;;   (mapc (lambda (source)
+;;           (message "source: %S" source)
+;;           (when (memq source my:helm-follow-sources)
+;;             (helm-attrset 'follow 1 (symbol-value source))))
+;;         helm-sources))
+
+;; helm-sources is nil while 'helm-before-initialize-hook. This is a workaround
+;; to try to set attribute. Not good. need to be fixed.
+(defvar my:helm-follow-sources-to-init my:helm-follow-sources)
 (defun my:helm-set-follow ()
-  "Enable helm-follow-mode for the sources specified in the list
-variable `my-helm-follow-sources'. This function is meant to
-be run during `helm-initialize' and should be added to the hook
-`helm-before-initialize-hook'."
-  (mapc (lambda (source)
-          (when (memq source my:helm-follow-sources)
-            (helm-attrset 'follow 1 (symbol-value source))))
-        helm-sources))
+  (setq my:helm-follow-sources-to-init
+        (remove nil
+                (mapcar (lambda (source)
+                          (let ((value (and (boundp source)
+                                            (symbol-value source))))
+                            (if value
+                                (progn
+                                  (helm-attrset 'follow 1 value)
+                                  nil)
+                              source))) my:helm-follow-sources-to-init))))
 
-;; Add hook to enable helm-follow mode for specified helm
+ ;; Add hook to enable helm-follow mode for specified helm
 (add-hook 'helm-before-initialize-hook 'my:helm-set-follow)
-
 (provide 'utils-helm)
