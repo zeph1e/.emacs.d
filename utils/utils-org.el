@@ -3,7 +3,7 @@
 ;; Written by Yunsik Jang <doomsday@kldp.org>
 ;; You can use/modify/redistribute this freely
 
-(defconst babel-language-alist '((:lang awk :req ob-awk :mode awk :deps "awk")
+(defconst babel-language-plist '((:lang awk :req ob-awk :mode awk :deps "awk")
                                  (:lang C :req ob-C :mode c :deps "gcc")
                                  (:lang cpp :req ob-C :mode c++ :deps "g++")
                                  (:lang css :req ob-css :mode css)
@@ -20,25 +20,11 @@
                                  (:lang ruby :req ob-ruby :mode ruby :deps "ruby")
                                  (:lang sh :req ob-sh :mode shell-script)))
 
-;; LaTeX setup:
-;; The idea was heavely inspired from:
-;; http://emacs-fu.blogspot.com/2011/04/nice-looking-pdfs-with-org-mode-and.html
-;; But I don't like to define a new custom latex class while the latex headers be easily applied to
-;; writing document.
-
-;; Download URL for using fonts (in Debian package)
-;; https://packages.debian.org/sid/all/fonts-sil-gentium-basic/download
-;; https://packages.debian.org/sid/all/fonts-sil-charis/download
-;; https://packages.debian.org/sid/all/fonts-sil-gentium/download
-;; https://packages.debian.org/sid/all/ttf-dejavu/download
-
-(defconst my:latex-header-templates
-  '(("lax" "#+LaTeX_CLASS: article\n#+LaTeX_CMD: xelatex\n#+LaTeX_HEADER: \\usepackage[T1]{fontenc}\n#+LaTeX_HEADER: \\usepackage{fontspec}\n#+LaTeX_HEADER: \\usepackage{graphicx}\n#+LaTeX_HEADER: \\usepackage{hyperref}\n#+LaTeX_HEADER: \\usepackage[hyperref,x11names]{xcolor}\n#+LaTeX_HEADER: \\usepackage[parfill]{parskip}\n#+LaTeX_HEADER: \\defaultfontfeatures{Mapping=tex-text}\n#+LaTeX_HEADER: \\setromanfont{Gentium}\n#+LaTeX_HEADER: \\setromanfont [BoldFont={Gentium Basic Bold},ItalicFont={Gentium Basic Italic}]{Gentium Basic}\n#+LaTeX_HEADER: \\setsansfont{Charis SIL}\n#+LaTeX_HEADER: \\setmonofont[Scale=.7]{DejaVu Sans Mono}\n#+LaTeX_HEADER: \\usepackage{geometry}\n#+LaTeX_HEADER: \\geometry{a4paper, textwidth=6.5in, textheight=10in,marginparsep=7pt, marginparwidth=.6in}\n#+LaTeX_HEADER: \\hypersetup{colorlinks=true,linkcolor=DodgerBlue4,citecolor=DodgerBlue4,filecolor=DodgerBlue4,urlcolor=DodgerBlue4}\n?")))
 
 (eval-after-load 'org
   '(progn
      (let (load-languages)
-       (dolist (lang babel-language-alist)
+       (dolist (lang babel-language-plist)
          (when (and lang (if (plist-get lang ':deps) (executable-find (plist-get lang ':deps)) t))
            (push (cons (plist-get lang ':lang) t) load-languages)
            (require (plist-get lang ':req))
@@ -47,6 +33,8 @@
            (eval (plist-get lang ':settings))))
        (org-babel-do-load-languages 'org-babel-do-load-languages load-languages))
 
+     ;; init org-tempo
+     (require 'org-tempo)
      ;; other settings
      (setq org-confirm-babel-evaluate nil) ; turn off annoying prompt
      (require 'utils-theme)
@@ -57,9 +45,6 @@
      (setq org-startup-truncated nil)
      (setq org-startup-folded nil)
 
-     (dolist (template my:latex-header-templates)
-       (add-to-list 'org-structure-template-alist template))
-
      ;; inline images setting
      (when (display-graphic-p)
        (setq org-startup-with-inline-images t)
@@ -67,13 +52,58 @@
                                                  (when org-inline-image-overlays
                                                    (org-redisplay-inline-images)))))))
 
+;; LaTeX setup:
+;; The idea was heavely inspired from:
+;; http://emacs-fu.blogspot.com/2011/04/nice-looking-pdfs-with-org-mode-and.html
+
+;; Download URL for using fonts (in Debian package)
+;; https://packages.debian.org/sid/all/fonts-sil-gentium-basic/download
+;; https://packages.debian.org/sid/all/fonts-sil-charis/download
+;; https://packages.debian.org/sid/all/fonts-sil-gentium/download
+;; https://packages.debian.org/sid/all/ttf-dejavu/download
+
+(defconst my:org-latex-class-headers "
+\\usepackage[utf8]{inputenc}
+\\usepackage[T1]{fontenc}
+\\usepackage{fontspec}
+\\usepackage{graphicx}
+\\usepackage{grffile}
+\\usepackage{hyperref}
+\\usepackage[hyperref,x11names]{xcolor}
+\\usepackage[parfill]{parskip}
+\\usepackage{longtable}
+\\defaultfontfeatures{Mapping=tex-text}
+\\setromanfont{Gentium}
+\\setromanfont [BoldFont={Gentium Basic Bold},ItalicFont={Gentium Basic Italic}]{Gentium Basic}
+\\setsansfont{Charis SIL}
+\\setmonofont[Scale=.7]{DejaVu Sans Mono}
+\\usepackage{geometry}
+\\usepackage{amsmath}
+\\usepackage{amssymb}
+\\usepackage{capt-of}
+\\geometry{a4paper, textwidth=6.5in, textheight=10in,marginparsep=7pt, marginparwidth=.6in}
+\\hypersetup{colorlinks=true,linkcolor=DodgerBlue4,citecolor=DodgerBlue4,filecolor=DodgerBlue4,urlcolor=DodgerBlue4}
+\\title{}
+      [NO-DEFAULT-PACKAGES]
+      [NO-PACKAGES]")
+
 (eval-after-load 'ox-latex
   '(progn
+     ;; append additional latex header to each 'org-latex-classes
+     (setq org-latex-classes
+       (mapcar (lambda (class)
+                 (cons (car class)
+                       (cons
+                        (concat (car (cdr class))
+                                my:org-latex-class-headers)
+                        (cdr (cdr class)))))
+               org-latex-classes))
+
      (setq org-latex-tables-centered t)
      (setq org-latex-tables-booktabs t)
      ;; (setq org-latex-pdf-process '("latexmk -pdf -quiet %f"))
-     ;; (setq org-latex-pdf-process '("xelatex -interaction nonstopmode %f"
-     ;;                               "xelatex -interaction nonstopmode %f")) ; for multiple passes
+     (setq org-latex-pdf-process '("xelatex -interaction nonstopmode %f"
+                                   "xelatex -interaction nonstopmode %f")) ; for multiple passes
      ))
 
 ;; org-present
