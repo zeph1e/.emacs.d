@@ -12,7 +12,7 @@
 
          web-mode-enable-auto-opening t
          web-mode-enable-auto-closing t
-         web-mode-enable-auto-pairting t
+         web-mode-enable-auto-pairing t
          web-mode-enable-auto-indentation t
          ))
 
