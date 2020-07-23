@@ -1,0 +1,5 @@
+(:name emacs-nes
+       :description "Elisp NES Emulator"
+       :website "https://github.com/gongo/emacs-nes"
+       :type github
+       :pkgname "gongo/emacs-nes")

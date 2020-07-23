@@ -1,0 +1,5 @@
+(:name gn-mode
+       :description "Chromium gn-mode"
+       :type http
+       :url "https://chromium.googlesource.com/chromium/src/+/df175a8c3d1c1060f96d123a5896fdfbe4b3782d/tools/gn/misc/emacs/gn-mode.el?format=TEXT"
+       :localname "gn-mode.el")
