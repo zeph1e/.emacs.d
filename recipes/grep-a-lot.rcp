@@ -1,0 +1,3 @@
+(:name grep-a-lot
+       :description "manages multiple search results buffers for grep.el"
+       :type emacswiki)
