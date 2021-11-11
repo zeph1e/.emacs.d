@@ -18,7 +18,7 @@
                                         :settings (setq org-plantuml-jar-path
                                                         "~/.emacs.d/el-get/plantuml-mode/plantuml.jar"))
                                  (:lang ruby :req ob-ruby :mode ruby :deps "ruby")
-                                 (:lang sh :req ob-sh :mode shell-script)))
+                                 (:lang shell :req ob-shell :mode shell-script)))
 
 
 (eval-after-load 'org

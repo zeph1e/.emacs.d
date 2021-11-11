@@ -37,4 +37,7 @@ Defaults to `error'."
            (delete-dups (copy-sequence (cons name conditions))))
       (when message (put name 'error-message message)))))
 
+(when (not (fboundp 'make-variable-frame-local))
+  (defun make-variable-frame-local (variable) variable))
+
 (provide 'utils-24compat)

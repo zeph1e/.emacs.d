@@ -1,6 +1,6 @@
 #!/bin/sh
 
-EMACS_CANDIDATES="emacs-25.1 emacs-24.5 emacs-24 emacs"
+EMACS_CANDIDATES="emacs26 emacs-26.3 emacs-25.1 emacs-24.5 emacs-24 emacs"
 for candidate in $EMACS_CANDIDATES; do
     for cmd in $(which $candidate); do
         if [ -x "$cmd" ]; then
