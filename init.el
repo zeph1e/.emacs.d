@@ -144,6 +144,7 @@
 (el-get-bundle  magit-tramp)
 (el-get-bundle  markdown-mode)
 (el-get-bundle! markdown-preview-mode)
+(el-get-bundle  mmm-mode) ; bitbake mode dependency
 (el-get-bundle  multiple-cursors)
 (el-get-bundle  nyan-mode)
 (if (eq system-type 'windows-nt) ; windows
@@ -278,7 +279,7 @@
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode)) ; C++, rather than C
 (add-to-list 'auto-mode-alist '("\\.\\(gp\\(i\\)?\\|plt\\)\\'" . gnuplot-mode))
 (add-to-list 'auto-mode-alist '("\\.qml\\'" . qml-mode))
-(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.\\(html\\|php\\)?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.\\(pde\\|ino\\)$" . arduino-mode))
 
 ;; customization settings
