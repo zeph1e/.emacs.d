@@ -137,6 +137,7 @@
         ;; assume windows lacks make and makeinfo
         :build/windows-nt (progn nil)
         :post-init (setq magit-last-seen-setup-instructions "1.4.0")))
+  (el-get-bundle compat)
   (el-get-bundle magit)
   (el-get-bundle magit-filenotify)
   (el-get-bundle magit-gerrit)) (setq magit-auto-revert-mode nil)
