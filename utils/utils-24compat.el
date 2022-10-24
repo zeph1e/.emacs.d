@@ -40,4 +40,6 @@ Defaults to `error'."
 (when (not (fboundp 'make-variable-frame-local))
   (defun make-variable-frame-local (variable) variable))
 
+(define-obsolete-function-alias 'string-to-int 'string-to-number "22.1")
+
 (provide 'utils-24compat)
