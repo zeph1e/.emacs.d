@@ -107,6 +107,7 @@
 (el-get-bundle  helm-descbinds)
 (el-get-bundle  helm-flyspell)
 (el-get-bundle  helm-projectile :checkout "1af5979")
+(el-get-bundle  hydra)
 (el-get-bundle  iedit)
 (el-get-bundle  javadoc-lookup)
 (el-get-bundle  js2-mode)
@@ -114,6 +115,9 @@
 (el-get-bundle  js2-refactor)
 (el-get-bundle  json)
 (el-get-bundle  json-mode)
+(el-get-bundle  kotlin-mode)
+(el-get-bundle  lsp-mode)
+(el-get-bundle  lsp-treemacs)
 (if (version< emacs-version "24.4")
     (progn
       (el-get-bundle  magit/git-modes
