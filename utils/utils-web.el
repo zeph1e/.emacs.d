@@ -16,4 +16,6 @@
          web-mode-enable-auto-indentation t
          ))
 
+(setq web-mode-engines-alist '("php" . "\\.php\\'"))
+
 (provide 'utils-web)
