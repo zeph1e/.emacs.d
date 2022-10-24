@@ -86,7 +86,7 @@
  c-default-style '((java-mode . "java")
                    (awk-mode . "awk")
                    (python-mode . "python")
-                   (other . "user"))
+                   (other . "google"))
  c-basic-offset 4
  tab-width 4 ; tab width
  indent-tabs-mode nil ; don't insert tabs in indent
