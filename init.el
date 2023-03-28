@@ -110,9 +110,6 @@
 (el-get-bundle  hydra)
 (el-get-bundle  iedit)
 (el-get-bundle  javadoc-lookup)
-(el-get-bundle  js2-mode)
-(el-get-bundle  js2-highlight-vars)
-(el-get-bundle  js2-refactor)
 (el-get-bundle  json)
 (el-get-bundle  json-mode)
 (el-get-bundle  kotlin-mode)
@@ -279,7 +276,6 @@
 
 ;; file associations
 (add-to-list 'auto-mode-alist '("\\.vbs\\'" . basic-mode))
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 (add-to-list 'auto-mode-alist '("\\.uml\\'" . plantuml-mode))
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode)) ; C++, rather than C
 (add-to-list 'auto-mode-alist '("\\.\\(gp\\(i\\)?\\|plt\\)\\'" . gnuplot-mode))
