@@ -80,6 +80,7 @@
 (el-get-bundle  company-c-headers)
 (el-get-bundle  company-statistics)
 (el-get-bundle  company-web)
+(el-get-bundle  dap-mode)
 (el-get-bundle  deft)
 (or (fboundp 'erc) (el-get-bundle  erc))
 (el-get-bundle  fill-column-indicator)
@@ -115,6 +116,7 @@
 (el-get-bundle  kotlin-mode)
 (el-get-bundle  lsp-mode)
 (el-get-bundle  lsp-treemacs)
+(el-get-bundle  lsp-ui)
 (if (version< emacs-version "24.4")
     (progn
       (el-get-bundle  magit/git-modes
