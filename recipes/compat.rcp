@@ -1,4 +1,0 @@
-(:name magit-gerrit
-       :description "COMPATibility Library for Emacs"
-       :type github
-       :pkgname "emacsmirror/compat")

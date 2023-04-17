@@ -1,5 +1,0 @@
-(:name auto-complete-emacs-lisp
-       :description "Auto-complete sources for emacs lisp"
-       :type http
-       :url "https://gist.githubusercontent.com/zeph1e/c39e9dcdbb7eee39ac47/raw/1951934e735ecd87eed59414c69d1ffaf0f5b5d4/auto-complete-emacs-lisp.el"
-       :depends auto-complete)

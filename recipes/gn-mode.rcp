@@ -1,5 +1,0 @@
-(:name gn-mode
-       :description "Chromium gn-mode"
-       :type http
-       :url "https://raw.githubusercontent.com/chromium/chromium/master/tools/emacs/gn.el"
-       :localname "gn-mode.el")
