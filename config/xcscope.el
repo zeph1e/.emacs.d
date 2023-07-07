@@ -1,5 +1,7 @@
 ;;-*- mode: emacs-lisp; -*-
 (use-package xcscope
+  :init
+  (cscope-setup)
   :config
   (defun cscope-search-one-database ()
     "Pop a database entry from `cscope-search-list' and do a search there."
