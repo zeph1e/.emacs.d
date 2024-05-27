@@ -12,6 +12,7 @@
   my:use-theme t
   load-prefer-newer t
   fill-column 80
+  tool-bar-mode -1
   )
 
 (setq
@@ -54,11 +55,6 @@
         (process-put server-process :frame (selected-frame))
         (process-put server-process :children '())))))
 
-;; store backup files in .emacs.d/backups
-(defconst emacs-backup-directory "~/.emacs.d/backups/")
-(setq backup-directory-alist `((".*" . ,emacs-backup-directory))
-      auto-save-file-name-transforms `((".*" ,emacs-backup-directory t)))
-
 ;; customization settings
 (setq custom-file "~/.emacs.d/custom.el")
 (unless (file-exists-p custom-file)
@@ -67,12 +63,27 @@
     (write-file custom-file t)))
 (load custom-file)
 
+;; store backup files in .emacs.d/backups
+(defconst emacs-backup-directory "~/.emacs.d/backups/")
+(setq backup-directory-alist `((".*" . ,emacs-backup-directory))
+      auto-save-file-name-transforms `((".*" ,emacs-backup-directory t)))
+
+;; create auto save backup directory unless it exists
+(if (file-exists-p emacs-backup-directory)
+    (unless (file-directory-p emacs-backup-directory)
+      (warn "Auto save backup path, %s is not a directory!" emacs-backup-directory))
+  (mkdir emacs-backup-directory))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; package & use-package initialization
 (require 'package)
-;; Add various package archives
-(add-to-list 'package-archives
-	     '("melpa" . "https://melpa.org/packages/"))
+;; NOTE:
+;; try set nil to package-check-signagure and package-refresh-contents
+;; when an archive is not downloadable.
+(setq package-archives
+      '(("gnu" . "http://elpa.gnu.org/packages/")
+        ("melpa" . "https://melpa.org/packages/")
+        ("org" . "https://orgmode.org/elpa/")))
 ;; Initialise packages
 (package-initialize)
 
