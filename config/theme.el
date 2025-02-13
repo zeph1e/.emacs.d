@@ -23,7 +23,10 @@
     (setq-default nyan-wavy-trail t
 		  nyan-bar-length 24)
     (nyan-mode 1)
-    (nyan-start-animation)))
+    (nyan-start-animation))
+  (when (> (string-to-number emacs-version) 29)
+    ;; compat issue in 29.1
+    (defun redraw-modeline ())))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; my custom mode-line (inspired from emacs-fu)
