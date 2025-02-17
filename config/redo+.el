@@ -2,4 +2,5 @@
 (use-package redo+
   :ensure nil
   :bind
-  (("M-_" . redo)))
+  (:map my:global-key-map
+   ("M-_" . redo)))

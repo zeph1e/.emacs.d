@@ -13,4 +13,5 @@
 	(setq file target-file)))
     (and my:view-file-opener (call-process my:view-file-opener nil 0 nil file)))
   :bind
-  (("C-x C-j" . dired-jump)))
+  (:map my:global-key-map
+   ("C-x C-j" . dired-jump)))

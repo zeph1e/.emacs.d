@@ -1,7 +1,9 @@
 ;;-*- mode: emacs-lisp; -*-
 (use-package helm
+  :demand t
   :bind
-  (("M-x"       . helm-M-x)
+  (:map my:global-key-map
+   ("M-x"       . helm-M-x)
    ("M-y"       . helm-show-kill-ring)
    ("C-x C-f"   . helm-find-files)
    ("C-x r b"   . helm-filtered-bookmarks)
@@ -42,6 +44,5 @@
   (("C-x C-p" . projectile-command-map)
    ("C-x p"   . projectile-command-map))
   :init
-  (projectile-global-mode)
   (helm-projectile-on)
-  :after (helm))
+  :after (helm projectile))

@@ -9,7 +9,6 @@
 (set-language-environment "Korean")
 (setq-default
   show-paren-mode t
-  my:use-theme t
   load-prefer-newer t
   fill-column 80
   tool-bar-mode -1
@@ -77,9 +76,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; package & use-package initialization
 (require 'package)
-;; NOTE:
-;; try set nil to package-check-signagure and package-refresh-contents
-;; when an archive is not downloadable.
+;; Add various package archives
 (setq package-archives
       '(("gnu" . "http://elpa.gnu.org/packages/")
         ("melpa" . "https://melpa.org/packages/")
@@ -108,6 +105,17 @@
   (add-to-list 'load-path default-directory)
   (normal-top-level-add-subdirs-to-load-path))
 
+(defvar my:global-key-map
+  (let ((map (make-sparse-keymap)))
+    map)
+  "My global key map")
+(define-minor-mode my:global-key-mode
+  "My global key mode to keep my keybindings overrides major modes keybindings
+  Key bindings:
+\\{my:global-key-map}"
+  t nil my:global-key-map)
+(my:global-key-mode t)
+
 ;; install & configure packages
 (let ((dir "~/.emacs.d/config"))
   (when (file-exists-p dir)
@@ -116,6 +124,7 @@
                  (not (file-directory-p filename))
                  (string-match "\\([^.]+\\).el\\'" filename))
         (load-file (concat dir "/" filename))))))
+
 
 ;; (el-get-bundle  arduino-mode)
 ;; (el-get-bundle  apache-mode)

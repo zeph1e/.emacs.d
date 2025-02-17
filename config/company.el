@@ -1,7 +1,8 @@
 ;;-*- mode: emacs-lisp; -*-
 (use-package company
   :bind
-  (("C-;" . company-complete)
+  (:map my:global-key-map
+   ("C-;" . company-complete)
    :map company-active-map
    ("C-p" . company-select-previous)
    ("C-n" . company-select-next)
