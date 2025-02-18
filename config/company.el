@@ -129,9 +129,6 @@
   (after-init . company-statistics-mode))
 
 (use-package company-web)
-
-(if (executable-find "npm") ; nodejs npm
-    (progn
-      (use-package tern)
-      ;; (use-package company-tern)
-      (use-package web-beautify)))
+(use-package company-tern
+  :ensure nil
+  :after (tern))

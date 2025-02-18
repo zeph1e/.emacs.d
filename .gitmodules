@@ -1,3 +1,6 @@
 [submodule "misc/reveal.js"]
 	path = misc/reveal.js
 	url = https://github.com/hakimel/reveal.js.git
+[submodule "plugins/company-tern"]
+	path = plugins/company-tern
+	url = git@github.com:zeph1e/company-tern.git
