@@ -102,8 +102,6 @@
 
 ;; add local package path to load path
 (let ((default-directory "~/.emacs.d/plugins"))
-  (byte-recompile-directory default-directory 0)
-  (add-to-list 'load-path default-directory)
   (normal-top-level-add-subdirs-to-load-path))
 
 (defvar my:global-key-map
