@@ -13,7 +13,6 @@ backups/*
 .*
 bookmarks
 tramp
-projectile*
 recentf
 custom.el
 company-statistics-cache.el
