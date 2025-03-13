@@ -1,6 +1,6 @@
 ;;-*- mode: emacs-lisp; -*-
 (use-package groovy-mode
   :ensure-system-package
-  (groovysh . "sudo apt install groovy")
+  (groovysh . "sudo install apt -y groovy")
   :custom
   (groovysh "groovysh"))
