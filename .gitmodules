@@ -4,3 +4,6 @@
 [submodule "plugins/company-tern"]
 	path = plugins/company-tern
 	url = git@github.com:zeph1e/company-tern.git
+[submodule "plugins/magit-gerrit"]
+	path = plugins/magit-gerrit
+	url = git@github.com:zeph1e/magit-gerrit.git

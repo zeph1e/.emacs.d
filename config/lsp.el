@@ -1,3 +1,5 @@
+;;-*- mode: emacs-lisp; -*-
+;; https://www.amoradi.org/20211123173900.html
 (defconst my:lsp-path (concat (file-name-directory user-init-file) "lsp/"))
 
 (use-package lsp-mode

@@ -7,3 +7,11 @@
    ("C-x RET C-b" . magit-blame)
    ("C-x RET C-f" . magit-find-file)
    ("C-x RET C-l" . magit-log-buffer-file)))
+
+(use-package magit-gerrit
+  :ensure nil
+  :pin manual
+  :custom
+  (magit-gerrit-known-hosts '("[a-zA-Z0-9]+.lge.com"
+                              "[a-zA-Z0-9]+.lgsvl.com"))
+  (magit-gerrit-popup-prefix (kbd "`")))
