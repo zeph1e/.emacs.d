@@ -10,7 +10,10 @@
 (setq-default
   show-paren-mode t
   load-prefer-newer t
+  global-hl-line-mode t
   fill-column 80
+  whitespace-line-column fill-column
+  whitespace-style '(face trailing lines-tail tabs tab-mark)
   )
 (tool-bar-mode -1)
 (menu-bar-mode -1)
@@ -96,8 +99,8 @@
   ;; In this case we don't need to add a load path
   (when (< (string-to-number emacs-version) 29)
     (add-to-list 'load-path
-	         (package-desc-dir
-		  (car (cdr (assq 'use-package package-alist))))))
+                 (package-desc-dir
+                  (car (cdr (assq 'use-package package-alist))))))
   (require 'use-package)
   (setq use-package-always-ensure t))
 
@@ -125,6 +128,18 @@
                  (string-match "\\([^.]+\\).el\\'" filename))
         (load-file (concat dir "/" filename))))))
 
+;; define default minor modes
+(defconst my:default-minor-mode-list '(display-line-numbers-mode whitespace-mode))
+(defconst my:default-prog-minor-mode-list '(flyspell-prog-mode goto-address-prog-mode))
+(defconst my:default-text-minor-mode-list '(visual-line-mode flyspell-mode goto-address-mode))
+
+(mapc (lambda (mode)
+        (add-hook 'prog-mode-hook mode))
+      (my:flatten `(,my:default-minor-mode-list ,my:default-prog-minor-mode-list)))
+
+(mapc (lambda (mode)
+        (add-hook 'text-mode-hook mode))
+      (my:flatten `(,my:default-minor-mode-list ,my:default-text-minor-mode-list)))
 
 ;; (el-get-bundle  arduino-mode)
 ;; (el-get-bundle  apache-mode)
