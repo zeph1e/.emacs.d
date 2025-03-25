@@ -4,7 +4,6 @@
   (:map my:global-key-map
    ("C-M-;" . company-complete)
    :map company-active-map
-   ("TAB" . company-complete-common-or-cycle)
    ("C-p" . company-select-previous)
    ("C-n" . company-select-next)
    ("C-v" . company-next-page)

@@ -62,9 +62,16 @@
     "cleanup whitespace on kill-line"
     (if (not (bolp))
         (delete-region (point) (progn (skip-chars-forward " \t") (point)))))
+
+  (defun my:toggle-buffer-read-only ()
+    "Toggles read-only flag of the current buffer."
+    (interactive)
+    (setq-local buffer-read-only (null buffer-read-only)))
+
   :bind
   (:map my:global-key-map
    ("M-@" . my:mark-word)
    ("M-#" . my:mark-symbol)
    ("M-SPC" . my:forward-to-indentation)
-   ("M-S-SPC" . just-one-space)))
+   ("M-S-SPC" . just-one-space)
+   ("<f12>" . my:toggle-buffer-read-only)))
