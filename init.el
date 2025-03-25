@@ -42,10 +42,11 @@
       (set-fontset-font "fontset-default" '(#xe0bc . #xf66e) korean-font))))
 
 (ignore-errors
-  (let ((warning-minimum-level :emergency)) ; a kinda tricky way to suppress warning
+  ;; a kinda tricky way to suppress warning
+  (let ((warning-minimum-level :emergency))
     (require 'server)
     (unless (server-running-p)
-      ;; http://stackoverflow.com/questions/885793/emacs-error-when-calling-server-start
+      ;; http://stackoverflow.com/q/885793/emacs-error-when-calling-server-start
       (when (and (>= emacs-major-version 23)
                  (equal window-system 'w32))
         (defun server-ensure-safe-dir (dir) "Noop" t))
@@ -74,7 +75,8 @@
 ;; create auto save backup directory unless it exists
 (if (file-exists-p emacs-backup-directory)
     (unless (file-directory-p emacs-backup-directory)
-      (warn "Auto save backup path, %s is not a directory!" emacs-backup-directory))
+      (warn "Auto save backup path, %s is not a directory!"
+            emacs-backup-directory))
   (mkdir emacs-backup-directory))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -129,17 +131,24 @@
         (load-file (concat dir "/" filename))))))
 
 ;; define default minor modes
-(defconst my:default-minor-mode-list '(display-line-numbers-mode whitespace-mode))
-(defconst my:default-prog-minor-mode-list '(flyspell-prog-mode goto-address-prog-mode))
-(defconst my:default-text-minor-mode-list '(visual-line-mode flyspell-mode goto-address-mode))
+(defconst my:default-minor-mode-list
+  '(display-line-numbers-mode whitespace-mode))
+(defconst my:default-prog-minor-mode-list
+  '(flyspell-prog-mode
+    display-fill-column-indicator-mode
+    goto-address-prog-mode))
+(defconst my:default-text-minor-mode-list
+  '(visual-line-mode flyspell-mode goto-address-mode))
 
 (mapc (lambda (mode)
         (add-hook 'prog-mode-hook mode))
-      (my:flatten `(,my:default-minor-mode-list ,my:default-prog-minor-mode-list)))
+      (my:flatten `(,my:default-minor-mode-list
+                    ,my:default-prog-minor-mode-list)))
 
 (mapc (lambda (mode)
         (add-hook 'text-mode-hook mode))
-      (my:flatten `(,my:default-minor-mode-list ,my:default-text-minor-mode-list)))
+      (my:flatten `(,my:default-minor-mode-list
+                    ,my:default-text-minor-mode-list)))
 
 ;; (el-get-bundle  arduino-mode)
 ;; (el-get-bundle  apache-mode)
