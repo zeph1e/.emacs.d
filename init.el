@@ -121,6 +121,15 @@
   t nil my:global-key-map)
 (my:global-key-mode t)
 
+(defadvice load (after my:keybindings-priority)
+  "Try to ensure that my keybindings always have priority."
+  (if (not (eq (car (car minor-mode-map-alist)) 'my:global-key-mode))
+      (let ((mykeys (assq 'my:global-key-mode minor-mode-map-alist)))
+        (assq-delete-all 'my:global-key-mode minor-mode-map-alist)
+        (add-to-list 'minor-mode-map-alist mykeys))))
+(ad-activate 'load)
+
+
 ;; install & configure packages
 (let ((dir "~/.emacs.d/config"))
   (when (file-exists-p dir)
