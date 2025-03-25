@@ -58,7 +58,7 @@
           (if cscope-command-args
               (setq options (append options cscope-command-args))
             (error (concat "Tried to do a search without 'cscope-command-args' "
-                           "set. Something is wrong..."))
+                           "set. Something is wrong...")))
 
 
           (setq database-file (concat cscope-directory base-database-file-name)
