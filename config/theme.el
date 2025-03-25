@@ -21,7 +21,7 @@
   :config
   (when (display-graphic-p)
     (setq-default nyan-wavy-trail t
-		  nyan-bar-length 24)
+                  nyan-bar-length 24)
     (nyan-mode 1)
     (nyan-start-animation)))
 

@@ -75,7 +75,8 @@
           (scroll-down-command arg)
         (beginning-of-buffer (goto-char (point-min))))))
 
-  ;; split horizontally first, from http://www.emacswiki.org/emacs/HorizontalSplitting
+  ;; split horizontally first from :
+  ;; http://www.emacswiki.org/emacs/HorizontalSplitting
   (defun my:split-window-prefer-horizonally (window)
     "If there's only one window (excluding any possibly active
      minibuffer), then split the current window horizontally."

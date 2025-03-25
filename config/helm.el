@@ -42,14 +42,15 @@
   (helm-ff-auto-update-initial-value nil)
   (helm-M-x-fuzzy-match t)
   (helm-split-window-in-side-p t)
-  (helm-bookmark-default-filtered-sources '(helm-source-bookmark-files&dirs
-					    helm-source-bookmark-helm-find-files
-					    helm-source-bookmark-info
-					    helm-source-bookmark-gnus
-					    helm-source-bookmark-man
-					    helm-source-bookmark-images
-					    helm-source-bookmark-w3m
-					    helm-source-bookmark-uncategorized)))
+  (helm-bookmark-default-filtered-sources
+   '(helm-source-bookmark-files&dirs
+     helm-source-bookmark-helm-find-files
+     helm-source-bookmark-info
+     helm-source-bookmark-gnus
+     helm-source-bookmark-man
+     helm-source-bookmark-images
+     helm-source-bookmark-w3m
+     helm-source-bookmark-uncategorized)))
 
 (use-package helm-projectile
   :bind-keymap

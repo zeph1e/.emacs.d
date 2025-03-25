@@ -56,7 +56,8 @@
     (interactive)
     (forward-to-indentation 0))
 
-  ;; kill heading spaces on kill-line : from http://emacswiki.org/emacs/DeletingWhitespace
+  ;; kill heading spaces on kill-line:
+  ;; from http://emacswiki.org/emacs/DeletingWhitespace
   (defadvice kill-line (after kill-line-cleanup-whitespace activate compile)
     "cleanup whitespace on kill-line"
     (if (not (bolp))
