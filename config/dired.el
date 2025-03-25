@@ -1,3 +1,4 @@
+;;-*- mode: emacs-lisp; -*-
 (use-package dired
   :ensure nil
   :config
