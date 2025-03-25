@@ -11,8 +11,9 @@
   show-paren-mode t
   load-prefer-newer t
   fill-column 80
-  tool-bar-mode -1
   )
+(tool-bar-mode -1)
+(menu-bar-mode -1)
 
 (setq
   truncate-partial-width-windows nil ; do not truncate
