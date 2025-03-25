@@ -70,3 +70,12 @@
   (helm-ag-insert-at-point 'thing-at-point)
   (helm-ag-fuzzy-match t)
   :after (helm))
+
+(use-package helm-descbinds
+  :commands helm-descbinds
+  :bind
+  (:map my:global-key-map
+   ("C-h b" . helm-descbinds))
+  :custom
+  helm-descbinds-mode t
+  :after (helm))
