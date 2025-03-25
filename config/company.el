@@ -70,7 +70,9 @@
   (my:install-company-backends company-c-headers objc-mode-hook)
 
   ;; python
-  (my:install-company-backends company-anaconda python-mode-hook))
+  (my:install-company-backends company-anaconda python-mode-hook)
+  :hook
+  (after-init . global-company-mode))
 
 (use-package company-c-headers
   :config
