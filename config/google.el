@@ -11,19 +11,16 @@
    indent-tabs-mode nil ; don't insert tabs in indent
    tab-always-indent nil))
 
-
 (use-package google-translate
   :init
-  (eval-after-load 'google-translate-default-ui
-    '(progn
-       (setq google-translate-default-source-language "auto"
-             google-translate-default-target-language "ko")))
   (eval-after-load 'google-translate-smooth-ui
-    '(progn
-       (setq google-translate-translation-directions-alist
+    '(setq google-translate-translation-directions-alist
              '(("en" . "ko") ("ko" . "en") ("de" . "ko") ("ko" . "de")
-               ("en" . "de") ("de" . "en") ("ko" . "ja")))))
+               ("en" . "de") ("de" . "en") ("ko" . "ja"))))
   :bind
   (:map my:global-key-map
    ("M-+" . google-translate-at-point)
-   ("C-+" . google-translate-smooth-translate)))
+   ("C-+" . google-translate-smooth-translate))
+  :custom
+  (google-translate-default-source-language "auto")
+  (google-translate-default-target-language "ko"))
