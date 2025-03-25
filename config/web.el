@@ -8,4 +8,5 @@
   (web-mode-enable-auto-opening t)
   (web-mode-enable-auto-closing t)
   (web-mode-enable-auto-pairing t)
-  (web-mode-enable-auto-indentation t))
+  (web-mode-enable-auto-indentation t)
+  (web-mode-engines-alist '(("php" . "\\.php\\'"))))
