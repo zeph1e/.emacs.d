@@ -10,13 +10,13 @@
 (setq-default
   show-paren-mode t
   load-prefer-newer t
-  global-hl-line-mode t
   fill-column 80
   whitespace-line-column fill-column
   whitespace-style '(face trailing lines-tail tabs tab-mark)
   )
 (tool-bar-mode -1)
 (menu-bar-mode -1)
+(global-hl-line-mode t)
 
 (setq
   truncate-partial-width-windows nil ; do not truncate
@@ -152,11 +152,17 @@
         (add-hook 'prog-mode-hook mode))
       (my:flatten `(,my:default-minor-mode-list
                     ,my:default-prog-minor-mode-list)))
-
 (mapc (lambda (mode)
         (add-hook 'text-mode-hook mode))
       (my:flatten `(,my:default-minor-mode-list
                     ,my:default-text-minor-mode-list)))
+
+;; disable hl-mode for following modes
+(defconst my:hl-mode-exceptions '(shell-mode eshell-mode term-mode))
+(mapc (lambda (mode)
+        (add-hook (derived-mode-hook-name mode)
+                  (lambda () (setq-local global-hl-line-mode nil))))
+      my:hl-mode-exceptions)
 
 ;; (el-get-bundle  arduino-mode)
 ;; (el-get-bundle  apache-mode)

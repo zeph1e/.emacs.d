@@ -2,17 +2,17 @@
 (use-package color-theme-tomorrow
   :ensure nil
   :commands (color-theme-tomorrow-night-eighties)
-  ;; :config
+  :config
   ;; (set-face-attribute 'mode-line nil
-  ;; 		      :background "DeepSkyBlue4"
-  ;; 		      :foreground "white"
-  ;; 		      :box `(:line-width 2 :color "dim gray"))
+  ;;                     :background "DeepSkyBlue4"
+  ;;                     :foreground "white"
+  ;;                     :box `(:line-width 2 :color "dim gray"))
   ;; (set-face-attribute 'mode-line-inactive nil
-  ;; 		      :box `(:line-width 2 :color ,(face-attribute
-  ;; 						    'mode-line-inactive
-  ;; 						    :background)))
+  ;;                     :box `(:line-width 2 :color ,(face-attribute
+  ;;                                                   'mode-line-inactive
+  ;;                                                   :background)))
   ;; (set-face-attribute 'mode-line-buffer-id nil :foreground "gold")
-  ;; (set-face-attribute 'highlight nil :background "DeepSkyBlue4")
+  (set-face-attribute 'highlight nil :background "DeepSkyBlue4")
   :init
   (color-theme-tomorrow-night-eighties))
 
