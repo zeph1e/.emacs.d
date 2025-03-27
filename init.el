@@ -5,8 +5,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; basic options
-(require 'workaround)
-
 (set-language-environment "Korean")
 (setq-default
   show-paren-mode t
@@ -58,6 +56,9 @@
         (process-put server-process :terminal (frame-terminal))
         (process-put server-process :frame (selected-frame))
         (process-put server-process :children '())))))
+
+;; load workaround
+(load "~/.emacs.d/workaround.el")
 
 ;; customization settings
 (setq custom-file "~/.emacs.d/custom.el")

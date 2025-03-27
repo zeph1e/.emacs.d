@@ -5,5 +5,3 @@
 ;; To fix issue in dictionaries-common:
 ;; https://www.ramimassoud.com/til/fix-debian-emacs-ispell
 (setq ispell-menu-map-needed t)
-
-(provide 'workaround)
