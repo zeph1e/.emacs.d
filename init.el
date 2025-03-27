@@ -24,7 +24,6 @@
   make-backup-files nil ; no backup files
   inhibit-startup-screen t ; no startup screen
   inhibit-startup-message t ; no startup message
-  linum-format "%4d\u2502"
   default-input-method "korean-hangul390"
   default-korean-keyboard "3" ; 3 beolsik
   ;; coding-system-for-read 'utf-8
@@ -124,8 +123,8 @@
 (defadvice load (after my:keybindings-priority)
   "Try to ensure that my keybindings always have priority."
   (if (not (eq (car (car minor-mode-map-alist)) 'my:global-key-mode))
-      (let ((mykeys (assq 'my:global-key-mode minor-mode-map-alist)))
-        (assq-delete-all 'my:global-key-mode minor-mode-map-alist)
+      (let* ((mykeys (assq 'my:global-key-mode minor-mode-map-alist))
+             (mod (assq-delete-all 'my:global-key-mode minor-mode-map-alist)))
         (add-to-list 'minor-mode-map-alist mykeys))))
 (ad-activate 'load)
 
