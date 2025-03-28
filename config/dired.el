@@ -19,4 +19,5 @@
   :bind
   (:map my:global-key-map
    ("C-x C-j" . dired-jump)
+   :map dired-mode-map
    ("V" . my:view-file-external)))

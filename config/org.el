@@ -11,6 +11,8 @@
   ;; :mode : The mode name to edit the code block in.  When there's no :mode
   ;;         specified, it uses the value of :lang instead.
   ;; :deps : The executable name to parse or compile the language
+  ;; :settings : The things to evaluate
+
   (defconst babel-language-plist
     '((:lang awk :deps "awk")
       (:lang C :mode c :deps "gcc")
