@@ -69,16 +69,20 @@
 (load custom-file)
 
 ;; store backup files in .emacs.d/backups
-(defconst emacs-backup-directory "~/.emacs.d/backups/")
-(setq backup-directory-alist `((".*" . ,emacs-backup-directory))
-      auto-save-file-name-transforms `((".*" ,emacs-backup-directory t)))
-
-;; create auto save backup directory unless it exists
-(if (file-exists-p emacs-backup-directory)
-    (unless (file-directory-p emacs-backup-directory)
-      (warn "Auto save backup path, %s is not a directory!"
-            emacs-backup-directory))
-  (mkdir emacs-backup-directory))
+(let ((backups-dir (locate-user-emacs-file ".backups"))
+      (auto-saves-dir (locate-user-emacs-file ".auto-saves/"))
+      (lock-files-dir (locate-user-emacs-file ".lock-files/")))
+  (setq backup-directory-alist `((".*" . ,backups-dir))
+        auto-save-file-name-transforms  `((".*" ,auto-saves-dir t))
+        auto-save-list-file-prefix (concat auto-saves-dir ".saves-")
+        lock-file-name-transforms `((".*" ,lock-files-dir t))
+        tramp-backup-directory-alist `((".*" . ,backups-dir))
+        tramp-auto-save-directory auto-saves-dir)
+  (dolist (dir (list backups-dir auto-saves-dir lock-files-dir))
+    (if (file-exists-p dir)
+        (unless (file-directory-p dir)
+          (warn "backup path, %s is not a directory!" dir))
+      (mkdir dir))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; package & use-package initialization
@@ -130,15 +134,23 @@
         (add-to-list 'minor-mode-map-alist mykeys))))
 (ad-activate 'load)
 
-
 ;; install & configure packages
-(let ((dir "~/.emacs.d/config"))
+(let ((dir "~/.emacs.d/config") (files))
   (when (file-exists-p dir)
     (dolist (filename (directory-files dir))
       (when (and (not (file-symlink-p filename))
                  (not (file-directory-p filename))
                  (string-match "\\([^.]+\\).el\\'" filename))
-        (load-file (concat dir "/" filename))))))
+        (push (concat dir "/" filename) files)
+        (load-file (concat dir "/" filename))))
+    ;; byte-compile them on quit
+    (add-hook 'kill-emacs-hook
+              `(lambda ()
+                 (dolist (filename (list ,@files))
+                   (let ((target (concat filename "c")))
+                     (unless (and (file-exists-p target)
+                                  (file-newer-than-file-p target filename))
+                       (byte-compile-file filename))))))))
 
 ;; define default minor modes
 (defconst my:default-minor-mode-list
