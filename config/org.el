@@ -2,33 +2,44 @@
 (use-package org
   :pin org
   :config
+  ;; Babel language support configuration
+  ;; See https://orgmode.org/worg/org-contrib/babel/languages/index.html
+  ;; :lang : The language keyword right after #+BEGIN_SRC
+  ;; :req  : The required ob-*, language specific extension to give to
+  ;;         org-babel-load-languages. When there's no :req specified, it uses
+  ;;         the value of :lang instead.
+  ;; :mode : The mode name to edit the code block in.  When there's no :mode
+  ;;         specified, it uses the value of :lang instead.
+  ;; :deps : The executable name to parse or compile the language
   (defconst babel-language-plist
-    '((:lang awk :req ob-awk :mode awk :deps "awk")
-      (:lang C :req ob-C :mode c :deps "gcc")
-      (:lang cpp :req ob-C :mode c++ :deps "g++")
-      (:lang css :req ob-css :mode css)
-      (:lang emacs-lisp :req ob-emacs-lisp :mode emacs-lisp)
-      (:lang gnuplot :req ob-gnuplot :mode gnuplot :deps "gnuplot")
-      (:lang java :req ob-java :mode java :deps "java")
-      (:lang org :req ob-org :mode org)
-      (:lang python :req ob-python :mode python :deps "python")
+    '((:lang awk :deps "awk")
+      (:lang C :mode c :deps "gcc")
+      (:lang C++ :req C :mode c++ :deps "g++")
+      (:lang css)
+      (:lang emacs-lisp)
+      (:lang elisp :req emacs-lisp :mode emacs-lisp)
+      (:lang gnuplot :deps "gnuplot")
+      (:lang java :deps "java")
+      (:lang org)
+      (:lang python :deps "python")
       (:lang plantuml
-             :req ob-plantuml
-             :mode plantuml
-             :settings (setq org-plantuml-jar-path plantuml-jar-path)
-      (:lang ruby :req ob-ruby :mode ruby :deps "ruby")
-      (:lang shell :req ob-shell :mode shell-script)))
+       :settings
+        (progn (require 'plantuml-mode)
+               (setq org-plantuml-jar-path plantuml-jar-path)))
+      (:lang ruby :deps "ruby")
+      (:lang shell :mode shell-script)))
 
-    (let (load-languages)
-      (dolist (lang babel-language-plist)
-        (when (and lang
-                   (if (plist-get lang ':deps)
-                       (executable-find (plist-get lang ':deps)) t))
-          (push (cons (plist-get lang ':lang) t) load-languages)
-          (require (plist-get lang ':req))
-          (add-to-list 'org-src-lang-modes
-                       (cons (symbol-name (plist-get lang ':lang))
-                             (plist-get lang ':mode)))
-          (eval (plist-get lang ':settings))))
+    (let ((load-languages))
+      (dolist (prop babel-language-plist)
+        (let* ((lang (plist-get prop :lang))
+               (req (or (plist-get prop :req) lang))
+               (mode (or (plist-get prop :mode) lang))
+               (deps (or (plist-get prop :deps)))
+               (settings (plist-get prop :settings)))
+          (when (null (alist-get req load-languages))
+            (push (cons req (if deps (and (executable-find deps) t) t))
+                  load-languages))
+          (add-to-list 'org-src-lang-modes (cons (symbol-name lang) mode))
+          (eval settings))
       (org-babel-do-load-languages
-       'org-babel-do-load-languages load-languages))))
+       'org-babel-load-languages load-languages))))
