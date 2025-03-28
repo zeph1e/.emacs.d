@@ -31,4 +31,5 @@
   (setq web-beautify-args '("-s" "2" "-f" "-"))
   :ensure-system-package
   ((npm . "sudo apt install -y npm")
+   ("~/.local/lib/node_modules" . "npm config set prefix ~/.local")
    (js-beautify . "npm -g install js-beautify")))
