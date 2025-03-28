@@ -1,10 +1,11 @@
 ;;-*- mode: emacs-lisp; -*-
 (use-package google-c-style
+  :init
+  (c-add-style "google" google-c-style)
   :config
   (setf (alist-get 'c++-mode c-default-style) "google"
-        (alist-get 'c-mode c-default-style) "google")
-  :hook
-  (c-mode-common . google-set-c-style))
+        (alist-get 'c-mode c-default-style) "google"))
+
 
 (use-package google-translate
   :init
