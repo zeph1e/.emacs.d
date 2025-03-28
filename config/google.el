@@ -1,15 +1,10 @@
 ;;-*- mode: emacs-lisp; -*-
 (use-package google-c-style
   :config
-  (add-hook 'c-mode-common-hook #'google-set-c-style)
-  :init
-  (setq-default
-   c-default-style '((java-mode . "java")
-                     (awk-mode . "awk")
-                     (python-mode . "python")
-                     (c-mode . "google"))
-   indent-tabs-mode nil ; don't insert tabs in indent
-   tab-always-indent nil))
+  (setf (alist-get 'c++-mode c-default-style) "google"
+        (alist-get 'c-mode c-default-style) "google")
+  :hook
+  (c-mode-common . google-set-c-style))
 
 (use-package google-translate
   :init
