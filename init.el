@@ -68,7 +68,7 @@
     (write-file custom-file t)))
 (load custom-file)
 
-;; store backup files in .emacs.d/backups
+;; backup, auto-save and lock file settings
 (let ((backups-dir (locate-user-emacs-file ".backups"))
       (auto-saves-dir (locate-user-emacs-file ".auto-saves/"))
       (lock-files-dir (locate-user-emacs-file ".lock-files/")))
@@ -83,6 +83,13 @@
         (unless (file-directory-p dir)
           (warn "backup path, %s is not a directory!" dir))
       (mkdir dir))))
+
+(setq make-backup-files t
+      backup-by-copying t
+      delete-old-versions t
+      version-control t
+      kept-new-versions 5
+      kept-old-versions 2)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; package & use-package initialization
