@@ -57,9 +57,6 @@
         (process-put server-process :frame (selected-frame))
         (process-put server-process :children '())))))
 
-;; load workaround
-(load "~/.emacs.d/workaround.el")
-
 ;; customization settings
 (setq custom-file "~/.emacs.d/custom.el")
 (unless (file-exists-p custom-file)
@@ -91,6 +88,13 @@
       kept-new-versions 5
       kept-old-versions 2)
 
+;; load workaround
+(load "~/.emacs.d/workaround.el")
+
+;; add local package path to load path
+(let ((default-directory "~/.emacs.d/plugins"))
+  (normal-top-level-add-subdirs-to-load-path))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; package & use-package initialization
 (require 'package)
@@ -117,10 +121,6 @@
                   (car (cdr (assq 'use-package package-alist))))))
   (require 'use-package)
   (setq use-package-always-ensure t))
-
-;; add local package path to load path
-(let ((default-directory "~/.emacs.d/plugins"))
-  (normal-top-level-add-subdirs-to-load-path))
 
 (defvar my:global-key-map
   (let ((map (make-sparse-keymap)))
