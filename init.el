@@ -153,18 +153,18 @@
                             (not (file-directory-p file))
                             (string-match "\\([^.]+\\).el\\'" file))
                      (load-file (concat dir "/" file))
-                     file))
+                     (concat dir "/" file)))
                  (directory-files dir))))))
     ;; byte-compile them on quit
     (add-hook 'kill-emacs-hook
               `(lambda ()
                  (mapc
-                  (lambda ()
+                  (lambda (filename)
                     (let ((target (concat filename "c")))
                       (unless (and (file-exists-p target)
                                    (file-newer-than-file-p target filename))
-                        (byte-compile-file filename)))
-                    (list ,@files))))))
+                        (byte-compile-file filename))))
+                    (list ,@files)))))
 
 ;; define default minor modes
 (defconst my:default-minor-mode-list
