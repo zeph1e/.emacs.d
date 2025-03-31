@@ -16,6 +16,9 @@
 (use-package anaconda-mode
   :hook
   ((python-mode . anaconda-mode)
-   (python-mode . anaconda-eldoc-mode)))
+   (python-mode . anaconda-eldoc-mode))
+  :custom
+  (anaconda-mode-installation-directory
+   (concat (file-name-directory user-init-file) ".anaconda-mode")))
 
 (use-package company-anaconda)
