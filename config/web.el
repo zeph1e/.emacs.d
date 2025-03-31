@@ -1,7 +1,6 @@
 (use-package web-mode
   :commands web-mode
-  :init
-  (add-to-list 'auto-mode-alist '("\\.\\(html\\|php\\)?\\'" . web-mode))
+  :mode "\\.\\(html\\|php\\)?\\'"
   :custom
   (web-mode-markup-indent-offset 2)
   (web-mode-attr-indent-offset 2)
