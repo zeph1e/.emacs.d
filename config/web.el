@@ -32,3 +32,20 @@
   ((npm . "sudo apt install -y npm")
    ("~/.local/lib/node_modules" . "npm config set prefix ~/.local")
    (js-beautify . "npm -g install js-beautify")))
+
+(use-package js
+  :pin manual
+  :ensure-system-package
+  ((npm . "sudo apt install -y npm")
+   ("~/.local/lib/node_modules" . "npm config set prefix ~/.local")
+   (typescript-language-server . "npm -g install typescript-language-server")))
+
+(use-package typescript-mode
+  :mode "\\.ts\\'"
+  :ensure-system-package
+  ((npm . "sudo apt install -y npm")
+   ("~/.local/lib/node_modules" . "npm config set prefix ~/.local")
+   (typescript-language-server . "npm -g install typescript-language-server")
+   (tsc . "npm -g install typescript"))
+  :custom
+  (typescript-indent-line 2))

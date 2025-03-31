@@ -15,5 +15,9 @@
   :hook
   (c-mode . lsp)
   (c++-mode . lsp)
+  (js-mode . lsp-deferred)
+  (typescript-mode . lsp-deferred)
+  (python-mode . lsp-deferred)
   (lsp-mode . lsp-enable-which-key-integration))
+
 (use-package lsp-ui)
