@@ -142,22 +142,29 @@
 (ad-activate 'load)
 
 ;; install & configure packages
-(let ((dir "~/.emacs.d/config") (files))
-  (when (file-exists-p dir)
-    (dolist (filename (directory-files dir))
-      (when (and (not (file-symlink-p filename))
-                 (not (file-directory-p filename))
-                 (string-match "\\([^.]+\\).el\\'" filename))
-        (push (concat dir "/" filename) files)
-        (load-file (concat dir "/" filename))))
+(let* ((dir "~/.emacs.d/config")
+       (files
+        (when (file-directory-p dir)
+          (remq nil
+                (mapcar
+                 (lambda (file)
+                   (when
+                       (and (not (file-symlink-p file))
+                            (not (file-directory-p file))
+                            (string-match "\\([^.]+\\).el\\'" file))
+                     (load-file (concat dir "/" file))
+                     file))
+                 (directory-files dir))))))
     ;; byte-compile them on quit
     (add-hook 'kill-emacs-hook
               `(lambda ()
-                 (dolist (filename (list ,@files))
-                   (let ((target (concat filename "c")))
-                     (unless (and (file-exists-p target)
-                                  (file-newer-than-file-p target filename))
-                       (byte-compile-file filename))))))))
+                 (mapc
+                  (lambda ()
+                    (let ((target (concat filename "c")))
+                      (unless (and (file-exists-p target)
+                                   (file-newer-than-file-p target filename))
+                        (byte-compile-file filename)))
+                    (list ,@files))))))
 
 ;; define default minor modes
 (defconst my:default-minor-mode-list
