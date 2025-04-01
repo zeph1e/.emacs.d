@@ -80,3 +80,9 @@
   :custom
   helm-descbinds-mode t
   :after (helm))
+
+(use-package helm-lsp
+  :bind
+  (:map lsp-mode-map
+   ([remap xref-find-apropos] . helm-lsp-workspace-symbol))
+  :after (helm lsp))
