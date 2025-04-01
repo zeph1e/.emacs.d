@@ -1,6 +1,7 @@
 (use-package python-mode
   :ensure-system-package
-  (pyls . "pip install --user 'python-language-server[all]'")
+  (pyls .
+   "pip install --user python-language-server[all] --break-system-packages")
   :bind
   (:map python-mode-map
    ("C-c C-." . python-indent-shift-right)
@@ -10,8 +11,8 @@
    ("C-c ," . python-indent-shift-left))
   :custom
   ((python-indent-offset 2)
-   (python-shell-interpreter (or (executable-find "python")
-                                 (executable-find "python3")))))
+   (python-shell-interpreter (or (executable-find "python3")
+                                 (executable-find "python")))))
 
 (use-package anaconda-mode
   :hook
