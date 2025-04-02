@@ -91,14 +91,20 @@ Runs revert-buffer--default internally"
     "Advised save-some-buffers to show what is changed in the buffers."
     (cl-letf* ((orig-map-y-or-n-p (symbol-function 'map-y-or-n-p))
                ((symbol-function 'map-y-or-n-p)
-               #'(lambda (prompter actor list &optional help action-alist
-                                   no-cursor-in-echo-area)
-                   (funcall orig-map-y-or-n-p
-                            #'(lambda (buffer)
-                              (my:display-buffer-modification buffer)
-                              (funcall prompter buffer))
-                            actor list help action-alist
-                            no-cursor-in-echo-area))))
+                #'(lambda (prompter actor list &optional help action-alist
+                                    no-cursor-in-echo-area)
+                    (funcall orig-map-y-or-n-p
+                             #'(lambda (buffer)
+                                 (my:display-buffer-modification buffer)
+                                 (funcall prompter buffer))
+                             actor list help
+                             `((?k ,(lambda (buf)
+                                      (if (null (buffer-file-name buf))
+                                          (message "Not applicable: no file")
+                                        (with-current-buffer buf
+                                          (revert-buffer))))
+                                   ,(purecopy "revert changes in this buffer")))
+                             no-cursor-in-echo-area))))
       ad-do-it))
   (ad-activate 'save-some-buffers)
 
