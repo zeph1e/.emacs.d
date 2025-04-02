@@ -18,7 +18,7 @@
     `(add-hook (quote ,hook)
                (lambda ()
                  (add-to-list (make-local-variable `company-backends)
-                              (quote (,backend :with company-capf)))
+                              (quote ,backend))
                  ,@body
                  )))
 
