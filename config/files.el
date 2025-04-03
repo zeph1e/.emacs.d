@@ -1,7 +1,7 @@
 (use-package files
   :ensure nil
   :pin manual
-  :init
+  :config
   (defun my:display-buffer-modification (&optional buffer-or-name)
     (interactive)
     (let* ((buffer (get-buffer (or buffer-or-name (current-buffer))))
@@ -102,7 +102,7 @@ Runs revert-buffer--default internally"
                                       (if (null (buffer-file-name buf))
                                           (message "Not applicable: no file")
                                         (with-current-buffer buf
-                                          (revert-buffer))))
+                                          (revert-buffer t t))))
                                    ,(purecopy "revert changes in this buffer")))
                              no-cursor-in-echo-area))))
       ad-do-it))
