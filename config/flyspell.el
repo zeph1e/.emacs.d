@@ -14,3 +14,8 @@
   :bind
   (:map my:global-key-map
    ("<f8>" . my:toggle-flyspell-mode)))
+
+(use-package flyspell-popup
+  :bind
+  (:map my:global-key-map
+  ("C-;" . flyspell-popup-correct)))
