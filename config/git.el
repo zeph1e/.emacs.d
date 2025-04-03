@@ -13,6 +13,14 @@
   :pin manual
   :config
   (setq-default magit-gerrit-push-to "for")
+  :hook
+  (text-mode . (lambda ()
+                 (let ((file-name (buffer-file-name)))
+                   (if file-name
+                       (when
+                              (string-match ".git/COMMIT_EDITMSG" file-name))
+                   (setq-local fill-column 70)
+                   (display-fill-column-indicator-mode 1)))))
   :custom
   (magit-gerrit-known-hosts '("[a-zA-Z0-9]+.lge.com"
                               "[a-zA-Z0-9]+.lgsvl.com"))
