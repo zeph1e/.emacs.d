@@ -58,7 +58,7 @@
         (process-put server-process :children '())))))
 
 ;; customization settings
-(setq custom-file "~/.emacs.d/custom.el")
+(setq custom-file (concat user-emacs-directory "custom.el"))
 (unless (file-exists-p custom-file)
   (with-temp-buffer
     (insert ";;; custom.el --- local customization\n")
@@ -89,11 +89,26 @@
       kept-old-versions 2)
 
 ;; load workaround
-(load "~/.emacs.d/workaround.el")
+(load (concat user-emacs-directory "workaround.el"))
 
 ;; add local package path to load path
-(let ((default-directory "~/.emacs.d/plugins"))
-  (normal-top-level-add-subdirs-to-load-path))
+(let ((default-directory (concat user-emacs-directory "plugins")))
+  (normal-top-level-add-subdirs-to-load-path)
+  (mapc (lambda (dir)
+          (let ((installed-flag (concat dir "/.installed")))
+            (unless (or (not (file-directory-p dir))
+                        (string-prefix-p "." dir)
+                        (file-exists-p installed-flag))
+              (mapc (lambda (file)
+                      (when (and (not (file-symlink-p file))
+                                 (not (file-directory-p file))
+                                 (string-match "\\([^.]+\\).el\\'" file))
+                          (byte-compile-file (concat dir "/" file))))
+                    (directory-files dir))
+              (make-directory-autoloads
+               dir (concat dir "/" (directory-file-name dir) "-autoloads.el"))
+              (make-empty-file installed-flag))))
+        (directory-files default-directory)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; package & use-package initialization
@@ -142,7 +157,7 @@
 (ad-activate 'load)
 
 ;; install & configure packages
-(let* ((dir "~/.emacs.d/config")
+(let* ((dir (concat user-emacs-directory "config"))
        (files
         (when (file-directory-p dir)
           (remq nil

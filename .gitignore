@@ -22,3 +22,4 @@ transient
 eln-cache
 projectile-bookmarks*
 session.*
+*-autoloads.el
