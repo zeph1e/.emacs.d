@@ -4,41 +4,40 @@
 ;; You can use/modify/redistribute this freely.
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; basic options
+;; basic option
+
+;; language
 (set-language-environment "Korean")
-(setq-default
-  show-paren-mode t
-  load-prefer-newer t
-  fill-column 80
-  )
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(global-hl-line-mode t)
+(setq default-korean-keyboard "3")
 
-(setq
-  truncate-partial-width-windows nil ; do not truncate
-  visible-bell t ; ring a visible bell
-  make-backup-files nil ; no backup files
-  inhibit-startup-screen t ; no startup screen
-  inhibit-startup-message t ; no startup message
-  default-input-method "korean-hangul390"
-  default-korean-keyboard "3" ; 3 beolsik
-  ;; coding-system-for-read 'utf-8
-)
-
+;; coding system
 (when (string-match "UTF-8" (concat (getenv "LANG")))
   (setq coding-system-for-read 'utf-8)
   (setq coding-system-for-write 'utf-8))
+
+;; ui configuration
+(setq-default
+ show-paren-mode t        ; highlights corresponding parentheses
+ load-prefer-newer t      ; loads newer file even there's byte-compiled
+ fill-column 80           ; set column indicator at 80
+ truncate-partial-width-windows nil ; do not truncate
+ visible-bell t           ; ring a visible bell
+ inhibit-startup-screen t ; no startup screen
+ )
+(tool-bar-mode -1)        ; do not shows toolbar
+(menu-bar-mode -1)        ; do not shows menu
+(global-hl-line-mode t)   ; highlights the current cursor line
 
 (ignore-errors
   (when (display-graphic-p)
     (let ((korean-font "NanumGothicCoding-10"))
       (set-face-font 'default "Lucida Console-10")
-      (set-fontset-font "fontset-default" '(#x1100 . #xffdc) korean-font)
-      (set-fontset-font "fontset-default" '(#xe0bc . #xf66e) korean-font))
+      (set-fontset-font "fontset-default" '(#x1100 . #xffdc) korean-font))
+      ;; (set-fontset-font "fontset-default" '(#xe0bc . #xf66e) korean-font))
     ;; maximize frame on launch
     (add-to-list 'default-frame-alist '(fullscreen . maximized))))
 
+;; emacs server configuration
 (ignore-errors
   ;; a kinda tricky way to suppress warning
   (let ((warning-minimum-level :emergency))
@@ -50,12 +49,10 @@
         (defun server-ensure-safe-dir (dir) "Noop" t))
       (server-start) ; start server
       (when (processp server-process)
-        (process-put server-process :as (cond ((daemonp) 'daemon)
-                                              ((display-graphic-p) 'gui)
-                                              (t 'tty)))
-        (process-put server-process :terminal (frame-terminal))
-        (process-put server-process :frame (selected-frame))
-        (process-put server-process :children '())))))
+        (process-put server-process
+                     :as (cond ((daemonp) 'daemon)
+                               ((display-graphic-p) 'gui)
+                               (t 'tty)))))))
 
 ;; customization settings
 (setq custom-file (concat user-emacs-directory "custom.el"))
