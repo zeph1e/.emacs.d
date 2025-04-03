@@ -6,21 +6,20 @@
    ("C-x RET C-h" . magit-log-head)
    ("C-x RET C-b" . magit-blame)
    ("C-x RET C-f" . magit-find-file)
-   ("C-x RET C-l" . magit-log-buffer-file)))
+   ("C-x RET C-l" . magit-log-buffer-file))
+  :hook
+  (text-mode . (lambda ()
+                 (let ((file-name (buffer-file-name)))
+                   (when file-name
+                     (when (string-match ".git/COMMIT_EDITMSG" file-name)
+                       (setq-local fill-column 70)
+                       (display-fill-column-indicator-mode 1)))))))
 
 (use-package magit-gerrit
   :ensure nil
   :pin manual
   :config
   (setq-default magit-gerrit-push-to "for")
-  :hook
-  (text-mode . (lambda ()
-                 (let ((file-name (buffer-file-name)))
-                   (if file-name
-                       (when
-                              (string-match ".git/COMMIT_EDITMSG" file-name))
-                   (setq-local fill-column 70)
-                   (display-fill-column-indicator-mode 1)))))
   :custom
   (magit-gerrit-known-hosts '("[a-zA-Z0-9]+.lge.com"
                               "[a-zA-Z0-9]+.lgsvl.com"))
