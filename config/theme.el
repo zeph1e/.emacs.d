@@ -1,7 +1,6 @@
 ;;-*- mode: emacs-lisp; -*-
 (use-package color-theme-tomorrow
   :ensure nil
-  :commands (color-theme-tomorrow-night-eighties)
   :config
   ;; (set-face-attribute 'mode-line nil
   ;;                     :background "DeepSkyBlue4"

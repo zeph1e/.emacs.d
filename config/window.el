@@ -15,7 +15,6 @@
 
 (use-package windcopy
   :ensure nil
-  :commands (windcopy-default-keybindings)
   :bind
   (:map my:global-key-map
    ("C-S-<left>"  . windcopy-left)
@@ -27,7 +26,6 @@
 
 (use-package framemove
   :ensure nil
-  :commands (framemove-default-keybindings)
   :bind
   (:map my:global-key-map
    ("M-<left>"  . fm-left-frame)

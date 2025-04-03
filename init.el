@@ -96,19 +96,21 @@
   (normal-top-level-add-subdirs-to-load-path)
   (mapc (lambda (dir)
           (let ((installed-flag (concat dir "/.installed")))
-            (unless (or (not (file-directory-p dir))
-                        (string-prefix-p "." dir)
-                        (file-exists-p installed-flag))
-              (mapc (lambda (file)
-                      (when (and (not (file-symlink-p file))
-                                 (not (file-directory-p file))
-                                 (string-match "\\([^.]+\\).el\\'" file))
+            (when (and (file-directory-p dir)
+                       (not (string-prefix-p "." dir)))
+              (unless (file-exists-p installed-flag)
+                (mapc (lambda (file)
+                        (when (and (not (file-symlink-p file))
+                                   (not (file-directory-p file))
+                                   (string-match "\\([^.]+\\).el\\'" file))
                           (byte-compile-file (concat dir "/" file))))
-                    (directory-files dir))
-              (make-directory-autoloads
-               dir (concat dir "/" (directory-file-name dir) "-autoloads.el"))
-              (make-empty-file installed-flag))))
-        (directory-files default-directory)))
+                      (directory-files dir))
+                (make-directory-autoloads
+                 dir (concat dir "/" (directory-file-name dir) "-autoloads.el"))
+                (make-empty-file installed-flag))
+              (require (intern (concat (directory-file-name dir)
+                                       "-autoloads"))))))
+          (directory-files default-directory)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; package & use-package initialization
