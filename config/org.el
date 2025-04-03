@@ -44,10 +44,4 @@
           (add-to-list 'org-src-lang-modes (cons (symbol-name lang) mode))
           (eval settings))
       (org-babel-do-load-languages
-       'org-babel-load-languages load-languages)))
-
-    :hook
-    (org-mode . (lambda ()
-                  ;; do not apply lines-tail for org mode
-                  (setq-local whitespace-style
-                              (delete 'lines-tail whitespace-style)))))
+       'org-babel-load-languages load-languages))))

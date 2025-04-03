@@ -10,8 +10,6 @@
   show-paren-mode t
   load-prefer-newer t
   fill-column 80
-  whitespace-line-column fill-column
-  whitespace-style '(face trailing lines-tail tabs tab-mark)
   )
 (tool-bar-mode -1)
 (menu-bar-mode -1)
@@ -170,11 +168,13 @@
 
 ;; define default minor modes
 (defconst my:default-minor-mode-list
-  '(display-line-numbers-mode whitespace-mode))
+  '(display-line-numbers-mode my:whitespace-mode))
+
 (defconst my:default-prog-minor-mode-list
   '(flyspell-prog-mode
     display-fill-column-indicator-mode
     goto-address-prog-mode))
+
 (defconst my:default-text-minor-mode-list
   '(visual-line-mode flyspell-mode goto-address-mode))
 
