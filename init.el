@@ -32,8 +32,8 @@
   (when (display-graphic-p)
     (let ((korean-font "NanumGothicCoding-10"))
       (set-face-font 'default "Lucida Console-10")
+      ;; HANGUL CHOSUNG KIYEOK to HALFWIDTH HANGUL LETTER I
       (set-fontset-font "fontset-default" '(#x1100 . #xffdc) korean-font))
-      ;; (set-fontset-font "fontset-default" '(#xe0bc . #xf66e) korean-font))
     ;; maximize frame on launch
     (add-to-list 'default-frame-alist '(fullscreen . maximized))))
 
