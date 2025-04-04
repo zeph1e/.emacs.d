@@ -4,7 +4,7 @@
   :config
   (defvar my:view-file-opener
     (eval-when-compile
-      (or (executable-find "explorer.exe") (executable-find "xdg-open"))))
+      (or (executable-find "wslview") (executable-find "xdg-open"))))
 
   (defun my:view-file-external (file)
     (interactive (list (convert-standard-filename
