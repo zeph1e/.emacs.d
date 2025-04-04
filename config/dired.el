@@ -2,6 +2,12 @@
 (use-package dired
   :ensure nil
   :config
+  ;; http://superuser.com/q/1728902
+  ;; If there's an issue in opening files with wslview, it would be from a bug
+  ;; in wslu, WSL Utilities. You may update wslu by:
+  ;; sudo add-apt-repository ppa:wslutilities/wslu
+  ;; sudo apt update
+  ;; sudo apt upgrade
   (defvar my:view-file-opener
     (eval-when-compile
       (or (executable-find "wslview") (executable-find "xdg-open"))))
