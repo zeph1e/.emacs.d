@@ -136,10 +136,13 @@
   (require 'use-package)
   (setq use-package-always-ensure t))
 
+;; Defines a global key map which always overrides other keybindings
+;; https://stackoverflow.com/q/34554427
 (defvar my:global-key-map
   (let ((map (make-sparse-keymap)))
     map)
   "My global key map")
+
 (define-minor-mode my:global-key-mode
   "My global key mode to keep my keybindings overrides major modes keybindings
   Key bindings:
