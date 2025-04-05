@@ -43,7 +43,7 @@
   (let ((warning-minimum-level :emergency))
     (require 'server)
     (unless (server-running-p)
-      ;; http://stackoverflow.com/q/885793/emacs-error-when-calling-server-start
+      ;; http://stackoverflow.com/q/885793
       (when (and (>= emacs-major-version 23)
                  (equal window-system 'w32))
         (defun server-ensure-safe-dir (dir) "Noop" t))
@@ -126,15 +126,15 @@
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
-(eval-when-compile
-  ;; use-package is landed as a default package into emacs 29
-  ;; In this case we don't need to add a load path
-  (when (< (string-to-number emacs-version) 29)
-    (add-to-list 'load-path
-                 (package-desc-dir
-                  (car (cdr (assq 'use-package package-alist))))))
-  (require 'use-package)
-  (setq use-package-always-ensure t))
+
+;; use-package is landed as a default package into emacs 29
+;; In this case we don't need to add a load path
+(when (< (string-to-number emacs-version) 29)
+  (add-to-list 'load-path
+               (package-desc-dir
+                (car (cdr (assq 'use-package package-alist))))))
+(require 'use-package)
+(setq use-package-always-ensure t)
 
 ;; Defines a global key map which always overrides other keybindings
 ;; https://stackoverflow.com/q/34554427
