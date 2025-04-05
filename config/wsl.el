@@ -2,6 +2,17 @@
   (string-match "-[Mm]icrosoft" operating-system-release)
   "Non-nil if it is on WSL.")
 
+(use-package mailcap
+  :pin manual
+  :config
+  ;; This is to launch external viewer programs on Windows, not in WSL.
+  (defun my:mailcap-mime-info (orig-fun &rest args)
+    (let ((viewer (apply orig-fun args)))
+      (if (and my:wslp (stringp viewer))
+          (concat (executable-find "wslview") " %s")
+        viewer)))
+  (advice-add 'mailcap-mime-info :around #'my:mailcap-mime-info))
+
 (use-package browse-url
   :pin manual
   :init
