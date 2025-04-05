@@ -53,25 +53,26 @@ Runs revert-buffer--default internally"
         (revert-buffer buf)))
     (message "Refreshed all opened files."))
 
-  (defadvice kill-buffer (around my:kill-buffer (&optional buffer-or-name))
+  (defun my:kill-buffer (orig-fun &rest args)
     "Advised kill buffer to show diff with original file to verify the changes."
-    (with-current-buffer (or buffer-or-name (current-buffer))
-      (if (and (buffer-live-p (current-buffer))
-               (buffer-modified-p)
-               (buffer-file-name))
-          (save-window-excursion
-            (my:display-buffer-modification (current-buffer))
-            (when (yes-or-no-p
-                   (format "Buffer %s modified; kill anyway? " (buffer-name)))
-              (set-buffer-modified-p nil)
-              ad-do-it))
-        ad-do-it)))
-  (ad-activate 'kill-buffer)
+    (let ((buffer-or-name (car args)))  ; original argument
+      (with-current-buffer (or buffer-or-name (current-buffer))
+        (if (and (buffer-live-p (current-buffer))
+                 (buffer-modified-p)
+                 (buffer-file-name))
+            (save-window-excursion
+              (my:display-buffer-modification (current-buffer))
+              (when (yes-or-no-p
+                     (format "Buffer %s modified; kill anyway? " (buffer-name)))
+                (set-buffer-modified-p nil)
+                (apply orig-fun args)))
+          (apply orig-fun args)))))
+  (advice-add 'kill-buffer :around #'my:kill-buffer)
 
-  (defadvice recover-file (around my:recover-file (file))
+  (defun my:recover-file (ofig-fun &rest args)
     "Advised recover-file to diff buffer with auto-save file."
     (interactive "FRecover file: ")
-    (cl-letf* ((file (expand-file-name file))
+    (cl-letf* ((file (expand-file-name (car args)))  ; original argument
                (file-buffer (find-buffer-visiting file))
                (file-name (let ((buffer-filen-name file))
                             (make-auto-save-file-name)))
@@ -83,30 +84,31 @@ Runs revert-buffer--default internally"
                     (diff file-buffer file-name nil 'noasync)
                     (if (y-or-n-p question) "yes" "no"))))
       (save-window-excursion
-        ad-do-it)))
-  (ad-activate 'recover-file)
+        (apply orig-fun args))))
+  (advice-add 'recover-file :around #'my:recover-file)
 
-  (defadvice save-some-buffers
-      (around my:save-some-buffers (&optional arg pred))
+  (defun my:save-some-buffers-around (orig-fun &rest args)
     "Advised save-some-buffers to show what is changed in the buffers."
-    (cl-letf* ((orig-map-y-or-n-p (symbol-function 'map-y-or-n-p))
+    (cl-letf* ((arg (car args)) (pred (cdr args))  ; original arguments
+               (orig-map-y-or-n-p (symbol-function 'map-y-or-n-p))
                ((symbol-function 'map-y-or-n-p)
-                #'(lambda (prompter actor list &optional help action-alist
-                                    no-cursor-in-echo-area)
-                    (funcall orig-map-y-or-n-p
-                             #'(lambda (buffer)
-                                 (my:display-buffer-modification buffer)
-                                 (funcall prompter buffer))
-                             actor list help
-                             `((?k ,(lambda (buf)
-                                      (if (null (buffer-file-name buf))
-                                          (message "Not applicable: no file")
-                                        (with-current-buffer buf
-                                          (revert-buffer t t))))
-                                   ,(purecopy "revert changes in this buffer")))
-                             no-cursor-in-echo-area))))
-      ad-do-it))
-  (ad-activate 'save-some-buffers)
+                (lambda (prompter actor list &optional help action-alist
+                                  no-cursor-in-echo-area)
+                  (funcall orig-map-y-or-n-p
+                           (lambda (buffer)
+                             (my:display-buffer-modification buffer)
+                             (funcall prompter buffer))
+                           actor list help
+                           `((?k ,(lambda (buf)
+                                    (if (null (buffer-file-name buf))
+                                        (message "Not applicable: no file")
+                                      (with-current-buffer buf
+                                        (revert-buffer t t))))
+                                 ,(purecopy
+                                   "revert changes in this buffer")))
+                           no-cursor-in-echo-area))))
+      (apply orig-fun args)))
+  (advice-add 'save-some-buffers :around #'my:save-some-buffers-around)
 
   :bind
   (:map my:global-key-map

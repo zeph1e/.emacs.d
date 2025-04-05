@@ -58,10 +58,11 @@
 
   ;; kill heading spaces on kill-line:
   ;; from http://emacswiki.org/emacs/DeletingWhitespace
-  (defadvice kill-line (after kill-line-cleanup-whitespace activate compile)
+  (defun my:kill-line (&rest arg)
     "cleanup whitespace on kill-line"
     (if (not (bolp))
         (delete-region (point) (progn (skip-chars-forward " \t") (point)))))
+  (advice-add 'kill-line :after #'my:kill-line)
 
   (defun my:toggle-buffer-read-only ()
     "Toggles read-only flag of the current buffer."
