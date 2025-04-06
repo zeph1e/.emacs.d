@@ -206,12 +206,12 @@
               my:default-text-minor-mode-list))
 
 ;; disable hl-mode for following modes
-(defconst my:hl-mode-exceptions '(shell-mode eshell-mode term-mode))
+(defconst my:hl-line-mode-exceptions '(shell-mode eshell-mode term-mode))
 
 (mapc (lambda (mode)
         (add-hook (derived-mode-hook-name mode)
                   (lambda () (setq-local global-hl-line-mode nil))))
-      my:hl-mode-exceptions)
+      my:hl-line-mode-exceptions)
 
 ;; (el-get-bundle  arduino-mode)
 ;; (el-get-bundle  apache-mode)
