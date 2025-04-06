@@ -198,7 +198,7 @@
 (mapc (lambda (mode)
         (add-hook 'prog-mode-hook mode))
       (append my:default-minor-mode-list
-               my:default-prog-minor-mode-list))
+              my:default-prog-minor-mode-list))
 
 (mapc (lambda (mode)
         (add-hook 'text-mode-hook mode))
