@@ -138,7 +138,7 @@
           (directory-files default-directory)))
 
 ;; Defines a global key map which always overrides other keybindings
-;; https://stackoverflow.com/q/34554427
+;; https://stackoverflow.com/q/683425/
 (defvar my:global-key-map
   (let ((map (make-sparse-keymap)))
     map)
@@ -164,25 +164,23 @@
 (let* ((dir (locate-user-emacs-file "config"))
        (files
         (when (file-directory-p dir)
-          (remq nil
-                (mapcar
-                 (lambda (file)
-                   (when
-                       (and (not (file-symlink-p file))
-                            (not (file-directory-p file))
-                            (string-match "\\([^.]+\\).el\\'" file))
-                     (load-file (concat dir "/" file))
-                     (concat dir "/" file)))
-                 (directory-files dir))))))
+          (remq nil (mapcar (lambda (file)
+                              (when
+                                  (and (not (file-symlink-p file))
+                                       (not (file-directory-p file))
+                                       (string-match "\\([^.]+\\).el\\'" file))
+                                (load-file (concat dir "/" file))
+                                (concat dir "/" file)))
+                            (directory-files dir))))))
     ;; byte-compile them on quit
     (add-hook 'kill-emacs-hook
               `(lambda ()
-                 (mapc
-                  (lambda (filename)
-                    (let ((target (concat filename "c")))
-                      (unless (and (file-exists-p target)
-                                   (file-newer-than-file-p target filename))
-                        (byte-compile-file filename))))
+                 (mapc (lambda (filename)
+                         (let ((target (concat filename "c")))
+                           (unless (and (file-exists-p target)
+                                        (file-newer-than-file-p target
+                                                                filename))
+                             (byte-compile-file filename))))
                     (list ,@files)))))
 
 ;; define default minor modes
@@ -199,15 +197,17 @@
 
 (mapc (lambda (mode)
         (add-hook 'prog-mode-hook mode))
-      (my:flatten `(,my:default-minor-mode-list
-                    ,my:default-prog-minor-mode-list)))
+      (append `(,my:default-minor-mode-list
+                ,my:default-prog-minor-mode-list)))
+
 (mapc (lambda (mode)
         (add-hook 'text-mode-hook mode))
-      (my:flatten `(,my:default-minor-mode-list
-                    ,my:default-text-minor-mode-list)))
+      (append `(,my:default-minor-mode-list
+                ,my:default-text-minor-mode-list)))
 
 ;; disable hl-mode for following modes
 (defconst my:hl-mode-exceptions '(shell-mode eshell-mode term-mode))
+
 (mapc (lambda (mode)
         (add-hook (derived-mode-hook-name mode)
                   (lambda () (setq-local global-hl-line-mode nil))))
