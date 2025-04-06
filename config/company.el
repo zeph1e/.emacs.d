@@ -66,11 +66,6 @@
 
 (use-package company-c-headers
   :config
-  (defun my:flatten (x)
-    (cond ((null x) nil)
-          ((listp x) (append (my:flatten (car x)) (my:flatten (cdr x))))
-          (t (list x))))
-
   (defun my:filter-list (condp list)
     (delq nil (mapcar (lambda (x) (and (funcall condp x) x)) list)))
 
@@ -103,7 +98,7 @@
                       (directory-files parent-directory t pattern))))
   (setq-default company-c-headers-path-system
                 (delete-dups
-                 (my:flatten
+                 (flatten-list
                   (list (mapcar (lambda (s) (string-remove-suffix "/" s))
                                 (my:filter-list 'file-directory-p
                                                 company-c-headers-path-system))
