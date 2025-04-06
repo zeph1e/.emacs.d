@@ -1,6 +1,6 @@
 ;;-*- mode: emacs-lisp; -*-
 (use-package org
-  :pin org
+  :pin gnu
   :config
   ;; Babel language support configuration
   ;; See https://orgmode.org/worg/org-contrib/babel/languages/index.html
