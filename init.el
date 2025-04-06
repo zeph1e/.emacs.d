@@ -197,13 +197,13 @@
 
 (mapc (lambda (mode)
         (add-hook 'prog-mode-hook mode))
-      (append `(,my:default-minor-mode-list
-                ,my:default-prog-minor-mode-list)))
+      (append my:default-minor-mode-list
+               my:default-prog-minor-mode-list))
 
 (mapc (lambda (mode)
         (add-hook 'text-mode-hook mode))
-      (append `(,my:default-minor-mode-list
-                ,my:default-text-minor-mode-list)))
+      (append my:default-minor-mode-list
+              my:default-text-minor-mode-list))
 
 ;; disable hl-mode for following modes
 (defconst my:hl-mode-exceptions '(shell-mode eshell-mode term-mode))
