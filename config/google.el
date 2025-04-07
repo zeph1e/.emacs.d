@@ -9,7 +9,7 @@
 
 (use-package google-translate
   :init
-  (eval-after-load 'google-translate-smooth-ui
+  (eval-after-load 'google-translate-core-ui
     '(progn
        (setq google-translate-translation-directions-alist
              '(("en" . "ko") ("ko" . "en") ("de" . "ko") ("ko" . "de")
