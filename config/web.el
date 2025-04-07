@@ -41,7 +41,9 @@
    (typescript-language-server . "npm -g install typescript-language-server")
    (tsc . "npm -g install typescript"))
   :hook
-  (js-mode . js-jsx-enable))
+  (js-mode . js-jsx-enable)
+  :custom
+  (js-indent-level 2))
 
 (use-package typescript-mode
   :mode "\\.ts\\'"
@@ -52,3 +54,7 @@
    (tsc . "npm -g install typescript"))
   :custom
   (typescript-indent-line 2))
+
+(use-package css-mode
+  :custom
+  (css-indent-offset 2))
