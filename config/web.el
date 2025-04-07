@@ -53,7 +53,7 @@
    (typescript-language-server . "npm -g install typescript-language-server")
    (tsc . "npm -g install typescript"))
   :custom
-  (typescript-indent-line 2))
+  (typescript-indent-level 2))
 
 (use-package css-mode
   :custom
