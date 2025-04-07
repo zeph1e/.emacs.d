@@ -11,6 +11,7 @@
     (when (y-or-n-p "Cleanup all tramp buffers? ")
       (tramp-cleanup-all-buffers)
       (message "Cleaned all tramp buffers up")))
+  ;; FIXME: home directory may differ
   (add-to-list 'tramp-remote-path (concat (getenv "HOME") "/.local/bin"))
   :bind
   (:map my:global-key-map
@@ -18,5 +19,6 @@
    ("C-<f6>" . my:tramp-cleanup-all-buffers))
   :custom
   (tramp-default-method
-   (ignore-errors (file-name-nondirectory (executable-find "ssh"))))
+   (or (ignore-errors (file-name-nondirectory (executable-find "ssh")))
+       (default-value 'tramp-default-method)))
   (enable-remote-dir-locals t))
