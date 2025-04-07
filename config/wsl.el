@@ -31,6 +31,6 @@ The optional argument NEW-WINDOW is not used."
   (defun my:browse-url-default-browser (url &rest args)
     (if my:wslp
         (my:browse-url-wslview url args)
-      (funcall (default-value 'browse-url-browser-function) url args)))
+      (browse-url-default-browser url args)))
   :custom
   (browse-url-browser-function #'my:browse-url-default-browser))
