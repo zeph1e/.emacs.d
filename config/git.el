@@ -11,7 +11,8 @@
   (text-mode . (lambda ()
                  (let ((file-name (buffer-file-name)))
                    (when file-name
-                     (when (string-match ".git/COMMIT_EDITMSG" file-name)
+                     (when (string-match ".+\\(.git/COMMIT_EDITMSG\\)\\'"
+                                         file-name)
                        (setq-local fill-column 70)
                        (display-fill-column-indicator-mode 1)))))))
 
