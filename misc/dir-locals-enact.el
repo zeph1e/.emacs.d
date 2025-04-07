@@ -1,0 +1,7 @@
+((js-mode . ((js-jsx-syntax . t)
+             (indent-tabs-mode . t)
+             (tab-width . 4)))
+ (less-css-mode . ((indent-tabs-mode . t)
+                   (tab-width . 4)))
+ (js-json-mode . ((js-indent-level . 2)
+                  (indent-tabs-mode . nil))))
