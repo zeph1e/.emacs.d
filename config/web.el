@@ -40,8 +40,6 @@
    ("~/.local/lib/node_modules" . "npm config set prefix ~/.local")
    (typescript-language-server . "npm -g install typescript-language-server")
    (tsc . "npm -g install typescript"))
-  :hook
-  (js-mode . js-jsx-enable)
   :custom
   (js-indent-level 2))
 
