@@ -10,6 +10,7 @@
   (js-mode . lsp-deferred)
   (typescript-mode . lsp-deferred)
   (python-mode . lsp-deferred)
+  (web-mode . lsp-deferred)
   (lsp-mode . lsp-enable-which-key-integration)
   :custom
   ((lsp-keymap-prefix "C-c C-l")

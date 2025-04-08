@@ -31,15 +31,18 @@
   :ensure-system-package
   ((npm . "sudo apt install -y npm")
    ("~/.local/lib/node_modules" . "npm config set prefix ~/.local")
-   (js-beautify . "npm -g install js-beautify")))
+   (js-beautify . "npm -g install js-beautify")
+   (vscode-html-language-server
+    . "npm -g install vscode-langservers-extracted")))
 
 (use-package js
   :pin manual
   :ensure-system-package
   ((npm . "sudo apt install -y npm")
    ("~/.local/lib/node_modules" . "npm config set prefix ~/.local")
+   (tsc . "npm -g install typescript")
    (typescript-language-server . "npm -g install typescript-language-server")
-   (tsc . "npm -g install typescript"))
+   (vscode-json-language-server . "npm -g vscode-langservers-extracted"))
   :custom
   (js-indent-level 2))
 
@@ -54,5 +57,9 @@
   (typescript-indent-level 2))
 
 (use-package css-mode
+  :ensure-system-package
+  ((npm . "sudo apt install -y npm")
+   ("~/.local/lib/node_modules" . "npm config set prefix ~/.local")
+   (vscode-css-language-server . "npm -g vscode-langservers-extracted"))
   :custom
   (css-indent-offset 2))
