@@ -8,4 +8,5 @@
       (call-interactively #'compile)))
   :bind
   (:map my:global-key-map
-   ("<f7>" . my:compile)))
+   ("<f7>" . my:compile)
+   ("C-<f7>" . compile)))
