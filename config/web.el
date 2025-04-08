@@ -1,6 +1,9 @@
 (use-package web-mode
   :commands web-mode
   :mode "\\.\\(html\\|php\\)?\\'"
+  :ensure-system-package
+  (vscode-html-language-server
+   . "npm -g install vscode-langservers-extracted")
   :custom
   (web-mode-markup-indent-offset 2)
   (web-mode-attr-indent-offset 2)
@@ -14,6 +17,10 @@
   (web-mode-engines-alist '(("php" . "\\.php\\'"))))
 
 (use-package web-beautify
+  :ensure-system-package
+  ((npm . "sudo apt install -y npm")
+   ("~/.local/lib/node_modules" . "npm config set prefix ~/.local")
+   (js-beautify . "npm -g install js-beautify"))
   :init
   (eval-after-load 'js
     '(define-key js-mode-map (kbd "C-c b") 'web-beautify-js))
@@ -27,13 +34,7 @@
     '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
 
   :config
-  (setq web-beautify-args '("-s" "2" "-f" "-"))
-  :ensure-system-package
-  ((npm . "sudo apt install -y npm")
-   ("~/.local/lib/node_modules" . "npm config set prefix ~/.local")
-   (js-beautify . "npm -g install js-beautify")
-   (vscode-html-language-server
-    . "npm -g install vscode-langservers-extracted")))
+  (setq web-beautify-args '("-s" "2" "-f" "-")))
 
 (use-package js
   :pin manual
