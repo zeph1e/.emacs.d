@@ -44,4 +44,5 @@
           (add-to-list 'org-src-lang-modes (cons (symbol-name lang) mode))
           (eval settings))
       (org-babel-do-load-languages
-       'org-babel-load-languages load-languages))))
+       'org-babel-load-languages load-languages)))
+    :after (plantuml-mode))

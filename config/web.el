@@ -43,7 +43,8 @@
    ("~/.local/lib/node_modules" . "npm config set prefix ~/.local")
    (tsc . "npm -g install typescript")
    (typescript-language-server . "npm -g install typescript-language-server")
-   (vscode-json-language-server . "npm -g vscode-langservers-extracted"))
+   (vscode-json-language-server
+    . "npm -g install vscode-langservers-extracted"))
   :custom
   (js-indent-level 2))
 
@@ -61,6 +62,6 @@
   :ensure-system-package
   ((npm . "sudo apt install -y npm")
    ("~/.local/lib/node_modules" . "npm config set prefix ~/.local")
-   (vscode-css-language-server . "npm -g vscode-langservers-extracted"))
+   (vscode-css-language-server . "npm -g install vscode-langservers-extracted"))
   :custom
   (css-indent-offset 2))
