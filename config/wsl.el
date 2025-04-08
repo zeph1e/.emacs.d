@@ -9,9 +9,10 @@
   (defun my:mailcap-mime-info (orig-fun &rest args)
     (let ((viewer (apply orig-fun args)))
       (if (and my:wslp (stringp viewer))
-          (concat (executable-find "wslview") " %s")
+          (concat my:view-file-opener " %s")
         viewer)))
-  (advice-add 'mailcap-mime-info :around #'my:mailcap-mime-info))
+  (advice-add 'mailcap-mime-info :around #'my:mailcap-mime-info)
+  :after (dired))
 
 (use-package browse-url
   :pin manual
@@ -21,7 +22,7 @@
 in WSL. Default to the URL around or before point.
 The optional argument NEW-WINDOW is not used."
     (when my:wslp
-      (let ((wslview (executable-find "wslview")))
+      (let ((wslview my:view-file-opener))
         (if wslview
             (call-process wslview nil (current-buffer) nil url)
           (error "Unable to find wslview")))))
@@ -33,4 +34,5 @@ The optional argument NEW-WINDOW is not used."
         (my:browse-url-wslview url args)
       (browse-url-default-browser url args)))
   :custom
-  (browse-url-browser-function #'my:browse-url-default-browser))
+  (browse-url-browser-function #'my:browse-url-default-browser)
+  :after (dired))

@@ -1,6 +1,7 @@
 ;;-*- mode: emacs-lisp; -*-
 (use-package dired
   :ensure nil
+  :pin manual
   :config
   ;; http://superuser.com/q/1728902
   ;; If there's an issue in opening files with wslview, it would be from a bug
@@ -8,9 +9,12 @@
   ;; sudo add-apt-repository ppa:wslutilities/wslu
   ;; sudo apt update
   ;; sudo apt upgrade
-  (defvar my:view-file-opener
-    (eval-when-compile
-      (or (executable-find "wslview") (executable-find "xdg-open"))))
+  (defvar my:view-file-opener (or (executable-find "wslview")  ; for WSL
+                                  (executable-find "xdg-open")
+                                  (executable-find "gnome-open")
+                                  (executable-find "kde-open")
+                                  (executable-find "open"))
+    "The executable which opens file in external viewer")
 
   (defun my:view-file-external (file)
     (interactive (list (convert-standard-filename
