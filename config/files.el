@@ -75,7 +75,7 @@ Runs revert-buffer--default internally"
           (apply orig-fun args)))))
   (advice-add 'kill-buffer :around #'my:kill-buffer)
 
-  (defun my:recover-file (ofig-fun &rest args)
+  (defun my:recover-file (orig-fun &rest args)
     "Advised recover-file to diff buffer with auto-save file."
     (interactive "FRecover file: ")
     (cl-letf* ((file (expand-file-name (car args)))  ; original argument
