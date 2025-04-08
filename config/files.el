@@ -20,10 +20,16 @@
         (error "Visiting buffer %S doesn't have a name of file" buffer)
       (display-buffer buffer '(display-buffer-same-window))
       (delete-other-windows)
-      (diff (if (file-exists-p file-name)
-                file-name
-              null-device)
-            buffer nil 'noasync)))
+      ;; If the directory containing the file is removed already, diff will
+      ;; grumble about it.
+      (let ((default-directory (if (file-exists-p
+                                    (file-name-directory file-name))
+                                   (file-name-directory file-name)
+                                 "/")))
+        (diff (if (file-exists-p file-name)
+                  file-name
+                null-device)
+              buffer nil 'noasync))))
 
   (defun my:revert-buffer (ignore-auto noconfirm)
     "My custom function for revert-buffer which shows the differences.
