@@ -86,9 +86,6 @@
       kept-new-versions 5
       kept-old-versions 2)
 
-;; load workaround
-(load (locate-user-emacs-file "workaround.el"))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; package & use-package initialization
 (require 'package)
@@ -113,6 +110,9 @@
                 (car (cdr (assq 'use-package package-alist))))))
 (require 'use-package)
 (setq use-package-always-ensure t)
+
+;; load workaround
+(load (locate-user-emacs-file "workaround.el"))
 
 ;; add local package path to load path
 (let ((default-directory (locate-user-emacs-file "plugins")))
