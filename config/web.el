@@ -2,9 +2,7 @@
   :commands web-mode
   :mode "\\.\\(html\\|php\\)?\\'"
   :ensure-system-package
-  ((vscode-html-language-server . "npm -g install vscode-langservers-extracted")
-   ("~/.local/lib/node_modules" . "npm config set prefix ~/.local")
-   (npm . "sudo apt install -y npm"))
+  ((vscode-html-language-server . "npm -g install vscode-langservers-extracted"))
   :custom
   (web-mode-markup-indent-offset 2)
   (web-mode-attr-indent-offset 2)
@@ -19,9 +17,7 @@
 
 (use-package web-beautify
   :ensure-system-package
-  ((npm . "sudo apt install -y npm")
-   ("~/.local/lib/node_modules" . "npm config set prefix ~/.local")
-   (js-beautify . "npm -g install js-beautify"))
+  ((js-beautify . "npm -g install js-beautify"))
   :init
   (eval-after-load 'js
     '(define-key js-mode-map (kbd "C-c b") 'web-beautify-js))
@@ -42,26 +38,21 @@
   :ensure-system-package
   ((tsc . "npm -g install typescript")
    (typescript-language-server . "npm -g install typescript-language-server")
-   (vscode-json-language-server . "npm -g install vscode-langservers-extracted")
-   ("~/.local/lib/node_modules" . "npm config set prefix ~/.local")
-   (npm . "sudo apt install -y npm"))
+   (vscode-json-language-server
+    . "npm -g install vscode-langservers-extracted"))
   :custom
   (js-indent-level 2))
 
 (use-package typescript-mode
   :mode "\\.ts\\'"
   :ensure-system-package
-  ((typescript-language-server . "npm -g install typescript-language-server")
-   (tsc . "npm -g install typescript")
-   ("~/.local/lib/node_modules" . "npm config set prefix ~/.local")
-   (npm . "sudo apt install -y npm"))
+  ((tsc . "npm -g install typescript")
+   (typescript-language-server . "npm -g install typescript-language-server"))
   :custom
   (typescript-indent-level 2))
 
 (use-package css-mode
   :ensure-system-package
-  ((vscode-css-language-server . "npm -g install vscode-langservers-extracted")
-   ("~/.local/lib/node_modules" . "npm config set prefix ~/.local")
-   (npm . "sudo apt install -y npm"))
+  ((vscode-css-language-server . "npm -g install vscode-langservers-extracted"))
   :custom
   (css-indent-offset 2))

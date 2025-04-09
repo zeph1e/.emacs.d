@@ -160,7 +160,9 @@
         (add-to-list 'minor-mode-map-alist mykeys))))
 (advice-add 'load :after #'my:load-with-keybindings-priority)
 
+
 ;; install & configure packages
+(require 'use-package-ensure-system-package+)
 (let* ((dir (locate-user-emacs-file "config"))
        (files
         (when (file-directory-p dir)
