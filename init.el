@@ -162,7 +162,6 @@
 
 
 ;; install & configure packages
-(require 'use-package-ensure-system-package+)
 (let* ((dir (locate-user-emacs-file "config"))
        (files
         (when (file-directory-p dir)
