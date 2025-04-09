@@ -12,6 +12,14 @@
   (python-mode . lsp-deferred)
   (web-mode . lsp-deferred)
   (lsp-mode . lsp-enable-which-key-integration)
+  :ensure-system-package
+  ((tsc . "npm -g install typescript")
+   (typescript-language-server . "npm -g install typescript-language-server")
+   (vscode-html-language-server . "npm -g install vscode-langservers-extracted")
+   (vscode-json-language-server . "npm -g install vscode-langservers-extracted")
+   (vscode-css-language-server . "npm -g install vscode-langservers-extracted")
+   (pylsp . "sudo apt install -y python3-pylsp"))
+
   :custom
   ((lsp-keymap-prefix "C-c C-l")
    ;; to get lsp-mode going with xtensa

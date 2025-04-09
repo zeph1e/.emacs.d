@@ -61,6 +61,7 @@
   :after (helm projectile))
 
 (use-package helm-ag
+  :ensure-system-package (ag . "sudo apt install -y silversearcher-ag")
   :bind
   (:map helm-ag-map
    ("M-n" . helm-ag--next-file)

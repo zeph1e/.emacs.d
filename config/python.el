@@ -1,7 +1,4 @@
 (use-package python-mode
-  :ensure-system-package
-  ((pyls .
-   "pip install --user python-language-server[all] --break-system-packages"))
   :bind
   (:map python-mode-map
    ("C-c C-." . python-indent-shift-right)

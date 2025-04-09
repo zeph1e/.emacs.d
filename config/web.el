@@ -1,8 +1,6 @@
 (use-package web-mode
   :commands web-mode
   :mode "\\.\\(html\\|php\\)?\\'"
-  :ensure-system-package
-  ((vscode-html-language-server . "npm -g install vscode-langservers-extracted"))
   :custom
   (web-mode-markup-indent-offset 2)
   (web-mode-attr-indent-offset 2)
@@ -35,24 +33,14 @@
 
 (use-package js
   :pin manual
-  :ensure-system-package
-  ((tsc . "npm -g install typescript")
-   (typescript-language-server . "npm -g install typescript-language-server")
-   (vscode-json-language-server
-    . "npm -g install vscode-langservers-extracted"))
   :custom
   (js-indent-level 2))
 
 (use-package typescript-mode
   :mode "\\.ts\\'"
-  :ensure-system-package
-  ((tsc . "npm -g install typescript")
-   (typescript-language-server . "npm -g install typescript-language-server"))
   :custom
   (typescript-indent-level 2))
 
 (use-package css-mode
-  :ensure-system-package
-  ((vscode-css-language-server . "npm -g install vscode-langservers-extracted"))
   :custom
   (css-indent-offset 2))
