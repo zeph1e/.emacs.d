@@ -2,7 +2,7 @@
 (use-package groovy-mode
   :mode "\\.groovy\\'"
   :ensure-system-package
-  (groovysh . "sudo install apt -y groovy")
+  (groovysh . "sudo apt install -y groovy")
   :commands groovy-mode
   :custom
   (groovysh "groovysh"))
