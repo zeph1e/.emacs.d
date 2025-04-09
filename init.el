@@ -169,7 +169,8 @@
                                   (and (not (file-symlink-p file))
                                        (not (file-directory-p file))
                                        (string-match "\\([^.]+\\).el\\'" file))
-                                (load-file (concat dir "/" file))
+                                (let ((byte-compile-warnings nil))
+                                  (load-file (concat dir "/" file)))
                                 (concat dir "/" file)))
                             (directory-files dir))))))
     ;; byte-compile them on quit
