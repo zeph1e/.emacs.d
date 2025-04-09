@@ -1,6 +1,5 @@
 (use-package flyspell
-  :ensure-system-package
-  (ispell . "sudo apt install -y ispell")
+  :ensure-system-package (ispell . "sudo apt install -y ispell")
   :config
   ;; To make flyspell ignore urls
   ;; https://emacs.stackexchange.com/q/5415

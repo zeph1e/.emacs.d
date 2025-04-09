@@ -1,8 +1,7 @@
 ;;-*- mode: emacs-lisp; -*-
 (use-package plantuml-mode
+  :ensure-system-package (plantuml . "sudo apt install -y plantuml")
   :mode "\\.uml\\'"
-  :ensure-system-package
-  (plantuml . "sudo apt install -y plantuml")
   :config
   (setq-default plantuml-output-type "png")
   :custom

@@ -2,8 +2,9 @@
   :commands web-mode
   :mode "\\.\\(html\\|php\\)?\\'"
   :ensure-system-package
-  (vscode-html-language-server
-   . "npm -g install vscode-langservers-extracted")
+  ((vscode-html-language-server . "npm -g install vscode-langservers-extracted")
+   ("~/.local/lib/node_modules" . "npm config set prefix ~/.local")
+   (npm . "sudo apt install -y npm"))
   :custom
   (web-mode-markup-indent-offset 2)
   (web-mode-attr-indent-offset 2)
@@ -39,29 +40,28 @@
 (use-package js
   :pin manual
   :ensure-system-package
-  ((npm . "sudo apt install -y npm")
-   ("~/.local/lib/node_modules" . "npm config set prefix ~/.local")
-   (tsc . "npm -g install typescript")
+  ((tsc . "npm -g install typescript")
    (typescript-language-server . "npm -g install typescript-language-server")
-   (vscode-json-language-server
-    . "npm -g install vscode-langservers-extracted"))
+   (vscode-json-language-server . "npm -g install vscode-langservers-extracted")
+   ("~/.local/lib/node_modules" . "npm config set prefix ~/.local")
+   (npm . "sudo apt install -y npm"))
   :custom
   (js-indent-level 2))
 
 (use-package typescript-mode
   :mode "\\.ts\\'"
   :ensure-system-package
-  ((npm . "sudo apt install -y npm")
+  ((typescript-language-server . "npm -g install typescript-language-server")
+   (tsc . "npm -g install typescript")
    ("~/.local/lib/node_modules" . "npm config set prefix ~/.local")
-   (typescript-language-server . "npm -g install typescript-language-server")
-   (tsc . "npm -g install typescript"))
+   (npm . "sudo apt install -y npm"))
   :custom
   (typescript-indent-level 2))
 
 (use-package css-mode
   :ensure-system-package
-  ((npm . "sudo apt install -y npm")
+  ((vscode-css-language-server . "npm -g install vscode-langservers-extracted")
    ("~/.local/lib/node_modules" . "npm config set prefix ~/.local")
-   (vscode-css-language-server . "npm -g install vscode-langservers-extracted"))
+   (npm . "sudo apt install -y npm"))
   :custom
   (css-indent-offset 2))
