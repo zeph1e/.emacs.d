@@ -23,6 +23,7 @@
  truncate-partial-width-windows nil ; do not truncate
  visible-bell t           ; ring a visible bell
  inhibit-startup-screen t ; no startup screen
+ help-window-select t     ; always select the help window
  )
 (tool-bar-mode -1)        ; do not shows toolbar
 (menu-bar-mode -1)        ; do not shows menu
@@ -214,3 +215,11 @@
         (add-hook (derived-mode-hook-name mode)
                   (lambda () (setq-local global-hl-line-mode nil))))
       my:hl-line-mode-exceptions)
+
+;; Delimit fill-column for following modes
+(defconst my:fill-column-exceptions '(helm-major-mode))
+
+(mapc (lambda (mode)
+        (add-hook (derived-mode-hook-name mode)
+                  (lambda () (display-fill-column-indicator-mode -1))))
+      my:fill-column-exceptions)
