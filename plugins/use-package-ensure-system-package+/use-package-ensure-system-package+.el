@@ -52,7 +52,7 @@ This is to prevent redundant execution.")
 (defun upesp+:async-shell-command (command &optional _out _err)
   ;; (message "executing: %S!!!!!!!!!!!!!!!!!" command)
   (when command
-    (add-to-list 'upesp+:command-queue command))
+    (add-to-list 'upesp+:command-queue command t))
   (unless upesp+:command-occupied
     (setq upesp+:command-occupied t)
     (let* ((cmd (pop upesp+:command-queue))
@@ -86,25 +86,12 @@ This is to prevent redundant execution.")
   "Turn ARG into a cons of the form (PACKAGE-NAME . INSTALL-COMMAND').
 Replaced async-shell-command to upesp+:async-shell-command
 to prevent to run package manager at the same time."
-  (cond
-   ((stringp arg)
-    (cons arg `(system-packages-install ,arg)))
-   ((symbolp arg)
-    (cons arg `(system-packages-install ,(symbol-name arg))))
-   ((consp arg)
-    (cond
-     ((not (cdr arg))
-      (use-package-ensure-system-package-consify (car arg)))
-     ((stringp (cdr arg))
-      (progn
-        (push (cdr arg) use-package-ensure-system-package--custom-packages)
-        (cons (car arg) `(upesp+:async-shell-command ,(cdr arg)))))
-     (t
-      (cons (car arg)
-            `(system-packages-install ,(symbol-name (cdr arg)))))))))
+  (when (eq (cadr arg) 'async-shell-command)
+    (setf (cadr arg) 'upesp+:async-shell-command))
+  `(,@arg))
 
 ;;;###autoload
 (advice-add 'use-package-ensure-system-package-consify
-            :override #'upesp+:use-package-ensure-system-package-consify)
+            :filter-return #'upesp+:use-package-ensure-system-package-consify)
 
 (provide 'use-package-ensure-system-package+)
