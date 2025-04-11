@@ -1,4 +1,8 @@
-;;-*- mode: emacs-lisp; -*-
+;;; git.el  -*- lexical-binding: t; -*-
+
+;; Written by Yunsik Jang <z3ph1e@gmail.com>
+;; You can use/modify/redistribute this freely.
+
 (use-package magit
   :bind
   (:map my:global-key-map

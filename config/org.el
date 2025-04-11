@@ -1,4 +1,8 @@
-;;-*- mode: emacs-lisp; -*-
+;;; org.el  -*- lexical-binding: t; -*-
+
+;; Written by Yunsik Jang <z3ph1e@gmail.com>
+;; You can use/modify/redistribute this freely.
+
 (use-package org
   :pin gnu
   :config
@@ -12,7 +16,6 @@
   ;;         specified, it uses the value of :lang instead.
   ;; :deps : The executable name to parse or compile the language
   ;; :settings : The things to evaluate
-
   (defconst babel-language-plist
     '((:lang awk :deps "awk")
       (:lang C :mode c :deps "gcc")

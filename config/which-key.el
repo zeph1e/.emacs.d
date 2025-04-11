@@ -1,3 +1,8 @@
+;;; which-key.el  -*- lexical-binding: t; -*-
+
+;; Written by Yunsik Jang <z3ph1e@gmail.com>
+;; You can use/modify/redistribute this freely.
+
 (use-package which-key
   :init
   ;; Allow C-h to trigger which-key before it is done automatically

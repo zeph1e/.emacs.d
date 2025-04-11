@@ -1,3 +1,8 @@
+;;; web.el  -*- lexical-binding: t; -*-
+
+;; Written by Yunsik Jang <z3ph1e@gmail.com>
+;; You can use/modify/redistribute this freely.
+
 (use-package web-mode
   :commands web-mode
   :mode "\\.\\(html\\|php\\)?\\'"
@@ -30,6 +35,9 @@
 
   :config
   (setq web-beautify-args '("-s" "2" "-f" "-")))
+
+(use-package tern
+  :ensure-system-package (tern .  "npm i -g tern"))
 
 (use-package js
   :pin manual

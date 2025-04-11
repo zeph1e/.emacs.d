@@ -1,3 +1,8 @@
+;;; wsl.el  -*- lexical-binding: t; -*-
+
+;; Written by Yunsik Jang <z3ph1e@gmail.com>
+;; You can use/modify/redistribute this freely.
+
 (defconst my:wslp
   (string-match "-[Mm]icrosoft" operating-system-release)
   "Non-nil if it is on WSL.")

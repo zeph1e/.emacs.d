@@ -1,6 +1,7 @@
-;;-*- mode: emacs-lisp; -*-
-;; https://www.amoradi.org/20211123173900.html
-(defconst my:lsp-path (concat (file-name-directory user-init-file) "lsp/"))
+;;; lsp.el  -*- lexical-binding: t; -*-
+
+;; Written by Yunsik Jang <z3ph1e@gmail.com>
+;; You can use/modify/redistribute this freely.
 
 (use-package lsp-mode
   :commands (lsp lsp-deferred)

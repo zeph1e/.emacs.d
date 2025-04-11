@@ -1,4 +1,8 @@
-;;-*- mode: emacs-lisp; -*-
+;;; google.el  -*- lexical-binding: t; -*-
+
+;; Written by Yunsik Jang <z3ph1e@gmail.com>
+;; You can use/modify/redistribute this freely.
+
 (use-package google-c-style
   :init
   (c-add-style "google" google-c-style)

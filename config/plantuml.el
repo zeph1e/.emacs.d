@@ -1,4 +1,8 @@
-;;-*- mode: emacs-lisp; -*-
+;;; plantuml.el  -*- lexical-binding: t; -*-
+
+;; Written by Yunsik Jang <z3ph1e@gmail.com>
+;; You can use/modify/redistribute this freely.
+
 (use-package plantuml-mode
   :ensure-system-package (plantuml . "sudo apt install -y plantuml")
   :mode "\\.uml\\'"

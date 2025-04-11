@@ -1,4 +1,8 @@
-;;-*- mode: emacs-lisp; -*-
+;;; tramp.el  -*- lexical-binding: t; -*-
+
+;; Written by Yunsik Jang <z3ph1e@gmail.com>
+;; You can use/modify/redistribute this freely.
+
 (use-package tramp
   :config
   (defun my:tramp-cleanup-all-connections ()
