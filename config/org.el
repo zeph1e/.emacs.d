@@ -49,3 +49,6 @@
       (org-babel-do-load-languages
        'org-babel-load-languages load-languages)))
     :after (plantuml-mode))
+
+;; Required for html export
+(use-package htmlize)
