@@ -89,5 +89,9 @@
 (use-package helm-lsp
   :bind
   (:map lsp-mode-map
-   ([remap xref-find-apropos] . helm-lsp-workspace-symbol))
-  :after (helm lsp))
+   ([remap xref-find-apropos] . helm-lsp-workspace-symbol)
+   ([remap lsp-execute-code-action] . helm-lsp-code-actions))
+  (:map lsp-command-map
+   ("GA" . helm-lsp-global-workspace-symbol)
+   ("DD". helm-lsp-diagnostics))
+  :after (helm lsp-mode))
