@@ -47,8 +47,10 @@
            (when (or (string= source-lang target-lang)
                      (string= target-lang "auto"))
              (catch 'break
-               (dotimes (i (length google-translate-translation-directions-alist))
-                 (let ((dir (nth i google-translate-translation-directions-alist)))
+               (dotimes (i (length
+                            google-translate-translation-directions-alist))
+                 (let ((dir (nth
+                             i google-translate-translation-directions-alist)))
                    (when (string= (car dir) source-lang)
                      (setq target-lang (cdr dir))
                      (throw 'break nil))))))
