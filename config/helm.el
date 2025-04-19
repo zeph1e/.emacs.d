@@ -83,7 +83,7 @@
   (:map my:global-key-map
    ("C-h b" . helm-descbinds))
   :custom
-  helm-descbinds-mode t
+  (helm-descbinds-mode t)
   :after (helm))
 
 (use-package helm-lsp

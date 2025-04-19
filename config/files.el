@@ -66,18 +66,17 @@ Runs revert-buffer--default internally"
 
   (defun my:kill-buffer (orig-fun &rest args)
     "Advised kill buffer to show diff with original file to verify the changes."
-    (let ((buffer-or-name (car args)))  ; original argument
-      (with-current-buffer (or buffer-or-name (current-buffer))
-        (if (and (buffer-live-p (current-buffer))
-                 (buffer-modified-p)
-                 (buffer-file-name))
+    (let* ((buffer-or-name (car args))  ; original argument
+           (buffer (get-buffer (or buffer-or-name (current-buffer)))))
+      (if (and (called-interactively-p)
+               (buffer-live-p buffer)
+               (buffer-modified-p buffer)
+               (buffer-file-name buffer))
+          (with-current-buffer buffer
             (save-window-excursion
-              (my:display-buffer-modification (current-buffer))
-              (when (yes-or-no-p
-                     (format "Buffer %s modified; kill anyway? " (buffer-name)))
-                (set-buffer-modified-p nil)
-                (apply orig-fun args)))
-          (apply orig-fun args)))))
+              (my:display-buffer-modification)
+              (apply orig-fun args)))
+          (apply orig-fun args))))
   (advice-add 'kill-buffer :around #'my:kill-buffer)
 
   (defun my:recover-file (orig-fun &rest args)
