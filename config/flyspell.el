@@ -25,7 +25,8 @@ to ignore url stuff"
         (flyspell-buffer))))
   :bind
   (:map my:global-key-map
-   ("<f8>" . my:toggle-flyspell-mode)))
+   ("<f8>" . my:toggle-flyspell-mode)
+   ("C-<f8>" . flyspell-buffer)))
 
 (use-package flyspell-popup
   :bind

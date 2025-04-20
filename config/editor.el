@@ -68,6 +68,18 @@
         (delete-region (point) (progn (skip-chars-forward " \t") (point)))))
   (advice-add 'kill-line :after #'my:kill-line)
 
+  (defun my:open-line-above ()
+    "Open a new line at the beginning of line"
+    (interactive)
+    (beginning-of-line)
+    (open-line 1))
+
+  (defun my:new-line-below ()
+    "Insert new line at the end of line"
+    (interactive)
+    (end-of-line)
+    (newline))
+
   (defun my:toggle-buffer-read-only ()
     "Toggles read-only flag of the current buffer."
     (interactive)
@@ -79,4 +91,6 @@
    ("M-#" . my:mark-symbol)
    ("M-SPC" . my:forward-to-indentation)
    ("M-S-SPC" . just-one-space)
+   ("C-o" . my:open-line-above)
+   ("M-o" . my:new-line-below)
    ("<f12>" . my:toggle-buffer-read-only)))

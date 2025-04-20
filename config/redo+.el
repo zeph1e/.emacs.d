@@ -7,4 +7,5 @@
   :ensure nil
   :bind
   (:map my:global-key-map
+   ("C-_" . undo)
    ("M-_" . redo)))
