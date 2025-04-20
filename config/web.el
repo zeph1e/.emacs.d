@@ -32,6 +32,8 @@
     '(define-key web-mode-map (kbd "C-c b") 'web-beautify-html))
   (eval-after-load 'css-mode
     '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
+  (eval-after-load 'less-css-mode
+    '(define-key less-css-mode-map (kbd "C-c b") 'web-beautify-css))
 
   :config
   (setq web-beautify-args '("-s" "2" "-f" "-")))

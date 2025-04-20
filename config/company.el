@@ -51,6 +51,7 @@
   (my:install-company-backends company-web-html sgml-mode-hook)
   (my:install-company-backends company-css web-mode-hook)
   (my:install-company-backends company-css css-mode-hook)
+  (my:install-company-backends company-css less-css-mode-hook)
   (my:install-company-backends company-tern web-mode-hook (tern-mode t))
   (my:install-company-backends company-nxml nxml-mode-hook)
 
