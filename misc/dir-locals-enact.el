@@ -1,5 +1,7 @@
 ((nil . ((buffer-read-only . t)
          (tab-width . 4)
          (indent-tabs-mode . t)
-         (js-indent-level . 4)))
+         (js-indent-level . 4)
+         (css-indent-offset . 4)))
+ (lisp-data-mode . ((indent-tabs-mode . nil)))
  (auto-mode-alist . (("\\.js\\'" . js-jsx-mode))))
