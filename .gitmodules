@@ -4,3 +4,6 @@
 [submodule "plugins/magit-gerrit"]
 	path = plugins/magit-gerrit
 	url = git@github.com:zeph1e/magit-gerrit.git
+[submodule "plugins/block-travel"]
+	path = plugins/block-travel
+	url = git@github.com:emacs-vs/block-travel.git

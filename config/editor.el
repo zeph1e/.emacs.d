@@ -94,3 +94,10 @@
    ("C-o" . my:open-line-above)
    ("M-o" . my:new-line-below)
    ("<f12>" . my:toggle-buffer-read-only)))
+
+(use-package block-travel
+  :ensure nil
+  :pin manual
+  :bind
+  (("M-p" . block-travel-up)
+   ("M-n" . block-travel-down)))
