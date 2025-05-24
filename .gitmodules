@@ -7,3 +7,4 @@
 [submodule "plugins/block-travel"]
 	path = plugins/block-travel
 	url = git@github.com:emacs-vs/block-travel.git
+        ignore = untracked
