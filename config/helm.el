@@ -28,7 +28,7 @@
    ("C-x b"     . helm-mini)
    ("C-h a"     . helm-apropos)
    ("M-r"       . helm-occur)
-   ("C-R"       . helm-do-grep-ag)
+   ("M-R"       . helm-do-grep-ag)
    ("C-M-r"     . my:helm-do-grep-vc-root-ag)
    ("M-g s"     . helm-google-suggest)
    ("C-x C-SPC" . helm-all-mark-rings)
