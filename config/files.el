@@ -61,7 +61,8 @@ Runs revert-buffer--default internally"
     (interactive)
     (dolist (buf (buffer-list))
       (with-current-buffer buf
-        (revert-buffer buf)))
+        (when (and (buffer-file-name) (buffer-modified-p))
+          (revert-buffer))))
     (message "Refreshed all opened files."))
 
   (defun my:kill-buffer (orig-fun &rest args)
