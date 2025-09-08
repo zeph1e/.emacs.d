@@ -4,6 +4,7 @@
 ;; You can use/modify/redistribute this freely.
 
 (use-package helm
+  :ensure-system-package (ag . "sudo apt install -y silversearcher-ag")
   :demand t
   :config
   (require 'helm-files)
@@ -13,6 +14,10 @@
     (if (looking-back "/" 1)
         (call-interactively 'helm-find-files-up-one-level)
       (delete-backward-char 1)))
+  (defun my:helm-do-grep-vc-root-ag (arg)
+    (interactive "P")
+    (let ((default-directory (or (vc-root-dir) default-directory)))
+      (helm-do-grep-ag arg)))
   :bind
   (:map my:global-key-map
    ("M-x"       . helm-M-x)
@@ -23,7 +28,8 @@
    ("C-x b"     . helm-mini)
    ("C-h a"     . helm-apropos)
    ("M-r"       . helm-occur)
-   ("M-R"       . helm-grep-do-git-grep)
+   ("C-R"       . helm-do-grep-ag)
+   ("C-M-r"     . my:helm-do-grep-vc-root-ag)
    ("M-g s"     . helm-google-suggest)
    ("C-x C-SPC" . helm-all-mark-rings)
    :map helm-map
@@ -63,19 +69,6 @@
   :init
   (helm-projectile-on)
   :after (helm projectile))
-
-(use-package helm-ag
-  :ensure-system-package (ag . "sudo apt install -y silversearcher-ag")
-  :bind
-  (:map helm-ag-map
-   ("M-n" . helm-ag--next-file)
-   ("M-p" . helm-ag--previous-file))
-  (:map my:global-key-map
-   ("C-M-r" . helm-ag))
-  :custom
-  (helm-ag-insert-at-point 'thing-at-point)
-  (helm-ag-fuzzy-match t)
-  :after (helm))
 
 (use-package helm-descbinds
   :commands helm-descbinds
