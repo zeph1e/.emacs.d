@@ -2,7 +2,7 @@
 #+AUTHOR: Yunsik Jang
 #+SETUPFILE: https://fniessen.github.io/org-html-themes/org/html-theme-readtheorg.setup
 
-[[./misc/res/screenshot.png]]
+#+HTML: <img src="https://github.com/zeph1e/.emacs.d/blob/master/misc/res/screenshot.png?raw=true">
 
 This repository contains my current Emacs configuration, designed to suit my preferences. However, parts of it may be useful to you, especially if you are a JavaScript, Python, or C/C++ developer.
 
@@ -96,7 +96,7 @@ I've used the Night Eighties variant of [[https://github.com/chriskempson/tomorr
 
 *** Mode Line
 
-[[./misc/res/modeline.png]]
+#+HTML: <img src="https://github.com/zeph1e/.emacs.d/blob/master/misc/res/modeline.png?raw=true">
 
 I customized the mode line rather than using Powerline or similar packages, because I wanted only the information I actually read: buffer size, modification flag, buffer name (red background when read-only), line:column, input method indicator, major mode, a [[https://github.com/TeMPOraL/nyan-mode][Nyan Cat]] progress bar, scroll percentage, and the vc-mode branch. Everything is in =config/theme.el=. If you'd like to do the same, the [[https://emacs-fu.blogspot.com/2011/08/customizing-mode-line.html][Emacs-fu article on mode-line customization]] is a good starting point.
 
