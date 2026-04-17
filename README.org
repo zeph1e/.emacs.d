@@ -1,51 +1,280 @@
-* .emacs.d
+#+TITLE:.emacs.d
+#+AUTHOR: Yunsik Jang
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/html-theme-readtheorg.setup
 
-This repository contains the emacs configuration currently I'm using. It is being written to make emacs be fits to my taste but all or some parts of this might be useful to you if you're a C++ developer.
+[[./misc/res/screenshot.png]]
 
-** Prerequisite
+This repository contains my current Emacs configuration, designed to suit my preferences. However, parts of it may be useful to you, especially if you are a JavaScript, Python, or C/C++ developer.
 
- - aspell for flyspell
- - git / mercurial to download packages
- - cscope for ascope and xcscope
- - gnuplot, the graphing utility
- - nodejs / npm for web-beautify
- - markdown for markdown-preview
- - JRE for plantuml and cider
- - texlive (on Ubuntu) for PDF export from org-mode
- - ImageMagick for screenshot
- - The Silver Searcher for AG integration
- - Pip for anaconda-mode
- - plink (Windows only)
+* How to Install
 
-Run following command on Ubuntu:
+** Prerequisites
 
-: $ sudo apt-get install git qt5-default qt5-qmake cscope gnuplot nodejs \
-:   npm markdown default-jre texlive-latex-recommended texlive-latex-extra \
-:   texlive-fonts-recommended texlive-base texlive-latex-base texlive-xetex \
-:   fonts-sil-gentium-basic fonts-sil-charis fonts-sil-gentium ttf-dejavu \
-:   imagemagick silversearcher-ag python-pip
+This configuration depends on a number of external system packages.
 
-*** Emacs and Git version
+ - Git for [[https://magit.vc/][magit]] and [[https://github.com/emacsorphanage/magit-gerrit][magit-gerrit]]
+ - Cscope for [[https://github.com/dkogan/xcscope.el][xcscope]]
+ - Node.js / NPM for [[https://github.com/yasuyk/web-beautify][web-beautify]], [[https://github.com/typescript-language-server/typescript-language-server][typescript-language-server]], and [[https://github.com/ternjs/tern][tern]]
+ - The silver searcher for [[https://github.com/Wilfred/ag.el][ag]] and [[https://github.com/emacsorphanage/helm-ag][helm-ag]]
+ - Python / pylsp for [[https://gitlab.com/python-mode-devs/python-mode][python-mode]] and [[https://github.com/pythonic-emacs/anaconda-mode][anaconda-mode]]
+ - Markdown for [[https://jblevins.org/projects/markdown-mode/][markdown-mode]] preview
+ - JRE + PlantUML for [[https://github.com/skuro/plantuml-mode][plantuml-mode]]
 
-If you're willing to use emacs 24.4 or later, magit 2.X will be installed and it doesn't work with earlier version of git. You need to install git version 1.9.4 or later. Otherwise, if you're stuck with emacs version 24.3 or earlier, magit 1.X will be installed and the git version will not make a problem.
+Thanks to the ~:ensure-system-package~ feature of use-package, most of these are installed automatically on first launch. Some require sudo, so you may be prompted for your password.
 
-Now I use version 24.5 only. So you might have problems with this configurations on earlier than 24.5.
+** System Environment
 
-*** Compiler
+Emacs 29 or 30 is required. Some features rely on built-ins introduced in Emacs 29, such as ~use-package~.
 
-Because I only use gcc for these days, I wrote some stuffs in gcc working manner. If you're using some other compiler something, like getting compiler specific include paths, might not work.
+** Compiler
+
+The C/C++ header path detection is tailored for GCC. If you use a different compiler, automatic include path discovery may not work correctly.
 
 ** Installation
 
-Try following commands on your system:
-
-#+BEGIN_SRC shell
-$ mv ~/.emacs.d ~/.emacs.d.old # backup your old config
-$ git clone git@github.com:zeph1e/.emacs.d.git ~/
+#+BEGIN_SRC sh
+  mv ~/.emacs.d ~/.emacs.d.old
+  git clone git@github.com:zeph1e/.emacs.d.git ~/
 #+END_SRC
 
-All of rest packages are installed while launching emacs after that.
+Remaining packages are installed automatically on first launch.
 
-** License
+* What's in here
 
-Completely free. You may copy whole or part of codes freely to use, to modify, or to redistribute at your own risk.
+While using Emacs for quite some time, I've accumulated various bits of code to enhance convenience. Here I will cover the parts that have been implemented. I hope it serves as a helpful resource, either for using this configuration as is or as inspiration for building your own.
+
+* Architecture
+
+The configuration is structured around a few top-level entry points:
+
+ - =init.el= — Entry point. Sets up locale, UI, the Emacs server, backup directories, =straight.el= / =use-package=, then loads =plugins/= and =config/=.
+ - =config/= — One =.el= file per concern (e.g., =helm.el=, =lsp.el=, =git.el=). All files are loaded at startup and byte-compiled when Emacs quits.
+ - =plugins/= — Manually managed packages not on ELPA/MELPA. Byte-compilation and autoload generation happen once on first load; a =.installed= sentinel file prevents re-processing.
+ - =workaround.el= — Loaded early; contains targeted fixes for upstream bugs.
+ - =custom.el= — Auto-generated by =M-x customize=; excluded from version control.
+
+All custom keybindings live in ~my:global-key-map~, a minor mode that always takes precedence over major and minor mode keymaps. Bindings go into ~:map my:global-key-map~ inside ~use-package~ ~:bind~ blocks — never ~global-set-key~ directly.
+
+* Basic Configuration
+
+** UI & Locale
+
+The UI starts minimal: no toolbar, no menu bar, no startup screen. ~global-hl-line-mode~ highlights the current line. The fill column is set to 80, and ~display-fill-column-indicator-mode~ is enabled in all ~prog-mode~ buffers. Locale is set to Korean with UTF-8 encoding.
+
+Fonts are configured only in graphical sessions. [[https://fonts.google.com/specimen/Nanum+Gothic+Coding][Nanum Gothic Coding]] covers the Korean character range (U+1100–U+FFDC), while =Lucida Console= is used for everything else. The frame is maximized on launch.
+
+** Emacs Server
+
+The server is started automatically on launch, storing its type (=daemon=, =gui=, or =tty=) as a process property. A helper shell script, =misc/edit=, acts as a smart =emacsclient= wrapper: it reuses a running instance if one exists, choosing =-c= or =-t= depending on whether the server is graphical or terminal. Setting =$EDITOR= to =edit= integrates Emacs into the shell seamlessly.
+
+** Backups & Auto-saves
+
+All auto-generated files are redirected into hidden subdirectories under =~/.emacs.d= (=.backups=, =.auto-saves=, =.lock-files=). This keeps the filesystem clean and prevents Tramp sessions from hanging on remote auto-save writes.
+
+** Package System
+
+[[https://github.com/radian-software/straight.el][straight.el]] is the primary package manager, bootstrapped before anything else. [[https://github.com/jwiegley/use-package][use-package]] is built-in from Emacs 29 and available via ELPA on older versions. MELPA, GNU ELPA, and NonGNU ELPA are all configured as archives.
+
+** Default Minor Modes
+
+Minor modes applied to every buffer by category:
+
+| Category | Minor modes |
+|----------+-------------|
+| All ~prog-mode~ | ~display-line-numbers-mode~, ~my:whitespace-mode~, ~flyspell-prog-mode~, ~display-fill-column-indicator-mode~, ~goto-address-prog-mode~ |
+| All ~text-mode~ | ~display-line-numbers-mode~, ~my:whitespace-mode~, ~visual-line-mode~, ~flyspell-mode~, ~goto-address-mode~ |
+
+~global-hl-line-mode~ is suppressed in shell, eshell, and term buffers where the highlight is visually disruptive.
+
+* UX Configuration
+
+** Look & Feel
+
+*** Theme
+
+I've used the Night Eighties variant of [[https://github.com/chriskempson/tomorrow-theme][Tomorrow Theme]] for most of my time with Emacs. The color contrast is well-balanced without being overly saturated. It is loaded from =plugins/color-theme-tomorrow=. The only adjustment I made is setting the ~highlight~ face background to =DeepSkyBlue4= for better text contrast.
+
+*** Mode Line
+
+[[./misc/res/modeline.png]]
+
+I customized the mode line rather than using Powerline or similar packages, because I wanted only the information I actually read: buffer size, modification flag, buffer name (red background when read-only), line:column, input method indicator, major mode, a [[https://github.com/TeMPOraL/nyan-mode][Nyan Cat]] progress bar, scroll percentage, and the vc-mode branch. Everything is in =config/theme.el=. If you'd like to do the same, the [[https://emacs-fu.blogspot.com/2011/08/customizing-mode-line.html][Emacs-fu article on mode-line customization]] is a good starting point.
+
+*** Header Line
+
+The header line displays the full path of the editing file, truncating the directory portion with =[...]= when it is too wide for the window. The code is taken from [[https://www.emacswiki.org/emacs/HeaderLine][Emacs Wiki]], in =config/theme.el=.
+
+** Helm & Company
+
+I initially used [[https://www.gnu.org/software/emacs/manual/html_mono/ido.html][ido]] and [[https://github.com/auto-complete/auto-complete][autocomplete]], but later switched to [[https://github.com/emacs-helm/helm][helm]] and [[https://company-mode.github.io/][company]], which I've been using ever since.
+
+*** Helm
+
+[[https://github.com/emacs-helm/helm][Helm]] replaces ido for all interactive selection, configured in =config/helm.el=. The most useful customization is ~my:helm-find-files-backward-dwim~: pressing =<backspace>= in a file path deletes one directory level rather than one character, making navigation of deep paths much faster.
+
+| Key | Command |
+|-----+---------|
+| =M-x= | ~helm-M-x~ |
+| =C-x C-f= | ~helm-find-files~ |
+| =C-x b= | ~helm-mini~ |
+| =M-y= | ~helm-show-kill-ring~ |
+| =M-r= | ~helm-occur~ |
+| =M-R= | ~helm-grep-do-git-grep~ |
+| =C-h a= | ~helm-apropos~ |
+| =C-h b= | ~helm-descbinds~ |
+| =C-x C-p= / =C-x p= | Projectile command map (helm-projectile) |
+
+[[https://github.com/emacs-lsp/helm-lsp][helm-lsp]] replaces ~xref-find-apropos~ with a helm-powered workspace symbol search when LSP is active.
+
+*** Company
+
+[[https://company-mode.github.io/][Company]] is enabled globally. Completion is triggered with =C-M-;=; candidates are navigated with =C-p= / =C-n= and paged with =C-v= / =M-v=.
+
+A custom ~my:company-ispell~ wrapper activates spell-check completion only inside comments, docstrings, and string literals by inspecting the face at point, keeping it out of regular code tokens.
+
+For C/C++, ~company-c-headers~ is configured with compiler include paths detected at runtime by invoking =gcc -x c -E -v -= and parsing the output. Qt headers are picked up automatically when =qmake= is available. Mode-specific backends:
+
+| Mode | Backends |
+|------+----------|
+| web-mode, sgml-mode | company-web-html, company-css, company-tern |
+| css-mode, less-css-mode | company-css |
+| js-mode | company-tern |
+| c-mode, c++-mode, objc-mode | company-c-headers |
+| python-mode | company-anaconda |
+
+[[https://github.com/company-statistics/company-statistics][company-statistics]] ranks candidates by usage history.
+
+* Editing
+
+** Multi-editing
+
+[[https://github.com/victorhge/iedit][iedit]] (=C-M-#=) edits all occurrences of a symbol within its scope simultaneously — ideal for quick in-buffer renaming. [[https://github.com/magnars/multiple-cursors.el][multiple-cursors]] is better suited for structured multi-line edits:
+
+| Key | Command |
+|-----+---------|
+| =M-.= | Mark next like this |
+| =M-,= | Mark previous like this |
+| =M-/= | Mark all like this |
+| =M-?= | Edit lines in region |
+
+** Custom Editing Commands
+
+A collection of small ergonomic commands in =config/editor.el=:
+
+| Key | Command |
+|-----+---------|
+| =M-@= | Mark word at point |
+| =M-#= | Mark symbol at point |
+| =M-SPC= | Jump to first non-blank character on line |
+| =C-o= | Open new line above |
+| =M-o= | Insert new line below |
+| =<f12>= | Toggle buffer read-only |
+
+~kill-line~ is advised to clean up leading whitespace after the kill, preventing orphaned indentation.
+
+** Whitespace
+
+~my:whitespace-mode~ wraps the built-in ~whitespace-mode~ with mode-aware style. In ~prog-mode~ it highlights trailing whitespace, long lines (beyond fill-column), and tabs. In ~text-mode~ it omits the long-line indicator to avoid noise in prose.
+
+** Undo / Redo
+
+[[https://www.emacswiki.org/emacs/RedoPlus][redo+]] (=plugins/redo+=) adds conventional linear redo on top of Emacs' undo tree.
+
+* Window Management
+
+All bindings are in =config/window.el=.
+
+| Key | Action |
+|-----+--------|
+| =C-<arrow>= | Move focus to adjacent window |
+| =S-<arrow>= | Swap current window with adjacent ([[https://github.com/konstantinblaesi/windswap][windswap]]) |
+| =C-S-<arrow>= | Copy buffer to adjacent window ([[https://github.com/dholm/windcopy][windcopy]]) |
+| =M-<arrow>= | Move focus across frames ([[https://github.com/tlikonen/framemove][framemove]]) |
+| =C-x \= / =C-x -= | Split horizontally / vertically |
+| =C-x |= / =C-x _= | Split and move into new window ([[https://github.com/nex3/windsplit][windsplit]]) |
+| =C-x x= | Close current window |
+| =C-{= / =C-}= | Shrink / enlarge window horizontally |
+
+windcopy is handy for duplicating a buffer into a split view without disturbing the other window. framemove hooks into windmove so =C-<arrow>= wraps across frames transparently. Scrolling is patched so =C-v= / =M-v= at the buffer boundary moves to the end / beginning rather than signaling an error.
+
+* Project Navigation & Search
+
+** Projectile
+
+[[https://github.com/bbatsov/projectile][Projectile]] provides project-aware file finding and buffer switching with one-week caching. The helm front-end is provided by [[https://github.com/bbatsov/helm-projectile][helm-projectile]], and the project search root defaults to =~/Workspace=. The command map is bound to both =C-x C-p= and =C-x p=.
+
+** Search
+
+| Key | Tool |
+|-----+------|
+| =M-r= | ~helm-occur~ — incremental in-buffer search |
+| =M-R= | ~helm-grep-do-git-grep~ — search across the git repo |
+| =C-M-R= | ~ag~ — full-text search across a directory tree |
+
+** Cscope
+
+[[https://github.com/dkogan/xcscope.el][xcscope]] provides C/C++ symbol cross-referencing via ~cscope-setup~. It is useful in large codebases where LSP indexing is impractical.
+
+* Version Control
+
+Git integration is built around [[https://magit.vc/][magit]], configured in =config/git.el=.
+
+| Key | Command |
+|-----+---------|
+| =C-x RET C-s= | Magit status |
+| =C-x RET C-h= | Log for HEAD |
+| =C-x RET C-b= | Blame |
+| =C-x RET C-f= | Find file in another revision |
+| =C-x RET C-l= | Log for current buffer's file |
+
+[[https://github.com/emacsorphanage/magit-gerrit][magit-gerrit]] (=plugins/magit-gerrit=) integrates Gerrit code review into the magit interface, activating automatically for remotes matching LGE/LGSVL hostnames. Commit message buffers narrow ~fill-column~ to 70 to keep subject lines within the conventional limit.
+
+* LSP
+
+[[https://emacs-lsp.github.io/lsp-mode/][lsp-mode]] is configured in =config/lsp.el= with the keymap prefix =C-c C-l=. Active language hooks: =js-mode=, =typescript-mode=, =python-mode=, =web-mode=. C/C++ hooks are currently disabled.
+
+Required language servers are installed automatically via ~:ensure-system-package~:
+
+| Language | Server | Install command |
+|----------+--------+-----------------|
+| JS / TS | typescript-language-server | ~npm -g install typescript-language-server~ |
+| HTML / CSS / JSON | vscode-langservers-extracted | ~npm -g install vscode-langservers-extracted~ |
+| Python | pylsp | ~sudo apt install -y python3-pylsp~ |
+
+[[https://emacs-lsp.github.io/lsp-ui/][lsp-ui]] provides inline diagnostics and hover documentation. [[https://github.com/emacs-lsp/helm-lsp][helm-lsp]] replaces ~xref-find-apropos~ with a helm workspace symbol search.
+
+* Language Support
+
+** Web / JavaScript / TypeScript
+
+[[https://web-mode.org/][web-mode]] handles =.html= and =.php= files. JS, TS, CSS, and markup all use 2-space indentation. [[https://github.com/ternjs/tern][tern]] provides JavaScript analysis as a company backend in both =js-mode= and =web-mode=. [[https://github.com/yasuyk/web-beautify][web-beautify]] (=C-c b=) formats JS, HTML, and CSS using =js-beautify=.
+
+** Python
+
+[[https://github.com/pythonic-emacs/python-mode][python-mode]] uses 2-space indentation. [[https://github.com/pythonic-emacs/anaconda-mode][anaconda-mode]] provides in-buffer documentation and navigation; ~company-anaconda~ feeds completions into company. =pylsp= via =lsp-mode= covers full LSP analysis. Indent shift is on =C-c C-.= / =C-c C-,=, with =C-c .= / =C-c ,= as terminal-safe aliases.
+
+** C / C++
+
+=.h= files open in =c++-mode=. Indentation uses spaces throughout. ~company-c-headers~ provides header completion with paths auto-detected from GCC and qmake. Symbol navigation uses xcscope. LSP is currently disabled.
+
+** Rust
+
+[[https://github.com/brotzeit/rustic][rustic]] handles Rust files.
+
+* Build
+
+=<f7>= calls ~recompile~ when a previous compilation buffer exists, or falls back to the interactive ~compile~ prompt otherwise. =C-<f7>= always opens the interactive prompt. Both are configured in =config/compile.el=.
+
+* Snippets & Note Taking
+
+[[https://github.com/joaotavora/yasnippet][YASnippet]] is enabled globally. Custom snippets go in the =snippets/= directory.
+
+[[https://jblevins.org/projects/deft/][Deft]] (=M-g d= or =C-x RET C-d=) provides fast plain-text note browsing. Notes live in =~/Documents/deft= with recursive search, defaulting to the =.org= extension.
+
+* Org Mode
+
+Org Babel language support is configured in =config/org.el=. Language availability is determined at startup by checking for the relevant executables (=gcc=, =g++=, =python=, =gnuplot=, =java=, etc.). PlantUML blocks use the jar configured by =plantuml-mode=. [[https://github.com/hniksic/emacs-htmlize][htmlize]] is included for syntax-highlighted HTML export.
+
+* License
+
+For my own code, it is free to use. Packages under =plugins/= follow their own license notices.
