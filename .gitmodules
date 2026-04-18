@@ -11,3 +11,4 @@
 [submodule "plugins/use-package-ensure-system-package+"]
 	path = plugins/use-package-ensure-system-package+
 	url = git@github.com:zeph1e/use-package-ensure-system-package-plus.el
+        ignore = untracked
