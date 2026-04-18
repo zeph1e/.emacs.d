@@ -8,3 +8,6 @@
 	path = plugins/block-travel
 	url = git@github.com:emacs-vs/block-travel.git
         ignore = untracked
+[submodule "plugins/use-package-ensure-system-package+"]
+	path = plugins/use-package-ensure-system-package+
+	url = git@github.com:zeph1e/use-package-ensure-system-package-plus.el
