@@ -142,8 +142,6 @@ For C/C++, ~company-c-headers~ is configured with compiler include paths detecte
 | c-mode, c++-mode, objc-mode | company-c-headers |
 | python-mode | company-anaconda |
 
-[[https://github.com/company-statistics/company-statistics][company-statistics]] ranks candidates by usage history.
-
 * Editing
 
 ** Multi-editing
