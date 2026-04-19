@@ -34,7 +34,7 @@ The C/C++ header path detection is tailored for GCC. If you use a different comp
 
 #+BEGIN_SRC sh
   mv ~/.emacs.d ~/.emacs.d.old
-  git clone git@github.com:zeph1e/.emacs.d.git ~/
+  git clone --recursive git@github.com:zeph1e/.emacs.d.git ~/
 #+END_SRC
 
 Remaining packages are installed automatically on first launch.
