@@ -1,5 +1,7 @@
 (use-package claude-code-ide
   :straight (:type git :host github :repo "manzaltu/claude-code-ide.el")
+  :ensure-system-package
+  (claude . "npm install -g @anthropic-ai/claude-code")
   :config
   (claude-code-ide-emacs-tools-setup)
   :bind
