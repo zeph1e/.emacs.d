@@ -4,6 +4,8 @@
 ;; You can use/modify/redistribute this freely.
 
 (use-package python-mode
+  :ensure-system-package
+  (python . "sudo apt install -y python3")
   :bind
   (:map python-mode-map
    ("C-c C-." . python-indent-shift-right)
