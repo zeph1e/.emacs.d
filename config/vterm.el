@@ -6,14 +6,13 @@
     '((gcc . build-essential) (cmake . cmake)(libtool . libtool-bin)))
 
   (defun my:vterm-dependencies-checker (&optional cmd)
-    (message "run hook with %S" cmd)
     (when (stringp cmd)
       (let ((pkg (intern (car (last (split-string cmd))))))
         (setq my:vterm-system-deps
               (cl-remove-if #'(lambda (dep) (equal (cdr dep) pkg))
                             my:vterm-system-deps))))
     (unless my:vterm-system-deps
-      (exit-recursive-edit)))
+      (exit-recursive-edit))) ; resume vterm-module-compile
 
 
   (defun my:vterm-module-compile (orig-fun &rest args)
@@ -22,7 +21,7 @@
       (setq my:vterm-module-compile-orig-fun orig-fun)
       (add-hook 'upesp+:command-executed-hook 'my:vterm-dependencies-checker)
       (run-with-timer 0 nil #'my:vterm-module-compile-internal)
-      (recursive-edit)
+      (recursive-edit) ; block here and wait for installation to be done
       (funcall orig-fun)
       (remove-hook 'upesp+:command-executed-hook 'my:vterm-dependencies-checker)))
 
