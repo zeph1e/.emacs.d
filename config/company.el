@@ -70,6 +70,8 @@
   (company-tooltip-align-annotations t))
 
 (use-package company-c-headers
+  :ensure-system-package
+  (gcc . "sudo apt install -y build-essential")
   :config
   (defun my:filter-list (condp list)
     (delq nil (mapcar (lambda (x) (and (funcall condp x) x)) list)))
