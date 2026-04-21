@@ -99,5 +99,13 @@
   :ensure nil
   :pin manual
   :bind
-  (("M-p" . block-travel-up)
+  (:map my:global-key-map
+   ("M-p" . block-travel-up)
    ("M-n" . block-travel-down)))
+
+(use-package ibuffer
+  :ensure nil
+  :pin manual
+  :bind
+  (:map my:global-key-map
+   ("C-x C-b" . ibuffer)))

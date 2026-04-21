@@ -29,3 +29,6 @@
   (magit-gerrit-known-hosts '("[a-zA-Z0-9]+.lge.com"
                               "[a-zA-Z0-9]+.lgsvl.com"))
   (magit-gerrit-popup-prefix (kbd "`")))
+
+(use-package magit-gh
+  :after magit)
