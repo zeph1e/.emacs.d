@@ -6,4 +6,5 @@
   (claude-code-ide-emacs-tools-setup)
   :bind
   (:map my:global-key-map
-   ("C-c C-'" . claude-code-ide-menu)))
+   ("C-c C-_" . claude-code-ide-menu) ; C-c C-/ in terminal
+   ("C-c C-/" . claude-code-ide-menu)))

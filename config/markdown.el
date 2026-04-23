@@ -4,4 +4,6 @@
 ;; You can use/modify/redistribute this freely.
 
 (use-package markdown-mode
-  :ensure-system-package (markdown . "sudo apt install -y markdown"))
+  :ensure-system-package (markdown . "sudo apt install -y markdown")
+  :custom
+  ((markdown-split-window-direction 'right)))
