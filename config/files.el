@@ -44,12 +44,13 @@ Runs revert-buffer--default internally"
                    (save-window-excursion
                      (my:display-buffer-modification (current-buffer))
                      (let* ((buffer (current-buffer))
-                           (choice
-                            (read-char-choice
-                             (format
-                              "Buffer %s modified; (d)iscard (s)ave or (q)uit? "
-                              (buffer-name buffer))
-                             '(?d ?q ?s))))
+                            (choice
+                             (or (unless (buffer-modified-p) ?d)
+                                 (read-char-choice
+                                  (format
+                                   "Buffer %s modified; (d)iscard (s)ave or (q)uit? "
+                                   (buffer-name buffer))
+                                  '(?d ?q ?s)))))
                        (cond ((equal choice ?d)
                               (message "Refreshed buffer: %s."
                                        (buffer-name buffer)) t)
