@@ -31,10 +31,14 @@
 
 (ignore-errors
   (when (display-graphic-p)
-    (let ((korean-font "NanumGothicCoding-10"))
+    (setq use-default-font-for-symbols nil)
+    (let ((korean-font "NanumGothicCoding-10")
+          (symbol-font "DejaVu Sans Mono"))
       (set-face-font 'default "Lucida Console-10")
       ;; HANGUL CHOSUNG KIYEOK to HALFWIDTH HANGUL LETTER I
-      (set-fontset-font "fontset-default" '(#x1100 . #xffdc) korean-font))
+      (set-fontset-font "fontset-default" '(#x1100 . #xffdc) korean-font)
+      (set-fontset-font t 'symbol symbol-font nil 'prepend))
+
     ;; maximize frame on launch
     (add-to-list 'default-frame-alist '(fullscreen . maximized))))
 

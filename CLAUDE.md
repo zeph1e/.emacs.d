@@ -66,4 +66,5 @@ Four plugins are git submodules (`company-tern`, `magit-gerrit`, `block-travel`,
 | `config/editor.el` | Small ergonomic editing commands |
 | `config/window.el` | All window/frame navigation bindings |
 | `config/fileviewer.el` | External file/URL opener integration; detects WSL / SSH-remote / local host and routes dired `V`, `browse-url`, and `mailcap` viewers accordingly |
+| `config/claude.el` | Claude Code integration via `claude-code.el`; uses `monet` for IDE server bridging and `inheritenv` for environment propagation; opens Claude in a right side window |
 | `misc/edit` | Smart `emacsclient` wrapper; set `$EDITOR` to this |
