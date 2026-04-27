@@ -263,6 +263,34 @@ Required language servers are installed automatically via ~:ensure-system-packag
 
 =<f7>= calls ~recompile~ when a previous compilation buffer exists, or falls back to the interactive ~compile~ prompt otherwise. =C-<f7>= always opens the interactive prompt. Both are configured in =config/compile.el=.
 
+* External File Viewer
+
+=config/fileviewer.el= routes external file opens and URL navigation to the host's default viewer, with awareness of where Emacs is running:
+
+ - *WSL* — uses =wslview= so files and URLs open in the Windows host.
+ - *SSH-remote* (=$SSH_CLIENT= set) — falls back to local =xdg-open= when a graphical display is available; otherwise the operation is skipped.
+ - *Local* — uses =xdg-open=, =gnome-open=, =kde-open=, or =open=, whichever is found.
+
+In dired, =V= invokes the resolved viewer on the file at point; remote files are first copied to a temp file via Tramp. ~browse-url-browser-function~ is wired to the same opener so external links land in the host browser, and =mailcap= viewer entries on WSL are rewritten to go through =wslview=.
+
+*** SSH-remote setup
+
+When Emacs runs on a remote server, ~browse-url~ resolves URLs by =ssh=-ing back to the workstation (the host found in =$SSH_CLIENT=) and invoking =xdg-open= there. For this to work non-interactively:
+
+ 1. *Reverse SSH access* — the workstation must run =sshd=, and the remote-host user's public key must be installed in =~/.ssh/authorized_keys= on the workstation, so password / passphrase prompts don't block Emacs.
+ 2. *Username mapping* — =ssh= defaults to the current user on the remote host. If your workstation login differs from your login on the remote host, add an entry to =~/.ssh/config= on the *remote* host:
+
+    #+BEGIN_SRC conf
+      Host <workstation-host-or-ip>
+          User <workstation-username>
+          IdentityFile ~/.ssh/id_ed25519
+    #+END_SRC
+
+    The =Host= pattern must match the IP returned by =$SSH_CLIENT= (the first whitespace-separated field) — typically the workstation's outbound address as seen from the server.
+ 3. *Host key trust* — the workstation's host key must already be in the remote host's =~/.ssh/known_hosts=, otherwise the first connection blocks on a confirmation prompt. Connect once manually (=ssh <workstation>=) before relying on URL handling.
+
+For dired =V= on the SSH-remote case, no reverse SSH is used — Emacs runs the *local* =xdg-open= and relies on graphical display forwarding (X11 / Wayland) to render on the workstation. Launch =emacs= with a working =$DISPLAY= (i.e. via =ssh -X= / =-Y=) for this branch to take effect.
+
 * Snippets & Note Taking
 
 [[https://github.com/joaotavora/yasnippet][YASnippet]] is enabled globally. Custom snippets go in the =snippets/= directory.

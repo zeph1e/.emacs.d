@@ -65,4 +65,5 @@ Four plugins are git submodules (`company-tern`, `magit-gerrit`, `block-travel`,
 | `config/vterm.el` | vterm setup; blocks module compilation via `upesp+:command-executed-hook` until system deps install |
 | `config/editor.el` | Small ergonomic editing commands |
 | `config/window.el` | All window/frame navigation bindings |
+| `config/fileviewer.el` | External file/URL opener integration; detects WSL / SSH-remote / local host and routes dired `V`, `browse-url`, and `mailcap` viewers accordingly |
 | `misc/edit` | Smart `emacsclient` wrapper; set `$EDITOR` to this |
