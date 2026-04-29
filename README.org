@@ -24,7 +24,7 @@ Thanks to the ~:ensure-system-package~ feature of use-package, most of these are
 
 ** System Environment
 
-Emacs 29 or 30 is required. Some features rely on built-ins introduced in Emacs 29, such as ~use-package~.
+Emacs 30 or newer is required. Several features rely on built-ins introduced in Emacs 29 (e.g. ~use-package~), and =config/claude.el= uses use-package's ~:vc~ keyword, which is only available in Emacs 30 and newer.
 
 ** Compiler
 
@@ -47,7 +47,7 @@ While using Emacs for quite some time, I've accumulated various bits of code to 
 
 The configuration is structured around a few top-level entry points:
 
- - =init.el= — Entry point. Sets up locale, UI, the Emacs server, backup directories, =straight.el= / =use-package=, then loads =plugins/= and =config/=.
+ - =init.el= — Entry point. Sets up locale, UI, the Emacs server, backup directories, =package.el= / =use-package=, then loads =plugins/= and =config/=.
  - =config/= — One =.el= file per concern (e.g., =helm.el=, =lsp.el=, =git.el=). All files are loaded at startup and byte-compiled when Emacs quits.
  - =plugins/= — Manually managed packages not on ELPA/MELPA. Byte-compilation and autoload generation happen once on first load; a =.installed= sentinel file prevents re-processing.
  - =workaround.el= — Loaded early; contains targeted fixes for upstream bugs.
@@ -73,7 +73,7 @@ All auto-generated files are redirected into hidden subdirectories under =~/.ema
 
 ** Package System
 
-[[https://github.com/radian-software/straight.el][straight.el]] is the primary package manager, bootstrapped before anything else. [[https://github.com/jwiegley/use-package][use-package]] is built-in from Emacs 29 and available via ELPA on older versions. MELPA, GNU ELPA, and NonGNU ELPA are all configured as archives.
+The built-in =package.el= is the package manager, with GNU ELPA, NonGNU ELPA, and MELPA configured as archives. [[https://github.com/jwiegley/use-package][use-package]] is built-in from Emacs 29 and is the canonical declaration form. Packages not on any archive are pulled in with use-package's =:vc= keyword (which delegates to =package-vc-install=); this requires Emacs 30 or newer.
 
 ** Default Minor Modes
 

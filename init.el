@@ -92,25 +92,7 @@
       kept-old-versions 2)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; straight & package & use-package initialization
-(defvar bootstrap-version)
-(setq warning-suppress-types '((straight package)))
-(let ((bootstrap-file
-       (expand-file-name
-        "straight/repos/straight.el/bootstrap.el"
-        (or (bound-and-true-p straight-base-dir)
-            user-emacs-directory)))
-      (bootstrap-version 7))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-(straight-use-package 'use-package)
-
+;; package & use-package initialization
 (require 'package)
 ;; Add various package archives
 (setq package-archives
@@ -120,17 +102,7 @@
 ;; Initialise packages
 (package-initialize)
 
-;; Install use-package
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
-;; use-package is landed as a built-in package into emacs 29
-;; In this case we don't need to add a load path
-(when (< (string-to-number emacs-version) 29)
-  (add-to-list 'load-path
-               (package-desc-dir
-                (car (cdr (assq 'use-package package-alist))))))
+;; use-package is built-in from Emacs 29; :vc keyword requires Emacs 30
 (require 'use-package)
 (setq use-package-always-ensure t)
 

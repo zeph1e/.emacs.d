@@ -1,14 +1,13 @@
 (use-package inheritenv
-  :straight (:type git :host github :repo "purcell/inheritenv"))
+  :vc (:url "https://github.com/purcell/inheritenv" :rev :newest))
 
 (use-package monet
-  :straight (:type git :host github :repo "stevemolitor/monet")
+  :vc (:url "https://github.com/stevemolitor/monet" :rev :newest)
   :demand t)
 
-;; install claude-code.el, using :depth 1 to reduce download size:
 (use-package claude-code
-  :straight (:type git :host github :repo "stevemolitor/claude-code.el" :branch "main" :depth 1
-                   :files ("*.el" (:exclude "images/*")))
+  :vc (:url "https://github.com/stevemolitor/claude-code.el"
+       :branch "main" :rev :newest)
   :ensure-system-package
   (claude . "npm install -g @anthropic-ai/claude-code")
   :bind-keymap
