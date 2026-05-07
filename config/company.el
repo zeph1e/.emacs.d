@@ -120,6 +120,9 @@
                                              s "Qt[A-za-z]+"))
                                 (my:company-find-headers-qt)))))))
 
+(use-package company-box
+  :hook (company-mode . company-box-mode))
+
 (use-package company-statistics
   :hook
   (after-init . company-statistics-mode))
