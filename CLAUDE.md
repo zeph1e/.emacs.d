@@ -4,14 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Requirements
 
-Emacs 30+. `use-package` is loaded from the built-in copy and the `:vc` keyword (used by `config/claude.el` to fetch packages from GitHub) is only available on Emacs 30 and newer.
+Emacs 30+ recommended. On Emacs 30+, `use-package` is loaded from the built-in copy and the `:vc` keyword (used by `config/claude.el` to fetch packages from GitHub) is provided by built-in `package-vc`. On older Emacs, `init.el` bootstraps `straight.el` from `radian-software/straight.el` and installs `use-package` through it; `:vc` continues to work because straight handles VC-installed packages.
 
 ## Architecture
 
 The configuration loads in a fixed sequence from `init.el`:
 
 1. **Locale / UI / server** — early options, font, Emacs server start
-2. **package.el + use-package** — built-in `package.el` with GNU/NonGNU/MELPA archives; `use-package-always-ensure` is `t`. Packages not on an archive are pulled in via `:vc` (powered by `package-vc-install`).
+2. **Package manager + use-package** — on Emacs < 30, `straight.el` is bootstrapped (cloning into `straight/` under `user-emacs-directory`) and used to install `use-package`; straight also services `:vc` requests on this path. On every version, built-in `package.el` is initialized with GNU/NonGNU/MELPA archives and `use-package-always-ensure` is set to `t`. Packages not on an archive are pulled in via `:vc` (powered by `package-vc-install` on Emacs 30+, by straight on older versions).
 3. **`workaround.el`** — loaded immediately after; holds targeted fixes for upstream Emacs/package bugs
 4. **`plugins/`** — local packages not on ELPA/MELPA; byte-compiled + autoloads generated on first load (see below)
 5. **`config/*.el`** — one file per feature domain, loaded in filesystem (alphabetical) order; byte-compiled on Emacs quit
