@@ -200,25 +200,41 @@
                              (byte-compile-file filename))))
                     (list ,@files)))))
 
-;; define default minor modes
+;; define default major modes
 (defconst my:default-minor-mode-list
-  '(display-line-numbers-mode my:whitespace-mode))
+  '(display-line-numbers-mode my:whitespace-mode)
+  "Minor modes to apply in both of text and prog modes.")
 
 (defconst my:default-prog-minor-mode-list
   '(flyspell-prog-mode
     display-fill-column-indicator-mode
-    goto-address-prog-mode))
+    goto-address-prog-mode)
+  "Minor modes to apply in `prog-mode'")
 
 (defconst my:default-text-minor-mode-list
-  '(visual-line-mode flyspell-mode goto-address-mode))
+  '(visual-line-mode flyspell-mode goto-address-mode)
+  "Minor modes to apply in `text-mode'")
+
+(defconst my:custom-prog-mode-hook-list nil
+  "Major mode work's like prog-mode without deriving it")
+
+(defconst my:custom-text-mode-hook-list
+  '(conf-mode-hook)
+  "Major mode work's like text-mode without deriving it")
 
 (mapc (lambda (mode)
-        (add-hook 'prog-mode-hook mode))
+        (add-hook 'prog-mode-hook mode)
+        (mapc (lambda (hook)
+                (add-hook hook mode))
+              my:custom-prog-mode-hook-list))
       (append my:default-minor-mode-list
               my:default-prog-minor-mode-list))
 
 (mapc (lambda (mode)
-        (add-hook 'text-mode-hook mode))
+        (add-hook 'text-mode-hook mode)
+        (mapc (lambda (hook)
+                (add-hook hook mode))
+              my:custom-text-mode-hook-list))
       (append my:default-minor-mode-list
               my:default-text-minor-mode-list))
 
@@ -237,3 +253,9 @@
         (add-hook (derived-mode-hook-name mode)
                   (lambda () (display-fill-column-indicator-mode -1))))
       my:fill-column-exceptions)
+
+
+
+;; DO NOT MERGE THIS
+(add-to-list 'load-path "~/Workspace/rfcview.el")
+(require 'rfcview)

@@ -37,6 +37,11 @@ Every config file uses `use-package`. All custom keybindings go into `:map my:gl
 
 `global-hl-line-mode` is suppressed in shell/eshell/term buffers. `display-fill-column-indicator-mode` is suppressed in `helm-major-mode`.
 
+Two companion lists extend this to major modes that do **not** derive from `prog-mode` / `text-mode` but should receive the same minor modes:
+
+- `my:custom-prog-mode-hook-list` — currently `nil`; add a mode hook here to give it prog-mode minor modes
+- `my:custom-text-mode-hook-list` — currently `'(conf-mode-hook)`; add a mode hook here to give it text-mode minor modes
+
 ### `plugins/use-package-ensure-system-package+`
 
 This is the most complex local plugin. It serializes all `:ensure-system-package` install commands through a single persistent `/bin/bash` process to avoid concurrent package manager races. It exposes `upesp+:command-executed-hook`, called with the completed command string after each install — `config/vterm.el` uses this to block vterm module compilation until its system dependencies (gcc, cmake, libtool) have finished installing. See its own `CLAUDE.md` for internals. It must be loaded (via the plugins autoload system) before any `config/*.el` file that uses `:ensure-system-package`.
@@ -83,6 +88,7 @@ Four plugins are git submodules (`company-tern`, `magit-gerrit`, `block-travel`,
 | `config/window.el` | All window/frame navigation bindings |
 | `config/fileviewer.el` | External file/URL opener integration; detects WSL / SSH-remote / local host and routes dired `V`, `browse-url`, and `mailcap` viewers accordingly |
 | `config/claude.el` | Claude Code integration via `claude-code.el`; uses `monet` for IDE server bridging and `inheritenv` for environment propagation; opens Claude in a right side window |
+| `config/pdf.el` | PDF viewing via `pdf-tools`; requires system package `epdfinfo` (installed via `sudo apt install -y elpa-pdf-tools-server`) |
 | `misc/edit` | Smart `emacsclient` wrapper; set `$EDITOR` to this |
 | `.dir-locals.el` | Sets `fill-column` to 80 globally; in `emacs-lisp-mode`, registers a `write-contents-functions` hook that strips trailing whitespace on every save |
 
