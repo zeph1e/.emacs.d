@@ -23,7 +23,19 @@ On first load each subdirectory is byte-compiled and an autoloads file (`<dir>-a
 
 ### `config/*.el` conventions
 
-Every config file uses `use-package`. All custom keybindings go into `:map my:global-key-map` — never `global-set-key` directly. `my:global-key-mode` is a minor mode that always sits at the head of `minor-mode-map-alist`, ensuring custom bindings win over major/minor mode defaults.
+Every config file uses `use-package`. All custom keybindings go into `:map my:global-key-map` — never `global-set-key` directly. `my:global-key-mode` is a minor mode that always sits at the head of `minor-mode-map-alist`, ensuring custom bindings win over major/minor mode defaults. An `:after load` advice (`my:load-with-keybindings-priority`) re-asserts that ordering after every `load`, so the priority survives later package loads.
+
+`config/*.el` files are byte-compiled lazily on `kill-emacs-hook`, only when the `.elc` is missing or older than the `.el`. **Consequence:** edits to a config file do not take effect until the next Emacs start. Restart Emacs (or manually `byte-compile-file` + reload) to pick up changes mid-session.
+
+### Default minor modes
+
+`init.el` installs three lists onto every buffer:
+
+- `my:default-minor-mode-list` (both prog and text): `display-line-numbers-mode`, `my:whitespace-mode`
+- `my:default-prog-minor-mode-list`: `flyspell-prog-mode`, `display-fill-column-indicator-mode`, `goto-address-prog-mode`
+- `my:default-text-minor-mode-list`: `visual-line-mode`, `flyspell-mode`, `goto-address-mode`
+
+`global-hl-line-mode` is suppressed in shell/eshell/term buffers. `display-fill-column-indicator-mode` is suppressed in `helm-major-mode`.
 
 ### `plugins/use-package-ensure-system-package+`
 
@@ -72,3 +84,10 @@ Four plugins are git submodules (`company-tern`, `magit-gerrit`, `block-travel`,
 | `config/fileviewer.el` | External file/URL opener integration; detects WSL / SSH-remote / local host and routes dired `V`, `browse-url`, and `mailcap` viewers accordingly |
 | `config/claude.el` | Claude Code integration via `claude-code.el`; uses `monet` for IDE server bridging and `inheritenv` for environment propagation; opens Claude in a right side window |
 | `misc/edit` | Smart `emacsclient` wrapper; set `$EDITOR` to this |
+| `.dir-locals.el` | Sets `fill-column` to 80 globally; in `emacs-lisp-mode`, registers a `write-contents-functions` hook that strips trailing whitespace on every save |
+
+## Conventions to remember when editing this repo
+
+- **Trailing whitespace is auto-stripped on save in `.el` files** (via `.dir-locals.el`). Don't be surprised by diffs that touch only line endings.
+- **Projectile's project search root is `~/Workspace`.** `helm-projectile` discovery starts there.
+- **Submodules ignore untracked files** (`block-travel`, `use-package-ensure-system-package+`) — `.gitmodules` sets `ignore = untracked` so local build artifacts don't surface in `git status`.
