@@ -48,11 +48,14 @@
     (interactive (list (convert-standard-filename
                         (expand-file-name (dired-file-name-at-point)))))
     (when (file-remote-p file)
-      (let ((target-file
-             (make-temp-file "view-file" nil
-                             (concat "-" (file-name-nondirectory file)))))
-        (tramp-compat-copy-file file target-file t)
-        (setq file target-file)))
+      (cond ((file-directory-p file) (error "Unable to view directory!"))
+            ((> (file-attribute-size (file-attributes file)) 5242880) ; 5MB
+             (error "The remote file is too large!"))
+            (t (let ((target-file
+                        (make-temp-file "view-file" nil
+                                        (concat "-" (file-name-nondirectory file)))))
+                   (copy-file file target-file t)
+                   (setq file target-file)))))
     (let* ((remotep (eq (my:emacs-running-at) 'remote))
            (my:view-file-viewer
             (if remotep

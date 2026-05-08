@@ -271,7 +271,7 @@ Required language servers are installed automatically via ~:ensure-system-packag
  - *SSH-remote* (=$SSH_CLIENT= set) — falls back to local =xdg-open= when a graphical display is available; otherwise the operation is skipped.
  - *Local* — uses =xdg-open=, =gnome-open=, =kde-open=, or =open=, whichever is found.
 
-In dired, =V= invokes the resolved viewer on the file at point; remote files are first copied to a temp file via Tramp. ~browse-url-browser-function~ is wired to the same opener so external links land in the host browser, and =mailcap= viewer entries on WSL are rewritten to go through =wslview=.
+In dired, =V= invokes the resolved viewer on the file at point; remote files are first copied to a temp file. Remote directories are rejected, and remote files larger than 5 MB are refused so the local copy stays bounded. ~browse-url-browser-function~ is wired to the same opener so external links land in the host browser, and =mailcap= viewer entries on WSL are rewritten to go through =wslview=.
 
 *** SSH-remote setup
 
