@@ -35,7 +35,7 @@
   (:map my:global-key-map
    ("M-<left>"  . fm-left-frame)
    ("M-<right>" . fm-right-frame)
-   ("M-<up>"    . fm-left-frame)
+   ("M-<up>"    . fm-up-frame)
    ("M-<down>"  . fm-down-frame))
   :init
   (framemove-default-keybindings 'meta)
