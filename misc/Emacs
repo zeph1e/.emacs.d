@@ -6,6 +6,9 @@ for candidate in $EMACS_CANDIDATES; do
         if [ -x "$cmd" ]; then
             unset GTK_IM_MODULE
             unset XMODIFIERS
+            if [ -d "$HOME/.nvm" ]; then
+                . $HOME/.nvm/nvm.sh
+            fi
             exec $cmd $@
             return 0
         fi
