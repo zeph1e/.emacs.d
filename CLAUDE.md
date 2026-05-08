@@ -68,7 +68,7 @@ Emacs will recompile and regenerate autoloads for that plugin on the next launch
 
 ## Submodules
 
-Four plugins are git submodules (`company-tern`, `magit-gerrit`, `block-travel`, `use-package-ensure-system-package+`). Clone with `--recursive` or run `git submodule update --init` after cloning.
+Four plugins are git submodules (`company-tern`, `magit-gerrit`, `block-travel`, `use-package-ensure-system-package+`). Clone with `--recursive` or run `git submodule update --init --recursive` after cloning.
 
 ## Key Files
 

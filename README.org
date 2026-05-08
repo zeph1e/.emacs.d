@@ -34,7 +34,13 @@ The C/C++ header path detection is tailored for GCC. If you use a different comp
 
 #+BEGIN_SRC sh
   mv ~/.emacs.d ~/.emacs.d.old
-  git clone --recursive git@github.com:zeph1e/.emacs.d.git
+  git clone --recursive git@github.com:zeph1e/.emacs.d.git ~/.emacs.d
+#+END_SRC
+
+If you already cloned without =--recursive=, fetch the submodules manually:
+
+#+BEGIN_SRC sh
+  git submodule update --init --recursive
 #+END_SRC
 
 Remaining packages are installed automatically on first launch.
@@ -77,14 +83,15 @@ The built-in =package.el= is the package manager, with GNU ELPA, NonGNU ELPA, an
 
 ** Default Minor Modes
 
-Minor modes applied to every buffer by category:
+=init.el= installs three lists of default minor modes — one shared by both prog and text buffers, plus one each for prog-only and text-only:
 
-| Category | Minor modes |
-|----------+-------------|
-| All ~prog-mode~ | ~display-line-numbers-mode~, ~my:whitespace-mode~, ~flyspell-prog-mode~, ~display-fill-column-indicator-mode~, ~goto-address-prog-mode~ |
-| All ~text-mode~ | ~display-line-numbers-mode~, ~my:whitespace-mode~, ~visual-line-mode~, ~flyspell-mode~, ~goto-address-mode~ |
+| List | Hooks | Minor modes |
+|------+-------+-------------|
+| ~my:default-minor-mode-list~ | both ~prog-mode~ and ~text-mode~ | ~display-line-numbers-mode~, ~my:whitespace-mode~ |
+| ~my:default-prog-minor-mode-list~ | ~prog-mode~ only | ~flyspell-prog-mode~, ~display-fill-column-indicator-mode~, ~goto-address-prog-mode~ |
+| ~my:default-text-minor-mode-list~ | ~text-mode~ only | ~visual-line-mode~, ~flyspell-mode~, ~goto-address-mode~ |
 
-~global-hl-line-mode~ is suppressed in shell, eshell, and term buffers where the highlight is visually disruptive.
+~global-hl-line-mode~ is suppressed in shell, eshell, and term buffers where the highlight is visually disruptive. ~display-fill-column-indicator-mode~ is suppressed in ~helm-major-mode~.
 
 * UX Configuration
 
@@ -119,7 +126,7 @@ I initially used [[https://www.gnu.org/software/emacs/manual/html_mono/ido.html]
 | =C-x b= | ~helm-mini~ |
 | =M-y= | ~helm-show-kill-ring~ |
 | =M-r= | ~helm-occur~ |
-| =M-R= | ~helm-grep-do-git-grep~ |
+| =M-R= | ~helm-do-grep-ag~ |
 | =C-h a= | ~helm-apropos~ |
 | =C-h b= | ~helm-descbinds~ |
 | =C-x C-p= / =C-x p= | Projectile command map (helm-projectile) |
@@ -164,8 +171,10 @@ A collection of small ergonomic commands in =config/editor.el=:
 | =M-@= | Mark word at point |
 | =M-#= | Mark symbol at point |
 | =M-SPC= | Jump to first non-blank character on line |
+| =M-S-SPC= | Collapse surrounding whitespace to one space (~just-one-space~) |
 | =C-o= | Open new line above |
 | =M-o= | Insert new line below |
+| =M-p= / =M-n= | Move up / down by code block ([[https://github.com/emacs-vs/block-travel][block-travel]]) |
 | =<f12>= | Toggle buffer read-only |
 
 ~kill-line~ is advised to clean up leading whitespace after the kill, preventing orphaned indentation.
@@ -176,7 +185,7 @@ A collection of small ergonomic commands in =config/editor.el=:
 
 ** Undo / Redo
 
-[[https://www.emacswiki.org/emacs/RedoPlus][redo+]] (=plugins/redo+=) adds conventional linear redo on top of Emacs' undo tree.
+[[https://www.emacswiki.org/emacs/RedoPlus][redo+]] (=plugins/redo+=) adds conventional linear redo on top of Emacs' built-in undo system.
 
 * Window Management
 
@@ -206,8 +215,8 @@ windcopy is handy for duplicating a buffer into a split view without disturbing 
 | Key | Tool |
 |-----+------|
 | =M-r= | ~helm-occur~ — incremental in-buffer search |
-| =M-R= | ~helm-grep-do-git-grep~ — search across the git repo |
-| =C-M-R= | ~ag~ — full-text search across a directory tree |
+| =M-R= | ~helm-do-grep-ag~ — full-text search across a directory tree |
+| =C-M-r= | ~my:helm-do-grep-vc-root-ag~ — same, rooted at the VCS repo root |
 
 ** Cscope
 
