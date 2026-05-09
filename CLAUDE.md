@@ -75,6 +75,17 @@ Emacs will recompile and regenerate autoloads for that plugin on the next launch
 
 Four plugins are git submodules (`company-tern`, `magit-gerrit`, `block-travel`, `use-package-ensure-system-package+`). Clone with `--recursive` or run `git submodule update --init --recursive` after cloning.
 
+## Building / Compiling
+
+There is no top-level build step for the Emacs config itself. For in-Emacs compilation:
+
+| Key | Command |
+|-----|---------|
+| `<f7>` | `my:compile` — calls `recompile` if a previous compilation buffer exists, otherwise prompts interactively |
+| `C-<f7>` | Always opens the interactive `compile` prompt |
+
+Defined in `config/compile.el`.
+
 ## Key Files
 
 | File | Purpose |
@@ -87,7 +98,7 @@ Four plugins are git submodules (`company-tern`, `magit-gerrit`, `block-travel`,
 | `config/editor.el` | Small ergonomic editing commands |
 | `config/window.el` | All window/frame navigation bindings |
 | `config/fileviewer.el` | External file/URL opener integration; detects WSL / SSH-remote / local host and routes dired `V`, `browse-url`, and `mailcap` viewers accordingly |
-| `config/claude.el` | Claude Code integration via `claude-code.el`; uses `monet` for IDE server bridging and `inheritenv` for environment propagation; opens Claude in a right side window |
+| `config/claude.el` | Claude Code integration via `claude-code.el`; keybinding prefix `C-'`; uses `monet` for IDE server bridging (`monet-ediff-tool` handles diffs) and `inheritenv` for environment propagation; opens Claude in a right side window |
 | `config/pdf.el` | PDF viewing via `pdf-tools`; requires system package `epdfinfo` (installed via `sudo apt install -y elpa-pdf-tools-server`) |
 | `misc/edit` | Smart `emacsclient` wrapper; set `$EDITOR` to this |
 | `.dir-locals.el` | Sets `fill-column` to 80 globally; in `emacs-lisp-mode`, registers a `write-contents-functions` hook that strips trailing whitespace on every save |
