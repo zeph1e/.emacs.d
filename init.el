@@ -6,6 +6,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; basic option
 
+;; load workaround
+(load (locate-user-emacs-file "workaround.el"))
+
 ;; language
 (set-language-environment "Korean")
 (setq default-korean-keyboard "3")
@@ -125,9 +128,6 @@
 ;; use-package is built-in from Emacs 29; :vc keyword requires Emacs 30
 (require 'use-package)
 (setq use-package-always-ensure t)
-
-;; load workaround
-(load (locate-user-emacs-file "workaround.el"))
 
 ;; add local package path to load path
 (let ((default-directory (locate-user-emacs-file "plugins")))
