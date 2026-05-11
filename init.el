@@ -256,6 +256,8 @@
 
 
 
-;; DO NOT MERGE THIS
-(add-to-list 'load-path "~/Workspace/rfcview.el")
-(require 'rfcview)
+;; test
+(let ((rvdir "~/Workspace/rfcview.el"))
+  (when (file-directory-p rvdir)
+    (add-to-list 'load-path rvdir)
+    (require 'rfcview)))
