@@ -8,7 +8,11 @@
   :config
   (set-face-attribute 'highlight nil :background "DeepSkyBlue4")
   :init
-  (color-theme-tomorrow-night-eighties))
+  (unless
+      ;; try theme in environment variable
+      (condition-case _
+          (load-theme (intern (getenv "EMACS_THEME"))) (error nil))
+    (color-theme-tomorrow-night-eighties)))
 
 (use-package nyan-mode
   :ensure t
