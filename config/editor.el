@@ -99,8 +99,7 @@
   :ensure nil
   :pin manual
   :bind
-  (:map my:global-key-map
-   ("M-p" . block-travel-up)
+  (("M-p" . block-travel-up) ; let these be overwritten
    ("M-n" . block-travel-down)))
 
 (use-package ibuffer
