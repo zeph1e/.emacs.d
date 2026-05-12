@@ -3,6 +3,8 @@
 ;; Written by Yunsik Jang <z3ph1e@gmail.com>
 ;; You can use/modify/redistribute this freely.
 
+(use-package base16-theme)              ; for reservation
+
 (use-package color-theme-tomorrow
   :ensure nil
   :config
