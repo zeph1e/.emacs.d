@@ -27,6 +27,7 @@
    ("C-x r i"   . helm-register)
    ("C-x b"     . helm-mini)
    ("C-h a"     . helm-apropos)
+   ("C-h i"     . helm-info)
    ("M-r"       . helm-occur)
    ("M-R"       . helm-do-grep-ag)
    ("C-M-r"     . my:helm-do-grep-vc-root-ag)
@@ -60,7 +61,11 @@
      helm-source-bookmark-man
      helm-source-bookmark-images
      helm-source-bookmark-w3m
-     helm-source-bookmark-uncategorized)))
+     helm-source-bookmark-uncategorized))
+  (helm-follow-mode-persistent t)
+  (helm-source-name-using-follow
+   ("AG" "Git-Grep" "global-mark-ring" "mark-ring")))
+
 
 (use-package helm-projectile
   :bind-keymap
