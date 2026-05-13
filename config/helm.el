@@ -8,6 +8,20 @@
   :demand t
   :config
   (require 'helm-files)
+  (defun my:read-file-name
+      (prompt &optional dir default-filename mustmatch initial predicate)
+    "Read a file name using `helm-read-file-name'.
+Suitable for use as `read-file-name-function'.
+PROMPT, DIR, DEFAULT-FILENAME, MUSTMATCH, INITIAL, and PREDICATE match
+the contract of `read-file-name'."
+    (helm-read-file-name
+     prompt
+     :initial-input (expand-file-name (or initial dir default-directory)
+                                      (or dir default-directory))
+     :default default-filename
+     :must-match mustmatch
+     :test predicate))
+  (setq read-file-name-function #'my:read-file-name)
   (defun my:helm-find-files-backward-dwim ()
     "Backspace goes to the upper folder if you're not in a filename."
     (interactive)
