@@ -44,6 +44,7 @@ the contract of `read-file-name'."
    ("C-h i"     . helm-info)
    ("M-r"       . helm-occur)
    ("M-R"       . helm-do-grep-ag)
+   ("C-R"       . helm-grep-do-git-grep)
    ("C-M-r"     . my:helm-do-grep-vc-root-ag)
    ("M-g s"     . helm-google-suggest)
    ("C-x C-SPC" . helm-all-mark-rings)
