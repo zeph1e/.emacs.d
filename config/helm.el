@@ -77,7 +77,7 @@ the contract of `read-file-name'."
      helm-source-bookmark-w3m
      helm-source-bookmark-uncategorized))
   (helm-follow-mode-persistent t)
-  (helm-source-name-using-follow
+  (helm-source-names-using-follow
    ("AG" "Git-Grep" "global-mark-ring" "mark-ring")))
 
 
