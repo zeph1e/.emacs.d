@@ -85,11 +85,11 @@ The built-in =package.el= is the package manager, with GNU ELPA, NonGNU ELPA, an
 
 =init.el= installs three lists of default minor modes — one shared by both prog and text buffers, plus one each for prog-only and text-only:
 
-| List | Hooks | Minor modes |
-|------+-------+-------------|
-| ~my:default-minor-mode-list~ | both ~prog-mode~ and ~text-mode~ | ~display-line-numbers-mode~, ~my:whitespace-mode~ |
-| ~my:default-prog-minor-mode-list~ | ~prog-mode~ only | ~flyspell-prog-mode~, ~display-fill-column-indicator-mode~, ~goto-address-prog-mode~ |
-| ~my:default-text-minor-mode-list~ | ~text-mode~ only | ~visual-line-mode~, ~flyspell-mode~, ~goto-address-mode~ |
+| List                              | Hooks                            | Minor modes                                                                          |
+|-----------------------------------+----------------------------------+--------------------------------------------------------------------------------------|
+| ~my:default-minor-mode-list~      | both ~prog-mode~ and ~text-mode~ | ~display-line-numbers-mode~, ~my:whitespace-mode~                                    |
+| ~my:default-prog-minor-mode-list~ | ~prog-mode~ only                 | ~flyspell-prog-mode~, ~display-fill-column-indicator-mode~, ~goto-address-prog-mode~ |
+| ~my:default-text-minor-mode-list~ | ~text-mode~ only                 | ~visual-line-mode~, ~flyspell-mode~, ~goto-address-mode~                             |
 
 ~global-hl-line-mode~ is suppressed in shell, eshell, and term buffers where the highlight is visually disruptive. ~display-fill-column-indicator-mode~ is suppressed in ~helm-major-mode~.
 
@@ -119,16 +119,16 @@ I initially used [[https://www.gnu.org/software/emacs/manual/html_mono/ido.html]
 
 [[https://github.com/emacs-helm/helm][Helm]] replaces ido for all interactive selection, configured in =config/helm.el=. The most useful customization is ~my:helm-find-files-backward-dwim~: pressing =<backspace>= in a file path deletes one directory level rather than one character, making navigation of deep paths much faster.
 
-| Key | Command |
-|-----+---------|
-| =M-x= | ~helm-M-x~ |
-| =C-x C-f= | ~helm-find-files~ |
-| =C-x b= | ~helm-mini~ |
-| =M-y= | ~helm-show-kill-ring~ |
-| =M-r= | ~helm-occur~ |
-| =M-R= | ~helm-do-grep-ag~ |
-| =C-h a= | ~helm-apropos~ |
-| =C-h b= | ~helm-descbinds~ |
+| Key                 | Command                                  |
+|---------------------+------------------------------------------|
+| =M-x=               | ~helm-M-x~                               |
+| =C-x C-f=           | ~helm-find-files~                        |
+| =C-x b=             | ~helm-mini~                              |
+| =M-y=               | ~helm-show-kill-ring~                    |
+| =M-r=               | ~helm-occur~                             |
+| =M-R=               | ~helm-do-grep-ag~                        |
+| =C-h a=             | ~helm-apropos~                           |
+| =C-h b=             | ~helm-descbinds~                         |
 | =C-x C-p= / =C-x p= | Projectile command map (helm-projectile) |
 
 [[https://github.com/emacs-lsp/helm-lsp][helm-lsp]] replaces ~xref-find-apropos~ with a helm-powered workspace symbol search when LSP is active.
@@ -141,13 +141,13 @@ A custom ~my:company-ispell~ wrapper activates spell-check completion only insid
 
 For C/C++, ~company-c-headers~ is configured with compiler include paths detected at runtime by invoking =gcc -x c -E -v -= and parsing the output. Qt headers are picked up automatically when =qmake= is available. Mode-specific backends:
 
-| Mode | Backends |
-|------+----------|
-| web-mode, sgml-mode | company-web-html, company-css, company-tern |
-| css-mode, less-css-mode | company-css |
-| js-mode | company-tern |
-| c-mode, c++-mode, objc-mode | company-c-headers |
-| python-mode | company-anaconda |
+| Mode                        | Backends                                    |
+|-----------------------------+---------------------------------------------|
+| web-mode, sgml-mode         | company-web-html, company-css, company-tern |
+| css-mode, less-css-mode     | company-css                                 |
+| js-mode                     | company-tern                                |
+| c-mode, c++-mode, objc-mode | company-c-headers                           |
+| python-mode                 | company-anaconda                            |
 
 * Editing
 
@@ -155,27 +155,27 @@ For C/C++, ~company-c-headers~ is configured with compiler include paths detecte
 
 [[https://github.com/victorhge/iedit][iedit]] (=C-M-#=) edits all occurrences of a symbol within its scope simultaneously — ideal for quick in-buffer renaming. [[https://github.com/magnars/multiple-cursors.el][multiple-cursors]] is better suited for structured multi-line edits:
 
-| Key | Command |
-|-----+---------|
-| =M-.= | Mark next like this |
+| Key   | Command                 |
+|-------+-------------------------|
+| =M-.= | Mark next like this     |
 | =M-,= | Mark previous like this |
-| =M-/= | Mark all like this |
-| =M-?= | Edit lines in region |
+| =M-/= | Mark all like this      |
+| =M-?= | Edit lines in region    |
 
 ** Custom Editing Commands
 
 A collection of small ergonomic commands in =config/editor.el=:
 
-| Key | Command |
-|-----+---------|
-| =M-@= | Mark word at point |
-| =M-#= | Mark symbol at point |
-| =M-SPC= | Jump to first non-blank character on line |
-| =M-S-SPC= | Collapse surrounding whitespace to one space (~just-one-space~) |
-| =C-o= | Open new line above |
-| =M-o= | Insert new line below |
-| =M-p= / =M-n= | Move up / down by code block ([[https://github.com/emacs-vs/block-travel][block-travel]]) |
-| =<f12>= | Toggle buffer read-only |
+| Key           | Command                                                         |
+|---------------+-----------------------------------------------------------------|
+| =M-@=         | Mark word at point                                              |
+| =M-#=         | Mark symbol at point                                            |
+| =M-SPC=       | Jump to first non-blank character on line                       |
+| =M-S-SPC=     | Collapse surrounding whitespace to one space (~just-one-space~) |
+| =C-o=         | Open new line above                                             |
+| =M-o=         | Insert new line below                                           |
+| =M-p= / =M-n= | Move up / down by code block ([[https://github.com/emacs-vs/block-travel][block-travel]])                     |
+| =<f12>=       | Toggle buffer read-only                                         |
 
 ~kill-line~ is advised to clean up leading whitespace after the kill, preventing orphaned indentation.
 
@@ -191,16 +191,16 @@ A collection of small ergonomic commands in =config/editor.el=:
 
 All bindings are in =config/window.el=.
 
-| Key | Action |
-|-----+--------|
-| =C-<arrow>= | Move focus to adjacent window |
-| =S-<arrow>= | Swap current window with adjacent ([[https://github.com/konstantinblaesi/windswap][windswap]]) |
-| =C-S-<arrow>= | Copy buffer to adjacent window ([[https://github.com/dholm/windcopy][windcopy]]) |
-| =M-<arrow>= | Move focus across frames ([[https://github.com/tlikonen/framemove][framemove]]) |
-| =C-x \= / =C-x -= | Split horizontally / vertically |
-| =C-x |= / =C-x _= | Split and move into new window ([[https://github.com/nex3/windsplit][windsplit]]) |
-| =C-x x= | Close current window |
-| =C-{= / =C-}= | Shrink / enlarge window horizontally |
+| Key               | Action                                       |
+|-------------------+----------------------------------------------|
+| =C-<arrow>=       | Move focus to adjacent window                |
+| =S-<arrow>=       | Swap current window with adjacent ([[https://github.com/konstantinblaesi/windswap][windswap]]) |
+| =C-S-<arrow>=     | Copy buffer to adjacent window ([[https://github.com/dholm/windcopy][windcopy]])    |
+| =M-<arrow>=       | Move focus across frames ([[https://github.com/tlikonen/framemove][framemove]])         |
+| =C-x \= / =C-x -= | Split horizontally / vertically              |
+| =C-x = / =C-x _=  | Split and move into new window ([[https://github.com/nex3/windsplit][windsplit]])   |
+| =C-x x=           | Close current window                         |
+| =C-{= / =C-}=     | Shrink / enlarge window horizontally         |
 
 windcopy is handy for duplicating a buffer into a split view without disturbing the other window. framemove hooks into windmove so =C-<arrow>= wraps across frames transparently. Scrolling is patched so =C-v= / =M-v= at the buffer boundary moves to the end / beginning rather than signaling an error.
 
@@ -212,11 +212,12 @@ windcopy is handy for duplicating a buffer into a split view without disturbing 
 
 ** Search
 
-| Key | Tool |
-|-----+------|
-| =M-r= | ~helm-occur~ — incremental in-buffer search |
-| =M-R= | ~helm-do-grep-ag~ — full-text search across a directory tree |
-| =C-M-r= | ~my:helm-do-grep-vc-root-ag~ — same, rooted at the VCS repo root |
+| Key       | Tool                                                             |
+|-----------+------------------------------------------------------------------|
+| =M-r=     | ~helm-occur~ — incremental in-buffer search                      |
+| =M-R=     | ~helm-do-grep-ag~ — full-text search across a directory tree     |
+| =C-M-r=   | ~my:helm-do-grep-vc-root-ag~ — same, rooted at the VCS repo root |
+| =C-M-S-r= | ~helm-grep-do-git-grep~ — =git grep= through helm                |
 
 ** Cscope
 
@@ -226,11 +227,11 @@ windcopy is handy for duplicating a buffer into a split view without disturbing 
 
 Git integration is built around [[https://magit.vc/][magit]], configured in =config/git.el=.
 
-| Key | Command |
-|-----+---------|
-| =C-x RET C-s= | Magit status |
-| =C-x RET C-h= | Log for HEAD |
-| =C-x RET C-b= | Blame |
+| Key           | Command                       |
+|---------------+-------------------------------|
+| =C-x RET C-s= | Magit status                  |
+| =C-x RET C-h= | Log for HEAD                  |
+| =C-x RET C-b= | Blame                         |
 | =C-x RET C-f= | Find file in another revision |
 | =C-x RET C-l= | Log for current buffer's file |
 
@@ -242,11 +243,11 @@ Git integration is built around [[https://magit.vc/][magit]], configured in =con
 
 Required language servers are installed automatically via ~:ensure-system-package~:
 
-| Language | Server | Install command |
-|----------+--------+-----------------|
-| JS / TS | typescript-language-server | ~npm -g install typescript-language-server~ |
+| Language          | Server                       | Install command                               |
+|-------------------+------------------------------+-----------------------------------------------|
+| JS / TS           | typescript-language-server   | ~npm -g install typescript-language-server~   |
 | HTML / CSS / JSON | vscode-langservers-extracted | ~npm -g install vscode-langservers-extracted~ |
-| Python | pylsp | ~sudo apt install -y python3-pylsp~ |
+| Python            | pylsp                        | ~sudo apt install -y python3-pylsp~           |
 
 [[https://emacs-lsp.github.io/lsp-ui/][lsp-ui]] provides inline diagnostics and hover documentation. [[https://github.com/emacs-lsp/helm-lsp][helm-lsp]] replaces ~xref-find-apropos~ with a helm workspace symbol search.
 
