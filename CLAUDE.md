@@ -6,6 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Emacs 30+ recommended. On Emacs 30+, `use-package` is loaded from the built-in copy and the `:vc` keyword (used by `config/claude.el` to fetch packages from GitHub) is provided by built-in `package-vc`. On older Emacs, `init.el` bootstraps `straight.el` from `radian-software/straight.el` and installs `use-package` through it; `:vc` continues to work because straight handles VC-installed packages.
 
+## First launch
+
+Several packages declare `:ensure-system-package` rules that install system binaries on first launch. Some require sudo (e.g. `python3-pylsp` via apt, `epdfinfo` via `elpa-pdf-tools-server`), others install globally via npm (`typescript-language-server`, `vscode-langservers-extracted`). All installs are serialized through `plugins/use-package-ensure-system-package+`'s persistent `/bin/bash` worker — sudo prompts will appear once per session, not per package. A blocked sudo prompt during startup looks like a hang; it is not.
+
 ## Architecture
 
 The configuration loads in a fixed sequence from `init.el`:
@@ -86,6 +90,18 @@ There is no top-level build step for the Emacs config itself. For in-Emacs compi
 
 Defined in `config/compile.el`.
 
+## Search keybindings
+
+| Key | Command | Defined in |
+|-----|---------|------------|
+| `M-r` | `helm-occur` — in-buffer incremental search | `config/helm.el` |
+| `M-R` | `helm-do-grep-ag` — grep across a directory tree | `config/helm.el` |
+| `C-M-r` | `my:helm-do-grep-vc-root-ag` — same, rooted at the VCS repo root | `config/helm.el` |
+| `C-M-S-r` | `helm-grep-do-git-grep` — `git grep` through helm | `config/helm.el` |
+| `C-M-R` | `ag` (standalone `ag.el`) — **shadowed** by `C-M-S-r` above; same keysym, and `helm.el` loads after `ag.el` alphabetically, so this binding never takes effect | `config/ag.el` |
+
+`xcscope` (loaded by `config/xcscope.el`) installs its own `C-c s` keymap for C/C++ symbol cross-referencing via `cscope-setup` — no entry in `my:global-key-map`.
+
 ## Key Files
 
 | File | Purpose |
@@ -108,3 +124,4 @@ Defined in `config/compile.el`.
 - **Trailing whitespace is auto-stripped on save in `.el` files** (via `.dir-locals.el`). Don't be surprised by diffs that touch only line endings.
 - **Projectile's project search root is `~/Workspace`.** `helm-projectile` discovery starts there.
 - **Submodules ignore untracked files** (`block-travel`, `use-package-ensure-system-package+`) — `.gitmodules` sets `ignore = untracked` so local build artifacts don't surface in `git status`.
+- **`init.el` ends with a developer-local `(require 'rfcview)` block** guarded by `(file-directory-p "~/Workspace/rfcview.el")`. It's intentional (loads an unpublished local package when present); do not "clean it up" as dead code.
