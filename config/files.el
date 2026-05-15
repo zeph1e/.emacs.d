@@ -8,6 +8,9 @@
   :pin manual
   :config
   (defun my:display-buffer-modification (&optional buffer-or-name)
+    "Show a diff between BUFFER-OR-NAME and its visited file.
+Interactively, waits for a keypress before restoring the window
+configuration; non-interactively, leaves the diff buffer displayed."
     (interactive)
     (let* ((buffer (get-buffer (or buffer-or-name (current-buffer))))
            (diff-switches "-urN")
@@ -21,6 +24,10 @@
 
   (defun my:display-buffer-modification-internal
       (buffer diff-switches file-name)
+    "Display a diff of BUFFER against FILE-NAME using DIFF-SWITCHES.
+Helper for `my:display-buffer-modification'; falls back to the null
+device when FILE-NAME does not exist and signals an error when BUFFER
+has no visiting file."
     (if (null file-name)
         (error "Visiting buffer %S doesn't have a name of file" buffer)
       (display-buffer buffer '(display-buffer-same-window))

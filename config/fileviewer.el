@@ -12,6 +12,7 @@
     (car (split-string c))))
 
 (defun my:emacs-running-at ()
+  "Return the environment Emacs is running in: `wsl', `remote', or nil."
   (cond
    (my:wslp 'wsl)
    (my:remote-host 'remote)
@@ -45,6 +46,9 @@
   ;; sudo apt upgrade
 
   (defun my:view-file-external (file)
+    "Open FILE in the host's external viewer.
+Refuses directories and remote files larger than 5MB; smaller remote
+files are copied to a temp file first."
     (interactive (list (convert-standard-filename
                         (expand-file-name (dired-file-name-at-point)))))
     (when (file-remote-p file)
@@ -74,6 +78,9 @@
   :config
   ;; This is to launch external viewer programs on Windows, not in WSL.
   (defun my:mailcap-mime-info (orig-fun &rest args)
+    "Around-advice for `mailcap-mime-info' (ORIG-FUN with ARGS).
+On WSL, replace the resolved viewer command with `my:view-file-viewer'
+so files are launched through the Windows host."
     (let ((viewer (apply orig-fun args)))
       (if (and my:wslp (stringp viewer))
           (concat my:view-file-viewer " %s")
@@ -102,6 +109,9 @@ The optional argument NEW-WINDOW is not used."
   (function-put 'my:browse-url-view 'browse-url-browser-kind 'external)
 
   (defun my:browse-url-default-browser (url &rest args)
+    "Open URL with `my:browse-url-view' on WSL or remote hosts.
+Falls back to `browse-url-default-browser' (passing ARGS) on local
+graphical sessions."
     (if (my:emacs-running-at)
         (apply #'my:browse-url-view url args)
       (apply #'browse-url-default-browser url args)))

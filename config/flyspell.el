@@ -14,6 +14,9 @@ to ignore url stuff"
     (not (thing-at-point 'url)))
 
   (defun my:toggle-flyspell-mode ()
+    "Toggle flyspell in the current buffer.
+Uses `flyspell-prog-mode' for `prog-mode' derivatives and `flyspell-mode'
+otherwise.  When enabling interactively, also re-checks the whole buffer."
     (interactive)
     (if flyspell-mode
         (flyspell-mode -1)

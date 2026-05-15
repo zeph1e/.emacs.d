@@ -7,6 +7,7 @@
   :pin manual
   :config
   (defun my:compile ()
+    "Re-run the last compilation if one exists, otherwise prompt for a command."
     (interactive)
     (if (bufferp compilation-last-buffer)
         (recompile)

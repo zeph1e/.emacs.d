@@ -6,11 +6,13 @@
 (use-package tramp
   :config
   (defun my:tramp-cleanup-all-connections ()
+    "Run `tramp-cleanup-all-connections' after asking for confirmation."
     (interactive)
     (when (y-or-n-p "Cleanup all tramp connections? ")
       (tramp-cleanup-all-connections)
       (message "Cleaned all tramp connections up")))
   (defun my:tramp-cleanup-all-buffers ()
+    "Run `tramp-cleanup-all-buffers' after asking for confirmation."
     (interactive)
     (when (y-or-n-p "Cleanup all tramp buffers? ")
       (tramp-cleanup-all-buffers)

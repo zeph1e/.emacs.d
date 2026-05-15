@@ -25,6 +25,12 @@
            ("de" . (#x00C4 #x00D6 #x00DC #x00DF #x00E4 #x00F6 #x00FC))))
 
        (defun my:google-translate-translate (args)
+         "Filter-args advice for `google-translate-translate'.
+ARGS is (SOURCE-LANG TARGET-LANG TEXT ...).  When SOURCE-LANG is
+\"auto\", guess it by scanning TEXT against
+`my:google-translate-unicode-range'; when the guessed source equals
+TARGET-LANG (or TARGET-LANG is \"auto\"), pick the corresponding
+TARGET-LANG from `google-translate-translation-directions-alist'."
          (let ((source-lang (nth 0 args))
                (target-lang (nth 1 args))
                (text (nth 2 args)))

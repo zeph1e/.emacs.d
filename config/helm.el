@@ -29,6 +29,9 @@ the contract of `read-file-name'."
         (call-interactively 'helm-find-files-up-one-level)
       (delete-backward-char 1)))
   (defun my:helm-do-grep-vc-root-ag (arg)
+    "Run `helm-do-grep-ag' starting from the current VC root.
+ARG is forwarded to `helm-do-grep-ag'.  When no VC root is found, the
+search falls back to `default-directory'."
     (interactive "P")
     (let ((default-directory (or (vc-root-dir) default-directory)))
       (helm-do-grep-ag arg)))

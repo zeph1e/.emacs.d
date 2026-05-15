@@ -9,6 +9,7 @@
   :init
   ;; ediff help functions
   (defun my:ediff-copy-both-to-C ()
+    "Copy the current diff's A and B regions concatenated into buffer C."
     (interactive)
     (ediff-copy-diff
      ediff-current-difference nil 'C nil

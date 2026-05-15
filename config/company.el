@@ -73,9 +73,6 @@
   :ensure-system-package
   (gcc . "sudo apt install -y build-essential")
   :config
-  (defun my:filter-list (condp list)
-    (delq nil (mapcar (lambda (x) (and (funcall condp x) x)) list)))
-
   (defun my:company-find-headers-qt ()
     "Find include paths of qt headers."
     (when (executable-find "qmake")
@@ -94,22 +91,22 @@
           (when (zerop (call-process compiler nil (current-buffer) nil
                                      (concat "-x" (downcase lang))
                                      "-E" "-v" "-"))
-            (my:filter-list (lambda (s) (and (string-prefix-p "/" s)
-                                             (file-directory-p s)))
-                            (mapcar (lambda (s) (file-truename (string-trim s)))
-                                    (split-string (buffer-string) "\n"))))))))
+            (seq-filter (lambda (s) (and (string-prefix-p "/" s)
+                                         (file-directory-p s)))
+                        (mapcar (lambda (s) (file-truename (string-trim s)))
+                                (split-string (buffer-string) "\n"))))))))
 
   (defun my:company-find-headers-subdir (parent-directory pattern)
     "Searches sub-directories to add to include path."
     (when (file-directory-p parent-directory)
-      (my:filter-list 'file-directory-p
-                      (directory-files parent-directory t pattern))))
+      (seq-filter #'file-directory-p
+                  (directory-files parent-directory t pattern))))
   (setq-default company-c-headers-path-system
                 (delete-dups
                  (flatten-list
                   (list (mapcar (lambda (s) (string-remove-suffix "/" s))
-                                (my:filter-list 'file-directory-p
-                                                company-c-headers-path-system))
+                                (seq-filter #'file-directory-p
+                                            company-c-headers-path-system))
                         (mapcar (lambda (s) (my:company-find-headers-subdir
                                              s "[A-Za-z0-9-_]+\\-[0-9.]+"))
                                 company-c-headers-path-system)
