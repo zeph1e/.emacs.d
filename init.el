@@ -208,7 +208,8 @@
 (defconst my:default-prog-minor-mode-list
   '(flyspell-prog-mode
     display-fill-column-indicator-mode
-    goto-address-prog-mode)
+    goto-address-prog-mode
+    indent-bars-mode)
   "Minor modes to apply in `prog-mode'")
 
 (defconst my:default-text-minor-mode-list

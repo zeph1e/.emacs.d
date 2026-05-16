@@ -107,4 +107,8 @@
   :pin manual
   :bind
   (:map my:global-key-map
-   ("C-x C-b" . ibuffer)))
+        ("C-x C-b" . ibuffer)))
+
+(use-package indent-bars
+  :ensure t
+  :pin gnu)
