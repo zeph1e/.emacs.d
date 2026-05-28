@@ -35,13 +35,22 @@
 (ignore-errors
   (when (display-graphic-p)
     (setq use-default-font-for-symbols nil)
-    (let ((korean-font "NanumGothicCoding-10")
-          (symbol-font "DejaVu Sans Mono"))
+    ;; Font Settings
+    ;; Korean: https://github.com/naver/nanumfont
+    ;; Japanese: https://inatsuka.com/extra/nekospoon/
+    ;; Symbol: https://github.com/dejavu-fonts/dejavu-fonts
+    (let ((font-set '(("NanumGothicCoding-10" . (hangul han cjk-misc))
+                      ("NekoSpoon-10" . (kana bopomofo))
+                      ("DejaVu Sans Mono-10" . (symbol)))))
       (set-face-font 'default "Lucida Console-10")
-      ;; HANGUL CHOSUNG KIYEOK to HALFWIDTH HANGUL LETTER I
-      (set-fontset-font "fontset-default" '(#x1100 . #xffdc) korean-font)
-      (set-fontset-font t 'symbol symbol-font nil 'prepend))
-
+      (mapc (lambda (f)
+              (let ((spec (car f))
+                    (charsets (cdr f)))
+                (mapc (lambda (c)
+                        (set-fontset-font t c spec
+                                          nil 'prepend))
+                      charsets)))
+            font-set))
     ;; maximize frame on launch
     (add-to-list 'default-frame-alist '(fullscreen . maximized))))
 
