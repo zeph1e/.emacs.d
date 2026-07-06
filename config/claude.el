@@ -42,3 +42,11 @@
   (monet-mode 1)
 
   (claude-code-mode))
+
+(use-package agent-shell
+  :ensure t
+  :pin melpa
+  :ensure-system-package
+  ;; Add agent installation configs here
+  ((claude . "npm install -g @anthropic-ai/claude-code")
+   (claude-agent-acp . "npm install -g @agentclientprotocol/claude-agent-acp")))
