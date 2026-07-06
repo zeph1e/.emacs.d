@@ -29,6 +29,7 @@
    (vscode-css-language-server . "npm -g install vscode-langservers-extracted"))
 
   :custom
-  ((lsp-keymap-prefix "C-c C-l")))
+  ((lsp-keymap-prefix "C-c C-l")
+   (lsp-completion-provider :capf)))
 
 (use-package lsp-ui)
