@@ -47,8 +47,7 @@
               (let ((spec (car f))
                     (charsets (cdr f)))
                 (mapc (lambda (c)
-                        (set-fontset-font t c spec
-                                          nil 'prepend))
+                        (set-fontset-font t c spec))
                       charsets)))
             font-set))
     ;; maximize frame on launch
