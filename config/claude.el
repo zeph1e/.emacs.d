@@ -50,3 +50,9 @@
   ;; Add agent installation configs here
   ((claude . "npm install -g @anthropic-ai/claude-code")
    (claude-agent-acp . "npm install -g @agentclientprotocol/claude-agent-acp")))
+
+(use-package agent-shell-tramp
+  :vc (:url "https://github.com/junyi-hou/agent-shell-tramp" :rev :newest)
+  :after agent-shell
+  :config
+  (agent-shell-tramp-mode 1))
