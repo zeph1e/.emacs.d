@@ -37,17 +37,18 @@
     (setq use-default-font-for-symbols nil)
     ;; Font Settings
     ;; Korean: https://github.com/naver/nanumfont
-    ;; Japanese: https://inatsuka.com/extra/nekospoon/
+    ;; Japanese: https://fonts.google.com/specimen/M+PLUS+U
     ;; Symbol: https://github.com/dejavu-fonts/dejavu-fonts
     (let ((font-set '(("NanumGothicCoding-10" . (hangul han cjk-misc))
-                      ("NekoSpoon-10" . (kana bopomofo))
+                      ("M PLUS U-9" . (kana bopomofo))
                       ("DejaVu Sans Mono-10" . (symbol)))))
       (set-face-font 'default "Lucida Console-10")
       (mapc (lambda (f)
               (let ((spec (car f))
                     (charsets (cdr f)))
                 (mapc (lambda (c)
-                        (set-fontset-font t c spec))
+                        (set-fontset-font t c spec nil
+                                          (when (eq c 'symbol) 'prepend)))
                       charsets)))
             font-set))
     ;; maximize frame on launch
