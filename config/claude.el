@@ -49,7 +49,10 @@
   :ensure-system-package
   ;; Add agent installation configs here
   ((claude . "npm install -g @anthropic-ai/claude-code")
-   (claude-agent-acp . "npm install -g @agentclientprotocol/claude-agent-acp")))
+   (claude-agent-acp . "npm install -g @agentclientprotocol/claude-agent-acp"))
+    :bind
+  (:map my:global-key-map
+   ("C-\"" . agent-shell-anthropic-start-claude-code)))
 
 (use-package agent-shell-tramp
   :vc (:url "https://github.com/junyi-hou/agent-shell-tramp" :rev :newest)
