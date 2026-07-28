@@ -30,6 +30,7 @@
 
   :custom
   ((lsp-keymap-prefix "C-c C-l")
-   (lsp-completion-provider :capf)))
+   (lsp-completion-provider :capf)
+   (lsp-ui-sideline-show-diagnostics nil)))
 
 (use-package lsp-ui)
