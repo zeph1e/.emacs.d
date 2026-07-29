@@ -138,6 +138,11 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
+;; Init use-package-ensure-system-package+ first
+(use-package use-package-ensure-system-package+
+  :vc (:url "https://github.com/zeph1e/use-package-ensure-system-package-plus.el"
+       :rev :newest))
+
 ;; add local package path to load path
 (let ((default-directory (locate-user-emacs-file "plugins")))
   (normal-top-level-add-subdirs-to-load-path) ; add sub-directories to load-path
