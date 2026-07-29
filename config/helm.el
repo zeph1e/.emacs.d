@@ -111,3 +111,9 @@ search falls back to `default-directory'."
    ("GA" . helm-lsp-global-workspace-symbol)
    ("DD". helm-lsp-diagnostics))
   :after (helm lsp-mode))
+
+(use-package helm-flycheck
+  :bind
+  (:map flycheck-command-map
+   ("h" . helm-flycheck))
+  :after (helm flycheck))

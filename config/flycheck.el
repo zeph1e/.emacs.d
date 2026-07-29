@@ -5,7 +5,10 @@
 
 (use-package flycheck
   :ensure t
-  :init (global-flycheck-mode))
+  :init
+  (global-flycheck-mode)
+  :custom
+  (flycheck-keymap-prefix (kbd "C-M-!")))
 
 
 (use-package flycheck-pos-tip

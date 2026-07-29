@@ -1,14 +1,16 @@
 [submodule "plugins/company-tern"]
 	path = plugins/company-tern
 	url = git@github.com:zeph1e/company-tern.git
+        ignore = dirty
 [submodule "plugins/magit-gerrit"]
 	path = plugins/magit-gerrit
 	url = git@github.com:zeph1e/magit-gerrit.git
+        ignore = dirty
 [submodule "plugins/block-travel"]
 	path = plugins/block-travel
 	url = git@github.com:emacs-vs/block-travel.git
-        ignore = untracked
+        ignore = dirty
 [submodule "plugins/use-package-ensure-system-package+"]
 	path = plugins/use-package-ensure-system-package+
 	url = git@github.com:zeph1e/use-package-ensure-system-package-plus.el
-        ignore = untracked
+        ignore = dirty
