@@ -97,7 +97,7 @@
 
 (use-package block-travel
   :ensure nil
-  :pin manual
+  :vc (:url "https://github.com/emacs-vs/block-travel" :rev :newest)
   :bind
   (("M-p" . block-travel-up) ; let these be overwritten
    ("M-n" . block-travel-down)))

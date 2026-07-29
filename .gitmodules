@@ -6,10 +6,6 @@
 	path = plugins/magit-gerrit
 	url = git@github.com:zeph1e/magit-gerrit.git
         ignore = dirty
-[submodule "plugins/block-travel"]
-	path = plugins/block-travel
-	url = git@github.com:emacs-vs/block-travel.git
-        ignore = dirty
 [submodule "plugins/use-package-ensure-system-package+"]
 	path = plugins/use-package-ensure-system-package+
 	url = git@github.com:zeph1e/use-package-ensure-system-package-plus.el
