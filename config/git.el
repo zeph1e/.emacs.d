@@ -20,15 +20,5 @@
                        (setq-local fill-column 70)
                        (display-fill-column-indicator-mode 1)))))))
 
-(use-package magit-gerrit
-  :ensure nil
-  :pin manual
-  :config
-  (setq-default magit-gerrit-push-to "for")
-  :custom
-  (magit-gerrit-known-hosts '("[a-zA-Z0-9]+.lge.com"
-                              "[a-zA-Z0-9]+.lgsvl.com"))
-  (magit-gerrit-popup-prefix (kbd "`")))
-
 (use-package magit-gh
   :after magit)
