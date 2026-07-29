@@ -52,10 +52,7 @@
   (my:install-company-backends company-css web-mode-hook)
   (my:install-company-backends company-css css-mode-hook)
   (my:install-company-backends company-css less-css-mode-hook)
-  (my:install-company-backends company-tern web-mode-hook (tern-mode t))
   (my:install-company-backends company-nxml nxml-mode-hook)
-
-  (my:install-company-backends company-tern js-mode-hook (tern-mode t))
 
   ;; C/C++
   (my:install-company-backends company-c-headers c-mode-hook)
@@ -125,6 +122,3 @@
   (after-init . company-statistics-mode))
 
 (use-package company-web)
-(use-package company-tern
-  :ensure nil
-  :after (tern))
