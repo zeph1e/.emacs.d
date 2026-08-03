@@ -20,10 +20,14 @@
                                  :deps []
                                  :is_workspace_member t)]
                        :sysroot_src
-                       ,(concat (string-trim-right
-                                 (shell-command-to-string
-                                  "rustup run stable rustc --print sysroot"))
-                                 "/lib/rustlib/src/rust/library"))]))))
+                       ,(or (and (boundp 'lsp-rust-sysroot)
+                                 lsp-rust-sysroot)
+                            (setq lsp-rust-sysroot
+                                  (concat
+                                   (string-trim-right
+                                    (shell-command-to-string
+                                     "rustup run stable rustc --print sysroot"))
+                                   "/lib/rustlib/src/rust/library"))))]))))
   :hook
   ;; (c-mode . lsp)
   ;; (c++-mode . lsp)
