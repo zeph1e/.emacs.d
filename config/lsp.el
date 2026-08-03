@@ -61,6 +61,7 @@
   ((lsp-keymap-prefix "C-c C-l")
    (lsp-completion-provider :capf)
    (lsp-auto-guess-root nil)
-   (lsp-ui-sideline-show-diagnostics nil)))
+   (lsp-ui-sideline-show-diagnostics nil)
+   (lsp-rust-analyzer-diagnostics-enable-experimental t)))
 
 (use-package lsp-ui)
