@@ -11,8 +11,7 @@
     (let ((has-project-file
            (or (locate-dominating-file default-directory "Cargo.toml")
                (locate-dominating-file default-directory "rust-project.json"))))
-      (if has-project-file
-          (setq-local lsp-rust-analyzer-linked-projects nil)
+      (unless has-project-file
         (setq-local lsp-rust-analyzer-linked-projects
                     `[(:roots ["."]
                        :crates [(:root_module ,(buffer-file-name)
