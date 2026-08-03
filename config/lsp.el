@@ -47,7 +47,12 @@
    (typescript-language-server . "npm -g install typescript-language-server")
    (vscode-html-language-server . "npm -g install vscode-langservers-extracted")
    (vscode-json-language-server . "npm -g install vscode-langservers-extracted")
-   (vscode-css-language-server . "npm -g install vscode-langservers-extracted"))
+   (vscode-css-language-server . "npm -g install vscode-langservers-extracted")
+   (rustup . "sudo apt install -y rustup || \
+              curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
+                sh -s -- -y && rustup component add rust-analyzer rust-src")
+   (rustc . "rustup default --stable")
+   (rust-analyzer . "rustup component add rust-analyzer rust-src"))
 
   :custom
   ((lsp-keymap-prefix "C-c C-l")
