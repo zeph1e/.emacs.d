@@ -17,14 +17,14 @@
             (buffer-string)
           (error (string-trim-right (buffer-string)))))))
 
-  (defvar my:rust-search-cache nil
+  (defvar my:rust-crates-cache nil
     "Cache for cargo search result.")
 
-  (defun my:rust-search (keyword)
+  (defun my:rust-search-crates (keyword)
     "Search packages, matching its name to `keyword'."
     (when (> (length keyword) 0)
-      (or (gethash keyword (or my:rust-search-cache
-                               (setq my:rust-search-cache
+      (or (gethash keyword (or my:rust-crates-cache
+                               (setq my:rust-crates-cache
                                      (make-hash-table :test 'equal
                                                       :size 100))))
           (let ((result (seq-filter
@@ -35,7 +35,7 @@
                            (format "%s search --limit 30 %s"
                                    rust-cargo-bin keyword))
                           "[ ]+=.+[\r\n]+" t))))
-            (puthash keyword result my:rust-search-cache)))))
+            (puthash keyword result my:rust-crates-cache)))))
 
   (defun my:rust-add-dependency (package)
     "Add dependency to `package', using 'cargo add'."
@@ -45,8 +45,9 @@
                (if (and (boundp 'helm-mode) helm-mode)
                    ;; Use a dynamic sync source instead
                    (helm :sources (helm-build-sync-source "Cargo Search"
-                                    :candidates (lambda ()
-                                                  (my:rust-search helm-pattern))
+                                    :candidates
+                                    (lambda ()
+                                      (my:rust-search-crates helm-pattern))
                                     :volatile t)
                          :buffer "*helm cargo search*"
                          :prompt "Package to add: "
@@ -54,7 +55,7 @@
                          :must-match nil)
                  (completing-read
                   "Package to add: "
-                  (completion-table-dynamic #'my:rust-search))))))
+                  (completion-table-dynamic #'my:rust-search-crates))))))
       (when chosen-package
         (rust--compile nil "%s add %s" rust-cargo-bin chosen-package))))
 
