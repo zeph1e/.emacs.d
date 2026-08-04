@@ -104,10 +104,6 @@ I've used the Night Eighties variant of [[https://github.com/chriskempson/tomorr
 
 I customized the mode line rather than using Powerline or similar packages, because I wanted only the information I actually read: buffer size, modification flag, buffer name (red background when read-only), line:column, input method indicator, major mode, a [[https://github.com/TeMPOraL/nyan-mode][Nyan Cat]] progress bar, scroll percentage, and the vc-mode branch. Everything is in =config/theme.el=. If you'd like to do the same, the [[https://emacs-fu.blogspot.com/2011/08/customizing-mode-line.html][Emacs-fu article on mode-line customization]] is a good starting point.
 
-*** Header Line
-
-The header line displays the full path of the editing file, truncating the directory portion with =[...]= when it is too wide for the window. The code is taken from [[https://www.emacswiki.org/emacs/HeaderLine][Emacs Wiki]], in =config/theme.el=.
-
 ** Helm & Company
 
 I initially used [[https://www.gnu.org/software/emacs/manual/html_mono/ido.html][ido]] and [[https://github.com/auto-complete/auto-complete][autocomplete]], but later switched to [[https://github.com/emacs-helm/helm][helm]] and [[https://company-mode.github.io/][company]], which I've been using ever since.

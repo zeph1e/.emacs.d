@@ -91,7 +91,7 @@ Defined in `config/compile.el`.
 |------|---------|
 | `init.el` | Entry point — orchestrates the entire load sequence |
 | `workaround.el` | Early-loaded upstream bug fixes |
-| `config/theme.el` | Mode line and header line customization |
+| `config/theme.el` | Mode line customization |
 | `config/lsp.el` | LSP configuration; language server install hooks |
 | `config/vterm.el` | vterm setup; blocks module compilation via `upesp+:command-executed-hook` until system deps install |
 | `config/editor.el` | Small ergonomic editing commands |
