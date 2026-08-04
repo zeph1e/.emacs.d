@@ -12,16 +12,16 @@ This repository contains my current Emacs configuration, designed to suit my pre
 
 This configuration depends on a number of external system packages.
 
- - Git for [[https://magit.vc/][magit]]
- - Cscope for [[https://github.com/dkogan/xcscope.el][xcscope]]
- - Node.js / NPM for [[https://github.com/yasuyk/web-beautify][web-beautify]], [[https://github.com/typescript-language-server/typescript-language-server][typescript-language-server]], [[https://github.com/ternjs/tern][tern]], and the Claude Code / Codex / Gemini CLI agents used by [[https://github.com/xenodium/agent-shell][agent-shell]]
- - The silver searcher for [[https://github.com/Wilfred/ag.el][ag]] and [[https://github.com/emacsorphanage/helm-ag][helm-ag]]
- - Python / pylsp for [[https://gitlab.com/python-mode-devs/python-mode][python-mode]] and [[https://github.com/pythonic-emacs/anaconda-mode][anaconda-mode]]
- - Markdown for [[https://jblevins.org/projects/markdown-mode/][markdown-mode]] preview
- - JRE + PlantUML for [[https://github.com/skuro/plantuml-mode][plantuml-mode]]
- - Ispell for [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Spelling.html][flyspell]]
+ - [[https://git-scm.com/][Git]] for [[https://magit.vc/][magit]]
+ - [[https://cscope.sourceforge.net/][Cscope]] for [[https://github.com/dkogan/xcscope.el][xcscope]]
+ - [[https://nodejs.org/][Node.js]] / NPM for [[https://github.com/yasuyk/web-beautify][web-beautify]], [[https://github.com/typescript-language-server/typescript-language-server][typescript-language-server]], [[https://github.com/ternjs/tern][tern]], and the Claude Code / Codex / Gemini CLI agents used by [[https://github.com/xenodium/agent-shell][agent-shell]]
+ - [[https://github.com/ggreer/the_silver_searcher][The Silver Searcher]] for [[https://github.com/Wilfred/ag.el][ag]] and [[https://github.com/emacsorphanage/helm-ag][helm-ag]]
+ - [[https://www.python.org/][Python]] / [[https://github.com/python-lsp/python-lsp-server][pylsp]] for [[https://gitlab.com/python-mode-devs/python-mode][python-mode]] and [[https://github.com/pythonic-emacs/anaconda-mode][anaconda-mode]]
+ - [[https://daringfireball.net/projects/markdown/][Markdown]] for [[https://jblevins.org/projects/markdown-mode/][markdown-mode]] preview
+ - [[https://openjdk.org/][JRE]] + [[https://plantuml.com/][PlantUML]] for [[https://github.com/skuro/plantuml-mode][plantuml-mode]]
+ - Ispell for flyspell
  - [[https://rustup.rs/][rustup]] for rust-analyzer (Rust LSP)
- - =elpa-pdf-tools-server= for [[https://github.com/vedang/pdf-tools][pdf-tools]] PDF viewing
+ - [[https://github.com/vedang/pdf-tools][pdf-tools]]' bundled =epdfinfo= server for PDF viewing
 
 Thanks to the ~:ensure-system-package~ feature of use-package, most of these are installed automatically on first launch. Some require sudo, so you may be prompted for your password.
 
