@@ -25,7 +25,8 @@
     (when (> (length keyword) 0)
       (or (gethash keyword (or my:rust-search-cache
                                (setq my:rust-search-cache
-                                     (make-hash-table :test 'equal))))
+                                     (make-hash-table :test 'equal
+                                                      :size 100))))
           (let ((result (seq-filter
                          (lambda (s)
                            (string-match-p (regexp-quote keyword) s))
