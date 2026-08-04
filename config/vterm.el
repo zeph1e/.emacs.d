@@ -45,6 +45,25 @@ ones are queued through `upesp+:async-shell-command'."
 
 
   (advice-add 'vterm-module-compile :around #'my:vterm-module-compile)
+  :config
+  (let ((colors (append ansi-color-names-vector nil))) ; Convert vector to list
+    (set-face-attribute 'vterm-color-black nil
+                        :foreground (nth 0 colors) :background (nth 0 colors))
+    (set-face-attribute 'vterm-color-red nil
+                        :foreground (nth 1 colors) :background (nth 1 colors))
+    (set-face-attribute 'vterm-color-green nil
+                        :foreground (nth 2 colors) :background (nth 2 colors))
+    (set-face-attribute 'vterm-color-yellow nil
+                        :foreground (nth 3 colors) :background (nth 3 colors))
+    (set-face-attribute 'vterm-color-blue nil
+                        :foreground (nth 4 colors) :background (nth 4 colors))
+    (set-face-attribute 'vterm-color-magenta nil
+                        :foreground (nth 5 colors) :background (nth 5 colors))
+    (set-face-attribute 'vterm-color-cyan nil
+                        :foreground (nth 6 colors) :background (nth 6 colors))
+    (set-face-attribute 'vterm-color-white nil
+                        :foreground (nth 7 colors) :background (nth 7 colors)))
   :bind
   (:map my:global-key-map
-   ("C-x t" . vterm)))
+   ("C-x t" . vterm))
+  :after (ansi-color))
