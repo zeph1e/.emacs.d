@@ -35,6 +35,7 @@ search falls back to `default-directory'."
     (interactive "P")
     (let ((default-directory (or (vc-root-dir) default-directory)))
       (helm-do-grep-ag arg)))
+  (helm-mode 1)
   :bind
   (:map my:global-key-map
    ("M-x"       . helm-M-x)
@@ -94,10 +95,6 @@ search falls back to `default-directory'."
   :after (helm projectile))
 
 (use-package helm-descbinds
-  :commands helm-descbinds
-  :bind
-  (:map my:global-key-map
-   ("C-h b" . helm-descbinds))
   :custom
   (helm-descbinds-mode t)
   :after (helm))
