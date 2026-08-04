@@ -12,13 +12,16 @@ This repository contains my current Emacs configuration, designed to suit my pre
 
 This configuration depends on a number of external system packages.
 
- - Git for [[https://magit.vc/][magit]] and [[https://github.com/emacsorphanage/magit-gerrit][magit-gerrit]]
+ - Git for [[https://magit.vc/][magit]]
  - Cscope for [[https://github.com/dkogan/xcscope.el][xcscope]]
- - Node.js / NPM for [[https://github.com/yasuyk/web-beautify][web-beautify]], [[https://github.com/typescript-language-server/typescript-language-server][typescript-language-server]], and [[https://github.com/ternjs/tern][tern]]
+ - Node.js / NPM for [[https://github.com/yasuyk/web-beautify][web-beautify]], [[https://github.com/typescript-language-server/typescript-language-server][typescript-language-server]], [[https://github.com/ternjs/tern][tern]], and the Claude Code / Codex / Gemini CLI agents used by [[https://github.com/xenodium/agent-shell][agent-shell]]
  - The silver searcher for [[https://github.com/Wilfred/ag.el][ag]] and [[https://github.com/emacsorphanage/helm-ag][helm-ag]]
  - Python / pylsp for [[https://gitlab.com/python-mode-devs/python-mode][python-mode]] and [[https://github.com/pythonic-emacs/anaconda-mode][anaconda-mode]]
  - Markdown for [[https://jblevins.org/projects/markdown-mode/][markdown-mode]] preview
  - JRE + PlantUML for [[https://github.com/skuro/plantuml-mode][plantuml-mode]]
+ - Ispell for [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Spelling.html][flyspell]]
+ - [[https://rustup.rs/][rustup]] for rust-analyzer (Rust LSP)
+ - =elpa-pdf-tools-server= for [[https://github.com/vedang/pdf-tools][pdf-tools]] PDF viewing
 
 Thanks to the ~:ensure-system-package~ feature of use-package, most of these are installed automatically on first launch. Some require sudo, so you may be prompted for your password.
 
@@ -135,13 +138,12 @@ A custom ~my:company-ispell~ wrapper activates spell-check completion only insid
 
 For C/C++, ~company-c-headers~ is configured with compiler include paths detected at runtime by invoking =gcc -x c -E -v -= and parsing the output. Qt headers are picked up automatically when =qmake= is available. Mode-specific backends:
 
-| Mode                        | Backends                                    |
-|-----------------------------+---------------------------------------------|
-| web-mode, sgml-mode         | company-web-html, company-css, company-tern |
-| css-mode, less-css-mode     | company-css                                 |
-| js-mode                     | company-tern                                |
-| c-mode, c++-mode, objc-mode | company-c-headers                           |
-| python-mode                 | company-anaconda                            |
+| Mode                        | Backends                      |
+|-----------------------------+--------------------------------|
+| web-mode, sgml-mode         | company-web-html, company-css |
+| css-mode, less-css-mode     | company-css                   |
+| c-mode, c++-mode, objc-mode | company-c-headers              |
+| python-mode                 | company-anaconda               |
 
 * Editing
 
@@ -229,19 +231,34 @@ Git integration is built around [[https://magit.vc/][magit]], configured in =con
 | =C-x RET C-f= | Find file in another revision |
 | =C-x RET C-l= | Log for current buffer's file |
 
-[[https://github.com/emacsorphanage/magit-gerrit][magit-gerrit]] (=plugins/magit-gerrit=) integrates Gerrit code review into the magit interface, activating automatically for remotes matching LGE/LGSVL hostnames. Commit message buffers narrow ~fill-column~ to 70 to keep subject lines within the conventional limit.
+[[https://github.com/jonathanchu/magit-gh][magit-gh]] integrates GitHub CLI (=gh=) actions into the magit interface. Commit message buffers narrow ~fill-column~ to 70 to keep subject lines within the conventional limit.
+
+* AI Agent Integration
+
+** Claude Code
+
+[[https://github.com/stevemolitor/claude-code.el][claude-code.el]] (=config/claude.el=) runs the [[https://github.com/anthropics/claude-code][Claude Code]] CLI inside Emacs, bound under the =C-'= keymap prefix and opened in a right-side window. [[https://github.com/stevemolitor/monet][monet]] bridges IDE-style features back into Emacs — =monet-start-server-function= is hooked into Claude Code's process environment, and =monet-ediff-tool= handles diffs — and [[https://github.com/purcell/inheritenv][inheritenv]] propagates buffer-local environment variables (e.g. Tramp connections) into the Claude Code subprocess. =M= inside the Claude Code map cycles auto-accept/plan/confirm modes (~claude-code-cycle-mode~).
+
+** Agent Shell
+
+[[https://github.com/xenodium/agent-shell][agent-shell]] (=config/agent-shell.el=, =C-"=) is a more general chat-shell front-end for CLI coding agents — Claude, Codex, Gemini — talking [[https://agentclientprotocol.com/][ACP]]. [[https://github.com/junyi-hou/agent-shell-tramp][agent-shell-tramp]] extends it to run agent sessions on Tramp remotes.
 
 * LSP
 
-[[https://emacs-lsp.github.io/lsp-mode/][lsp-mode]] is configured in =config/lsp.el= with the keymap prefix =C-c C-l=. Active language hooks: =js-mode=, =typescript-mode=, =python-mode=, =web-mode=. C/C++ hooks are currently disabled.
+[[https://emacs-lsp.github.io/lsp-mode/][lsp-mode]] is configured in =config/lsp.el= with the keymap prefix =C-c C-l=. Active language hooks: =js-mode=, =typescript-mode=, =python-mode=, =web-mode=, =rust-mode=, =kotlin-mode=. C/C++ hooks are currently disabled.
 
-Required language servers are installed automatically via ~:ensure-system-package~:
+For Rust, a conditional setup function (~my:lsp-rust-setup-conditional-project~) fills in a synthetic =lsp-rust-analyzer-linked-projects= entry when a buffer has no =Cargo.toml=/=rust-project.json= ancestor, so single-file =.rs= buffers still get rust-analyzer support.
+
+Most required language servers are installed automatically via ~:ensure-system-package~:
 
 | Language          | Server                       | Install command                               |
 |-------------------+------------------------------+-----------------------------------------------|
 | JS / TS           | typescript-language-server   | ~npm -g install typescript-language-server~   |
 | HTML / CSS / JSON | vscode-langservers-extracted | ~npm -g install vscode-langservers-extracted~ |
 | Python            | pylsp                        | ~sudo apt install -y python3-pylsp~           |
+| Rust              | rust-analyzer (via rustup)   | ~sudo apt install -y rustup~ or the rustup.rs installer, then =rustup component add rust-analyzer rust-src= |
+
+Kotlin's language server isn't auto-installed — =config/lsp.el= has commented-out =gh release download= commands for [[https://github.com/fwcd/kotlin-language-server][kotlin-language-server]] and [[https://github.com/fwcd/kotlin-debug-adapter][kotlin-debug-adapter]]; fetch them manually and put their =bin/= directories on =$PATH=.
 
 [[https://emacs-lsp.github.io/lsp-ui/][lsp-ui]] provides inline diagnostics and hover documentation. [[https://github.com/emacs-lsp/helm-lsp][helm-lsp]] replaces ~xref-find-apropos~ with a helm workspace symbol search.
 
@@ -249,7 +266,7 @@ Required language servers are installed automatically via ~:ensure-system-packag
 
 ** Web / JavaScript / TypeScript
 
-[[https://web-mode.org/][web-mode]] handles =.html= and =.php= files. JS, TS, CSS, and markup all use 2-space indentation. [[https://github.com/ternjs/tern][tern]] provides JavaScript analysis as a company backend in both =js-mode= and =web-mode=. [[https://github.com/yasuyk/web-beautify][web-beautify]] (=C-c b=) formats JS, HTML, and CSS using =js-beautify=.
+[[https://web-mode.org/][web-mode]] handles =.html= and =.php= files. JS, TS, CSS, and markup all use 2-space indentation. [[https://github.com/yasuyk/web-beautify][web-beautify]] (=C-c b=) formats JS, HTML, and CSS using =js-beautify=. JS/TS completion and diagnostics come from the LSP servers below rather than a dedicated company backend.
 
 ** Python
 
@@ -261,7 +278,20 @@ Required language servers are installed automatically via ~:ensure-system-packag
 
 ** Rust
 
-[[https://github.com/brotzeit/rustic][rustic]] handles Rust files.
+[[https://github.com/rust-lang/rust-mode][rust-mode]] handles Rust files, with rust-analyzer (see LSP above) providing completion and diagnostics.
+
+Two commands manage Cargo dependencies without leaving Emacs, both in =config/rust.el=:
+
+| Key             | Command                       |
+|-----------------+--------------------------------|
+| =C-c C-c C-a=   | ~my:rust-add-dependency~      |
+| =C-c C-c C-d=   | ~my:rust-remove-dependency~   |
+
+~my:rust-add-dependency~ searches the cargo registry (=cargo search=, results cached per keyword for the session) through helm or =completing-read=, then runs =cargo add= on the chosen package. ~my:rust-remove-dependency~ lists the current workspace's direct dependencies (=cargo tree --depth 1=) and runs =cargo remove=.
+
+** Kotlin
+
+[[https://github.com/Emacs-Kotlin-Mode-Maintainers/kotlin-mode][kotlin-mode]] handles Kotlin files; =lsp-mode= hooks in for completion and diagnostics once kotlin-language-server is installed (see LSP above).
 
 * Build
 
@@ -294,6 +324,10 @@ When Emacs runs on a remote server, ~browse-url~ resolves URLs by =ssh=-ing back
  3. *Host key trust* — the workstation's host key must already be in the remote host's =~/.ssh/known_hosts=, otherwise the first connection blocks on a confirmation prompt. Connect once manually (=ssh <workstation>=) before relying on URL handling.
 
 For dired =V= on the SSH-remote case, no reverse SSH is used — Emacs runs the *local* =xdg-open= and relies on graphical display forwarding (X11 / Wayland) to render on the workstation. Launch =emacs= with a working =$DISPLAY= (i.e. via =ssh -X= / =-Y=) for this branch to take effect.
+
+* PDF Viewing
+
+[[https://github.com/vedang/pdf-tools][pdf-tools]] (=config/pdf.el=) opens =.pdf= files in ~pdf-view-mode~, backed by the =epdfinfo= server process from the =elpa-pdf-tools-server= system package.
 
 * Snippets & Note Taking
 

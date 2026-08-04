@@ -48,24 +48,7 @@ Two companion lists extend this to major modes that do **not** derive from `prog
 
 ### `plugins/use-package-ensure-system-package+`
 
-This is the most complex local plugin. It serializes all `:ensure-system-package` install commands through a single persistent `/bin/bash` process to avoid concurrent package manager races. It exposes `upesp+:command-executed-hook`, called with the completed command string after each install — `config/vterm.el` uses this to block vterm module compilation until its system dependencies (gcc, cmake, libtool) have finished installing. See its own `CLAUDE.md` for internals. It must be loaded (via the plugins autoload system) before any `config/*.el` file that uses `:ensure-system-package`.
-
-## Running Tests
-
-Tests exist only for `plugins/use-package-ensure-system-package+`. The test runner requires `emacs` on `$PATH`.
-
-```sh
-# All tests (unit + functional)
-./plugins/use-package-ensure-system-package+/test/run-tests.sh
-
-# Unit tests only (no real shell spawned — fast)
-./plugins/use-package-ensure-system-package+/test/run-tests.sh unit
-
-# Functional tests only (spawns real /bin/bash processes)
-./plugins/use-package-ensure-system-package+/test/run-tests.sh func
-```
-
-There is no Makefile or build system for the top-level config — changes take effect on the next Emacs start.
+This is the most complex local plugin. It serializes all `:ensure-system-package` install commands through a single persistent `/bin/bash` process to avoid concurrent package manager races. It exposes `upesp+:command-executed-hook`, called with the completed command string after each install — `config/vterm.el` uses this to block vterm module compilation until its system dependencies (gcc, cmake, libtool) have finished installing. See its own `CLAUDE.md` for internals. It's installed via `:vc` directly in `init.el`, ahead of the `plugins/`/`config/` load, so it's always available before any `config/*.el` file that uses `:ensure-system-package`.
 
 ## Forcing Plugin Recompilation
 
@@ -75,9 +58,9 @@ rm plugins/<name>/.installed
 
 Emacs will recompile and regenerate autoloads for that plugin on the next launch.
 
-## Submodules
+## Notable dependencies
 
-Four plugins are git submodules (`company-tern`, `magit-gerrit`, `block-travel`, `use-package-ensure-system-package+`). Clone with `--recursive` or run `git submodule update --init --recursive` after cloning.
+`block-travel` (VS Code-style block navigation, bound to `M-p`/`M-n` in `config/editor.el`) and `use-package-ensure-system-package+` are installed via `:vc` like any other package, landing in `elpa/` (gitignored). Some `:vc`-installed packages under `elpa/` ship their own `CLAUDE.md` (e.g. `elpa/use-package-ensure-system-package+/CLAUDE.md`) with package-internal guidance, loaded automatically when working in those directories.
 
 ## Building / Compiling
 
@@ -116,6 +99,9 @@ Defined in `config/compile.el`.
 | `config/fileviewer.el` | External file/URL opener integration; detects WSL / SSH-remote / local host and routes dired `V`, `browse-url`, and `mailcap` viewers accordingly |
 | `config/claude.el` | Claude Code integration via `claude-code.el`; keybinding prefix `C-'`; uses `monet` for IDE server bridging (`monet-ediff-tool` handles diffs) and `inheritenv` for environment propagation; opens Claude in a right side window |
 | `config/pdf.el` | PDF viewing via `pdf-tools`; requires system package `epdfinfo` (installed via `sudo apt install -y elpa-pdf-tools-server`) |
+| `config/rust.el` | rust-mode config; includes cargo dependency-management commands (`my:rust-add-dependency`, searches the cargo registry) |
+| `config/agent-shell.el` | agent-shell integration |
+| `config/flycheck.el` | flycheck setup |
 | `misc/edit` | Smart `emacsclient` wrapper; set `$EDITOR` to this |
 | `.dir-locals.el` | Sets `fill-column` to 80 globally; in `emacs-lisp-mode`, registers a `write-contents-functions` hook that strips trailing whitespace on every save |
 
