@@ -17,12 +17,46 @@
             (buffer-string)
           (error (string-trim-right (buffer-string)))))))
 
+  (defvar my:rust-search-cache nil
+    "Cache for cargo search result.")
+
+  (defun my:rust-search (keyword)
+    "Search packages, matching its name to `keyword'."
+    (when (> (length keyword) 0)
+      (or (gethash keyword (or my:rust-search-cache
+                               (setq my:rust-search-cache
+                                     (make-hash-table :test 'equal))))
+          (let ((result (seq-filter
+                         (lambda (s)
+                           (string-match-p (regexp-quote keyword) s))
+                         (split-string
+                          (my:run-command-to-string
+                           (format "%s search --limit 30 %s"
+                                   rust-cargo-bin keyword))
+                          "[ ]+=.+[\r\n]+" t))))
+            (puthash keyword result my:rust-search-cache)))))
+
   (defun my:rust-add-dependency (package)
     "Add dependency to `package', using 'cargo add'."
     (interactive "P")
-    (rust--compile nil "%s add %s" rust-cargo-bin
-                   (or package
-                       (read-string "Package to add: "))))
+    (let ((chosen-package
+           (or package
+               (if (and (boundp 'helm-mode) helm-mode)
+                   ;; Use a dynamic sync source instead
+                   (helm :sources (helm-build-sync-source "Cargo Search"
+                                    :candidates (lambda ()
+                                                  (my:rust-search helm-pattern))
+                                    :volatile t)
+                         :buffer "*helm cargo search*"
+                         :prompt "Package to add: "
+                         :input-idle-delay 0.5
+                         :must-match nil)
+                 (completing-read
+                  "Package to add: "
+                  (completion-table-dynamic #'my:rust-search))))))
+      (when chosen-package
+        (rust--compile nil "%s add %s" rust-cargo-bin chosen-package))))
+
   (defun my:rust-remove-dependency (package)
     "Remove dependency to `package', using 'cargo remove'."
     (interactive "P")
