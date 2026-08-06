@@ -3,7 +3,11 @@
 ;; Written by Yunsik Jang <z3ph1e@gmail.com>
 ;; You can use/modify/redistribute this freely.
 
+(use-package transient ; to keep compatibility to magit
+  :pin melpa)
+
 (use-package magit
+  :pin melpa
   :bind
   (:map my:global-key-map
    ("C-x RET C-s" . magit)
