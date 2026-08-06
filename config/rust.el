@@ -79,7 +79,13 @@
                                            rust-cargo-bin))
                                          " v.+[ \r\n]+" t))))
                         nil t))))
+  (defun my:rust-explain-error-at-point ()
+    (interactive)
+    (when-let ((errors (flycheck-overlay-errors-at (point))))
+      (let ((error-id (car (mapcar #'flycheck-error-id errors))))
+        (async-shell-command (format "rustc --explain %s | cat" error-id)))))
   :bind
   (:map rust-mode-map
    ("C-c C-c C-a" . 'my:rust-add-dependency)
-   ("C-c C-c C-d" . 'my:rust-remove-dependency)))
+   ("C-c C-c C-d" . 'my:rust-remove-dependency)
+   ("C-c C-c C-e" . 'my:rust-explain-error-at-point)))
