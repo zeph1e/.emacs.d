@@ -16,4 +16,6 @@
   :commands flycheck-pos-tip-mode
   :init
   (with-eval-after-load 'flycheck
-    (flycheck-pos-tip-mode)))
+    (flycheck-pos-tip-mode))
+  :custom
+  (flycheck-pos-tip-timeout -1))
