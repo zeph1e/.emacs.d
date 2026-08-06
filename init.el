@@ -121,7 +121,9 @@
         (goto-char (point-max))
         (eval-print-last-sexp)))
     (load bootstrap-file nil 'nomessage))
-  (straight-use-package 'use-package))
+  (if (fboundp 'straight-use-package)
+      (straight-use-package 'use-package)
+    (error "Bootstrapping straight failed")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; package & use-package initialization
@@ -171,7 +173,7 @@
 (defvar my:global-key-map
   (let ((map (make-sparse-keymap)))
     map)
-  "My global key map")
+  "My global key map.")
 
 (define-minor-mode my:global-key-mode
   "My global key mode to keep my keybindings overrides major modes keybindings
@@ -268,11 +270,3 @@
         (add-hook (derived-mode-hook-name mode)
                   (lambda () (display-fill-column-indicator-mode -1))))
       my:fill-column-exceptions)
-
-
-
-;; test
-(let ((rvdir "~/Workspace/rfcview.el"))
-  (when (file-directory-p rvdir)
-    (add-to-list 'load-path rvdir)
-    (require 'rfcview)))

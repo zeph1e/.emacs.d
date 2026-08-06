@@ -38,9 +38,6 @@
   :config
   (setq web-beautify-args '("-s" "2" "-f" "-")))
 
-(use-package tern
-  :ensure-system-package (tern .  "npm i -g tern"))
-
 (use-package js
   :pin manual
   :custom
