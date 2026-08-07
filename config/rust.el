@@ -124,9 +124,11 @@ A plist with keys :errors :index :win :pos :list-frame :backup.")
     "Hide both posframes and restore the suppressed popups."
     (posframe-hide my:rust-explain-error-list-buffer)
     (posframe-hide my:rust-explain-error-buffer)
-    (my:rust-explain-error--restore-other-popup))
+    (my:rust-explain-error--restore-other-popup)
+    (remove-hook 'window-state-change-functions
+                 #'my:rust-explain-error--on-window-state-change))
 
-  (defun my:rust-explain-error--hidehandler (info)
+  (defun my:rust-explain-error--hidehandler (_info)
     "Return non-nil once the anchor window has moved point away.
 INFO is the plist posframe passes to its hidehandler.  Rather than
 comparing against the globally selected window/buffer (which can
@@ -134,14 +136,28 @@ transiently be one of our own child frames), this inspects the anchor
 window and buffer recorded in `my:rust-explain-error--state', so the
 popup stays put while focus bounces between our frames and only hides
 once the user actually moves point in the source buffer."
-    (let ((parent-buffer (cdr (plist-get info :posframe-parent-buffer)))
+    (let ((buf (my:rust-explain-error--get :buf))
           (win (my:rust-explain-error--get :win))
           (pos (my:rust-explain-error--get :pos)))
       (when (and (eq (selected-window) win)
-                 (eq (current-buffer) parent-buffer)
+                 (eq (with-selected-window (selected-window)
+                       (current-buffer))
+                     buf)
+                 (eq (current-buffer) buf)
                  (not (eq (point) pos)))
-        (my:rust-explain-error--restore-other-popup)
+        (my:rust-explain-error--teardown)
         t)))
+  (defun my:rust-explain-error--on-window-state-change ()
+    "Tear down the popup once the anchor window/buffer loses focus.
+Added to `window-state-change-functions', which is a global hook that
+does not pass any per-call argument here, so the anchor window and
+buffer are read back from `my:rust-explain-error--state' instead."
+    (let ((win (my:rust-explain-error--get :win))
+          (buf (my:rust-explain-error--get :buf)))
+      (unless (and (eq (selected-window) win)
+                   (eq (current-buffer) buf))
+        (with-current-buffer buf
+          (my:rust-explain-error--teardown)))))
 
   (defvar my:rust-explain-error-picker-map
     (let ((map (make-sparse-keymap)))
@@ -332,10 +348,14 @@ With LIST-FRAME, position the doc frame beside it instead of at POS."
       (if (null errors)
           (message "No explainable flycheck error at point")
         (setq my:rust-explain-error--state nil)
-        (my:rust-explain-error--set :win (get-buffer-window
-                                          (current-buffer)))
-        (my:rust-explain-error--set :pos pos)
-        (my:rust-explain-error--suppress-other-popup)
+        (let ((buf (current-buffer)))
+          (my:rust-explain-error--set :buf buf)
+          (my:rust-explain-error--set :win (get-buffer-window buf))
+          (my:rust-explain-error--set :pos pos)
+          (my:rust-explain-error--suppress-other-popup))
+        ;; install hook to handle window selection, buffer burying
+        (add-hook 'window-state-change-hook
+                  #'my:rust-explain-error--on-window-state-change)
         (if (cdr errors)
             (my:rust-explain-error--show-list errors)
           (my:rust-explain-error--show-doc (car errors) pos)))))
