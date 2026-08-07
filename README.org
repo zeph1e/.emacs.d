@@ -1,6 +1,6 @@
 #+TITLE:.emacs.d
 #+AUTHOR: Yunsik Jang
-#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/html-theme-readtheorg.setup
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/setup/html-theme-readtheorg.setup
 
 #+CAPTION: Screenshot
 [[file:misc/res/screenshot.png]]
