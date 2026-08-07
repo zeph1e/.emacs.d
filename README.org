@@ -2,7 +2,8 @@
 #+AUTHOR: Yunsik Jang
 #+SETUPFILE: https://fniessen.github.io/org-html-themes/org/html-theme-readtheorg.setup
 
-#+HTML: <img src="https://github.com/zeph1e/.emacs.d/blob/master/misc/res/screenshot.png?raw=true">
+#+CAPTION: Screenshot
+[[file:misc/res/screenshot.png]]
 
 This repository contains my current Emacs configuration, designed to suit my preferences. However, parts of it may be useful to you, especially if you are a JavaScript, Python, or C/C++ developer.
 
@@ -14,13 +15,13 @@ This configuration depends on a number of external system packages.
 
  - [[https://git-scm.com/][Git]] for [[https://magit.vc/][magit]]
  - [[https://cscope.sourceforge.net/][Cscope]] for [[https://github.com/dkogan/xcscope.el][xcscope]]
- - [[https://nodejs.org/][Node.js]] / NPM for [[https://github.com/yasuyk/web-beautify][web-beautify]], [[https://github.com/typescript-language-server/typescript-language-server][typescript-language-server]], [[https://github.com/ternjs/tern][tern]], and the Claude Code / Codex / Gemini CLI agents used by [[https://github.com/xenodium/agent-shell][agent-shell]]
+ - [[https://nodejs.org/][Node.js]] / NPM for [[https://github.com/yasuyk/web-beautify][web-beautify]], [[https://github.com/typescript-language-server/typescript-language-server][typescript-language-server]], and the Claude Code / Codex / Gemini CLI agents used by [[https://github.com/xenodium/agent-shell][agent-shell]]
  - [[https://github.com/ggreer/the_silver_searcher][The Silver Searcher]] for [[https://github.com/Wilfred/ag.el][ag]] and [[https://github.com/emacsorphanage/helm-ag][helm-ag]]
  - [[https://www.python.org/][Python]] / [[https://github.com/python-lsp/python-lsp-server][pylsp]] for [[https://gitlab.com/python-mode-devs/python-mode][python-mode]] and [[https://github.com/pythonic-emacs/anaconda-mode][anaconda-mode]]
  - [[https://daringfireball.net/projects/markdown/][Markdown]] for [[https://jblevins.org/projects/markdown-mode/][markdown-mode]] preview
  - [[https://openjdk.org/][JRE]] + [[https://plantuml.com/][PlantUML]] for [[https://github.com/skuro/plantuml-mode][plantuml-mode]]
  - Ispell for flyspell
- - [[https://rustup.rs/][rustup]] for rust-analyzer (Rust LSP)
+ - [[https://rustup.rs/][rustup]] for rust toolchain and rust-analyzer (Rust LSP)
  - [[https://github.com/vedang/pdf-tools][pdf-tools]]' bundled =epdfinfo= server for PDF viewing
 
 Thanks to the ~:ensure-system-package~ feature of use-package, most of these are installed automatically on first launch. Some require sudo, so you may be prompted for your password.
@@ -276,14 +277,20 @@ Kotlin's language server isn't auto-installed — =config/lsp.el= has commented-
 
 [[https://github.com/rust-lang/rust-mode][rust-mode]] handles Rust files, with rust-analyzer (see LSP above) providing completion and diagnostics.
 
-Two commands manage Cargo dependencies without leaving Emacs, both in =config/rust.el=:
+Three commands live in =config/rust.el=:
 
-| Key             | Command                       |
-|-----------------+--------------------------------|
-| =C-c C-c C-a=   | ~my:rust-add-dependency~      |
-| =C-c C-c C-d=   | ~my:rust-remove-dependency~   |
+| Key             | Command                           |
+|-----------------+------------------------------------|
+| =C-c C-c C-a=   | ~my:rust-add-dependency~          |
+| =C-c C-c C-d=   | ~my:rust-remove-dependency~       |
+| =C-c C-c C-e=   | ~my:rust-explain-error-at-point~  |
 
 ~my:rust-add-dependency~ searches the cargo registry (=cargo search=, results cached per keyword for the session) through helm or =completing-read=, then runs =cargo add= on the chosen package. ~my:rust-remove-dependency~ lists the current workspace's direct dependencies (=cargo tree --depth 1=) and runs =cargo remove=.
+
+#+CAPTION: my:rust-explain-error-at-point
+[[file:misc/res/rustexplain.png]]
+
+~my:rust-explain-error-at-point~ shows the =rustc --explain= output for the flycheck error at point in a posframe popup, syntax-highlighting any embedded code blocks. When multiple errors overlap at point, it opens a company-box-style picker (=C-n= / =C-p= to cycle, =C-g= to dismiss) that lists each error alongside its explanation, suppressing lsp-ui-doc's and flycheck's own popups while shown.
 
 ** Kotlin
 

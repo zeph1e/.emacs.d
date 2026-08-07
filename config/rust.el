@@ -79,11 +79,266 @@
                                            rust-cargo-bin))
                                          " v.+[ \r\n]+" t))))
                         nil t))))
-  (defun my:rust-explain-error-at-point ()
+
+  (defvar my:rust-explain-error-buffer " *rust-explain-error*"
+    "Buffer name for the `rustc --explain' documentation posframe.")
+  (defvar my:rust-explain-error-list-buffer " *rust-explain-error-list*"
+    "Buffer name for the multi-error picker posframe.")
+  (defvar my:rust-explain-error-cache nil
+    "Cache for `rustc --explain' results, keyed by error id.")
+
+  (defvar my:rust-explain-error--state nil
+    "Runtime state for the explain popup.
+A plist with keys :errors :index :win :pos :list-frame :backup.")
+
+  (defconst my:rust-explain-error--suppressed-vars
+    '(lsp-ui-doc-show-with-cursor
+      lsp-ui-doc-show-with-mouse
+      flycheck-display-errors-function)
+    "Variables disabled buffer-locally while our popup is shown.")
+
+  (defun my:rust-explain-error--get (key)
+    "Return field KEY of the explain-popup state."
+    (plist-get my:rust-explain-error--state key))
+
+  (defun my:rust-explain-error--set (key value)
+    "Set field KEY of the explain-popup state to VALUE."
+    (setq my:rust-explain-error--state
+          (plist-put my:rust-explain-error--state key value)))
+
+  (defun my:rust-explain-error--suppress-other-popup ()
+    "Disable competing popups buffer-locally, saving originals to restore."
+    (let (backup)
+      (dolist (sym my:rust-explain-error--suppressed-vars)
+        (when (boundp sym)
+          (push (cons sym (symbol-value sym)) backup)
+          (set (make-local-variable sym) nil)))
+      (my:rust-explain-error--set :backup backup)))
+
+  (defun my:rust-explain-error--restore-other-popup ()
+    "Restore the popups saved by the matching suppress function."
+    (dolist (entry (my:rust-explain-error--get :backup))
+      (set (make-local-variable (car entry)) (cdr entry))))
+
+  (defun my:rust-explain-error--teardown ()
+    "Hide both posframes and restore the suppressed popups."
+    (posframe-hide my:rust-explain-error-list-buffer)
+    (posframe-hide my:rust-explain-error-buffer)
+    (my:rust-explain-error--restore-other-popup))
+
+  (defun my:rust-explain-error--hidehandler (info)
+    "Return non-nil once the anchor window has moved point away.
+INFO is the plist posframe passes to its hidehandler.  Rather than
+comparing against the globally selected window/buffer (which can
+transiently be one of our own child frames), this inspects the anchor
+window and buffer recorded in `my:rust-explain-error--state', so the
+popup stays put while focus bounces between our frames and only hides
+once the user actually moves point in the source buffer."
+    (let ((parent-buffer (cdr (plist-get info :posframe-parent-buffer)))
+          (win (my:rust-explain-error--get :win))
+          (pos (my:rust-explain-error--get :pos)))
+      (when (and (eq (selected-window) win)
+                 (eq (current-buffer) parent-buffer)
+                 (not (eq (point) pos)))
+        (my:rust-explain-error--restore-other-popup)
+        t)))
+
+  (defvar my:rust-explain-error-picker-map
+    (let ((map (make-sparse-keymap)))
+      (define-key map (kbd "C-n") #'my:rust-explain-error-picker-next)
+      (define-key map (kbd "C-p") #'my:rust-explain-error-picker-prev)
+      (define-key map (kbd "C-g") #'my:rust-explain-error-picker-quit)
+      map)
+    "Transient keymap active while the multi-error picker is shown.")
+
+  (defun my:rust-explain-error--fontify-code-blocks ()
+    "Replace fenced code blocks with their rust-mode-fontified rendering."
+    (goto-char (point-min))
+    (while (re-search-forward "^```[^\n]*\n" nil t)
+      (let ((block-start (match-beginning 0))
+            (code-start (match-end 0)))
+        (when (re-search-forward "^```[ \t]*\n?" nil t)
+          (let ((code (buffer-substring-no-properties
+                       code-start (match-beginning 0)))
+                (block-end (match-end 0)))
+            (delete-region block-start block-end)
+            (goto-char block-start)
+            (insert (with-temp-buffer
+                      (insert code)
+                      (delay-mode-hooks (rust-mode))
+                      (font-lock-ensure)
+                      (buffer-string))))))))
+
+  (defun my:rust-explain-error--explain (error-id)
+    "Return the rust-mode-fontified `rustc --explain' text for ERROR-ID.
+Cached in `my:rust-explain-error-cache', keyed by ERROR-ID, since the
+explanation only depends on the error code, not the occurrence."
+    (or (gethash error-id
+                 (or my:rust-explain-error-cache
+                     (setq my:rust-explain-error-cache
+                           (make-hash-table :test 'equal))))
+        (puthash error-id
+                 (with-temp-buffer
+                   (insert (my:run-command-to-string
+                            (format "rustc --explain %s" error-id)))
+                   (my:rust-explain-error--fontify-code-blocks)
+                   (buffer-string))
+                 my:rust-explain-error-cache)))
+
+  (defun my:rust-explain-error--show-posframe (buffer &rest extra)
+    "Show BUFFER in a posframe using our shared styling.
+EXTRA is a plist of posframe-show arguments prepended before the common
+ones, so a caller can add (e.g. :position) or override them."
+    (apply #'posframe-show buffer
+           (append extra
+                   (list :internal-border-width 10
+                         :background-color
+                         (face-background 'company-tooltip nil t)
+                         :foreground-color
+                         (face-foreground 'default nil t)
+                         :hidehandler
+                         #'my:rust-explain-error--hidehandler))))
+
+  (defun my:rust-explain-error--reposition-beside (frame list-frame)
+    "Move doc FRAME beside LIST-FRAME, on whichever side has more room."
+    (let* ((parent (frame-parent list-frame))
+           (list-pos (frame-position list-frame))
+           (list-width (frame-pixel-width list-frame))
+           (doc-width (frame-pixel-width frame))
+           (gap (/ (frame-char-width parent) 2))
+           (space-right (- (frame-native-width parent)
+                           (car list-pos) list-width))
+           (space-left (car list-pos)))
+      (set-frame-position
+       frame
+       (if (>= space-right space-left)
+           (+ (car list-pos) list-width gap)
+         (max 0 (- (car list-pos) doc-width gap)))
+       (cdr list-pos))))
+
+  (defun my:rust-explain-error--show-doc (error pos &optional list-frame)
+    "Show the explanation for flycheck ERROR anchored at POS.
+With LIST-FRAME, position the doc frame beside it instead of at POS."
+    (let ((error-id (flycheck-error-id error)))
+      (with-current-buffer (get-buffer-create my:rust-explain-error-buffer)
+        (erase-buffer)
+        (insert (propertize
+                 (format "[%s] %s\n\n"
+                         error-id (flycheck-error-message error))
+                 'face 'info-title-3))
+        (insert (my:rust-explain-error--explain error-id))
+        (visual-line-mode 1))
+      (let ((frame (my:rust-explain-error--show-posframe
+                    my:rust-explain-error-buffer :position pos)))
+        (when (and frame list-frame)
+          (my:rust-explain-error--reposition-beside frame list-frame)))))
+
+  (defun my:rust-explain-error--level-icon (level)
+    "Return a display string with the icon for flycheck LEVEL."
+    (let* ((name (symbol-name level))
+           (file (expand-file-name
+                  (format "misc/res/icons8-%s-32.png" name)
+                  user-emacs-directory))
+           (file (if (file-exists-p file)
+                     file
+                   (expand-file-name "misc/res/icons8-info-32.png"
+                                     user-emacs-directory))))
+      (propertize " " 'display
+                  (create-image file 'png nil :ascent 'center
+                                :height (round
+                                         (* (frame-char-height) 0.9))))))
+
+  (defun my:rust-explain-error--render-list ()
+    "Redraw the picker list buffer for the current selection."
+    (with-current-buffer (get-buffer-create
+                          my:rust-explain-error-list-buffer)
+      (erase-buffer)
+      (let ((index (my:rust-explain-error--get :index))
+            (i 0))
+        (dolist (error (my:rust-explain-error--get :errors))
+          (let ((line (concat
+                       (my:rust-explain-error--level-icon
+                        (flycheck-error-level error))
+                       (format " [%s] %s"
+                               (flycheck-error-id error)
+                               (flycheck-error-message error)))))
+            (when (= i index)
+              (setq line (propertize
+                          line 'face
+                          (list :background
+                                (face-background
+                                 'company-tooltip-selection nil t)
+                                :extend t))))
+            (insert line "\n"))
+          (setq i (1+ i))))
+      (goto-char (point-min))))
+
+  (defun my:rust-explain-error--show-current ()
+    "Show the list and doc posframes for the current selection."
+    (my:rust-explain-error--render-list)
+    (let* ((pos (my:rust-explain-error--get :pos))
+           (errors (my:rust-explain-error--get :errors))
+           (index (my:rust-explain-error--get :index))
+           (list-frame (my:rust-explain-error--show-posframe
+                        my:rust-explain-error-list-buffer
+                        :position pos :lines-truncate t)))
+      (my:rust-explain-error--set :list-frame list-frame)
+      (my:rust-explain-error--show-doc (nth index errors) pos list-frame)))
+
+  (defun my:rust-explain-error-picker-next ()
+    "Select the next error in the picker."
     (interactive)
-    (when-let ((errors (flycheck-overlay-errors-at (point))))
-      (let ((error-id (car (mapcar #'flycheck-error-id errors))))
-        (async-shell-command (format "rustc --explain %s | cat" error-id)))))
+    (let ((errors (my:rust-explain-error--get :errors)))
+      (my:rust-explain-error--set
+       :index (mod (1+ (my:rust-explain-error--get :index))
+                   (length errors))))
+    (my:rust-explain-error--show-current))
+
+  (defun my:rust-explain-error-picker-prev ()
+    "Select the previous error in the picker."
+    (interactive)
+    (let ((errors (my:rust-explain-error--get :errors)))
+      (my:rust-explain-error--set
+       :index (mod (1- (my:rust-explain-error--get :index))
+                   (length errors))))
+    (my:rust-explain-error--show-current))
+
+  (defun my:rust-explain-error-picker-quit ()
+    "Dismiss the picker; teardown runs via the transient-map on-exit."
+    (interactive))
+
+  (defun my:rust-explain-error--show-list (errors)
+    "Show a picker posframe cycling through the multiple ERRORS."
+    (my:rust-explain-error--set :errors errors)
+    (my:rust-explain-error--set :index 0)
+    (my:rust-explain-error--show-current)
+    (set-transient-map
+     my:rust-explain-error-picker-map
+     (lambda ()
+       (memq this-command
+             '(my:rust-explain-error-picker-next
+               my:rust-explain-error-picker-prev)))
+     #'my:rust-explain-error--teardown))
+
+  (defun my:rust-explain-error-at-point ()
+    "Explain the flycheck error(s) at point via `rustc --explain'."
+    (interactive)
+    (let* ((pos (point))
+           (errors (seq-filter
+                    (lambda (e)
+                      (and (flycheck-error-id e)
+                           (eq (flycheck-error-level e) 'error)))
+                    (flycheck-overlay-errors-at pos))))
+      (if (null errors)
+          (message "No explainable flycheck error at point")
+        (setq my:rust-explain-error--state nil)
+        (my:rust-explain-error--set :win (get-buffer-window
+                                          (current-buffer)))
+        (my:rust-explain-error--set :pos pos)
+        (my:rust-explain-error--suppress-other-popup)
+        (if (cdr errors)
+            (my:rust-explain-error--show-list errors)
+          (my:rust-explain-error--show-doc (car errors) pos)))))
   :bind
   (:map rust-mode-map
    ("C-c C-c C-a" . 'my:rust-add-dependency)
