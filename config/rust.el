@@ -343,7 +343,7 @@ With LIST-FRAME, position the doc frame beside it instead of at POS."
            (errors (seq-filter
                     (lambda (e)
                       (and (flycheck-error-id e)
-                           (eq (flycheck-error-level e) 'error)))
+                           (string-match "E[0-9]+" (flycheck-error-id e))))
                     (flycheck-overlay-errors-at pos))))
       (if (null errors)
           (message "No explainable flycheck error at point")
