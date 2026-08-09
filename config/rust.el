@@ -235,9 +235,11 @@ ones, so a caller can add (e.g. :position) or override them."
   (defun my:rust-explain-error--show-doc (error pos &optional list-frame)
     "Show the explanation for flycheck ERROR anchored at POS.
 With LIST-FRAME, position the doc frame beside it instead of at POS."
-    (let ((error-id (flycheck-error-id error)))
+    (let ((error-id (flycheck-error-id error))
+          (error-level (flycheck-error-level error)))
       (with-current-buffer (get-buffer-create my:rust-explain-error-buffer)
         (erase-buffer)
+        (insert (my:rust-explain-error--level-icon error-level 1.2))
         (insert (propertize
                  (format "[%s] %s\n\n"
                          error-id (flycheck-error-message error))
@@ -249,7 +251,7 @@ With LIST-FRAME, position the doc frame beside it instead of at POS."
         (when (and frame list-frame)
           (my:rust-explain-error--reposition-beside frame list-frame)))))
 
-  (defun my:rust-explain-error--level-icon (level)
+  (defun my:rust-explain-error--level-icon (level &optional scale)
     "Return a display string with the icon for flycheck LEVEL."
     (let* ((name (symbol-name level))
            (file (expand-file-name
@@ -258,11 +260,12 @@ With LIST-FRAME, position the doc frame beside it instead of at POS."
            (file (if (file-exists-p file)
                      file
                    (expand-file-name "misc/res/icons8-info-32.png"
-                                     user-emacs-directory))))
+                                     user-emacs-directory)))
+           (scale (or scale 0.9)))
       (propertize " " 'display
                   (create-image file 'png nil :ascent 'center
                                 :height (round
-                                         (* (frame-char-height) 0.9))))))
+                                         (* (frame-char-height) scale))))))
 
   (defun my:rust-explain-error--render-list ()
     "Redraw the picker list buffer for the current selection."
