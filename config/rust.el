@@ -249,7 +249,12 @@ With LIST-FRAME, position the doc frame beside it instead of at POS."
       (let ((frame (my:rust-explain-error--show-posframe
                     my:rust-explain-error-buffer :position pos)))
         (when (and frame list-frame)
-          (my:rust-explain-error--reposition-beside frame list-frame)))))
+          (my:rust-explain-error--reposition-beside frame list-frame))))
+    (set-transient-map nil
+                       (lambda ()
+                         (memq this-command
+                               '(mwheel-scroll)))
+                       #'my:rust-explain-error--teardown))
 
   (defun my:rust-explain-error--level-icon (level &optional scale)
     "Return a display string with the icon for flycheck LEVEL."
