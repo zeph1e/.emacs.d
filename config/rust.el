@@ -239,7 +239,7 @@ With LIST-FRAME, position the doc frame beside it instead of at POS."
           (error-level (flycheck-error-level error)))
       (with-current-buffer (get-buffer-create my:rust-explain-error-buffer)
         (erase-buffer)
-        (insert (my:rust-explain-error--level-icon error-level 1.2))
+        (insert (my:rust-explain-error--level-icon error-level 1.2) " ")
         (insert (propertize
                  (format "[%s] %s\n\n"
                          error-id (flycheck-error-message error))
