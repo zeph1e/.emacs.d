@@ -54,7 +54,7 @@
    (rustup . "sudo apt install -y rustup || \
               curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
                 sh -s -- -y && rustup component add rust-analyzer rust-src")
-   (rustc . "rustup default --stable")
+   (rustc . "rustup default stable")
    (rust-analyzer . "rustup component add rust-analyzer rust-src"))
 
   :custom
