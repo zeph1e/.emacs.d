@@ -67,7 +67,7 @@
         (signal 'end-of-buffer '())
       (condition-case e
           (scroll-up-command arg)
-        (end-of-buffer (goto-char (point-max))))))
+        (error (end-of-buffer)))))
 
   (defun my:scroll-down-command (&optional arg)
     "Modify scroll-down behaviour to make it move to the beginning of buffer."
@@ -76,7 +76,7 @@
         (signal 'beginning-of-buffer '())
       (condition-case e
           (scroll-down-command arg)
-        (beginning-of-buffer (goto-char (point-min))))))
+        (error (beginning-of-buffer)))))
 
   ;; split horizontally first from :
   ;; http://www.emacswiki.org/emacs/HorizontalSplitting
