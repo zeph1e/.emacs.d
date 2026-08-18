@@ -1,10 +1,15 @@
-;;; init.el
+;;; init.el  -*- lexical-binding: t; -*-
 
 ;; Written by Yunsik Jang <z3ph1e@gmail.com>
 ;; You can use/modify/redistribute this freely.
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; basic option
+
+(require 'derived)
+(require 'server)
+(require 'tramp)
+(require 'warnings)
 
 ;; load workaround
 (load (locate-user-emacs-file "workaround.el"))
@@ -58,12 +63,11 @@
 (ignore-errors
   ;; a kinda tricky way to suppress warning
   (let ((warning-minimum-level :emergency))
-    (require 'server)
     (unless (server-running-p)
       ;; http://stackoverflow.com/q/885793
       (when (and (>= emacs-major-version 23)
                  (equal window-system 'w32))
-        (defun server-ensure-safe-dir (dir) "Noop" t))
+        (defun server-ensure-safe-dir (_) "Noop" t))
       (server-start) ; start server
       (when (processp server-process)
         (process-put server-process
@@ -176,18 +180,18 @@
   "My global key map.")
 
 (define-minor-mode my:global-key-mode
-  "My global key mode to keep my keybindings overrides major modes keybindings
-  Key bindings:
+  "My global key mode to keep my keybindings overrides major modes keybindings.
+Key bindings:
 \\{my:global-key-map}"
-  t nil my:global-key-map)
+  :init-value t :lighter nil :keymap my:global-key-map)
 (my:global-key-mode t)
 
 (defun my:load-with-keybindings-priority
-    (file &optional noerror nomessage nosuffix must-suffix)
+    (_file &optional _noerror _nomessage _nosuffix _must-suffix)
   "Try to ensure that my keybindings always have priority."
   (if (not (eq (car (car minor-mode-map-alist)) 'my:global-key-mode))
       (let* ((mykeys (assq 'my:global-key-mode minor-mode-map-alist))
-             (mod (assq-delete-all 'my:global-key-mode minor-mode-map-alist)))
+             (_ (assq-delete-all 'my:global-key-mode minor-mode-map-alist)))
         (add-to-list 'minor-mode-map-alist mykeys))))
 (advice-add 'load :after #'my:load-with-keybindings-priority)
 
@@ -226,18 +230,18 @@
     display-fill-column-indicator-mode
     goto-address-prog-mode
     indent-bars-mode)
-  "Minor modes to apply in `prog-mode'")
+  "Minor modes to apply in `prog-mode'.")
 
 (defconst my:default-text-minor-mode-list
   '(visual-line-mode flyspell-mode goto-address-mode)
-  "Minor modes to apply in `text-mode'")
+  "Minor modes to apply in `text-mode'.")
 
 (defconst my:custom-prog-mode-hook-list nil
-  "Major mode work's like prog-mode without deriving it")
+  "Major mode work's like `prog-mode' without deriving it.")
 
 (defconst my:custom-text-mode-hook-list
   '(conf-mode-hook)
-  "Major mode work's like text-mode without deriving it")
+  "Major mode work's like `text-mode' without deriving it.")
 
 (mapc (lambda (mode)
         (add-hook 'prog-mode-hook mode)
