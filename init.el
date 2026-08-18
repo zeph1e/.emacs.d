@@ -186,14 +186,15 @@ Key bindings:
   :init-value t :lighter nil :keymap my:global-key-map)
 (my:global-key-mode t)
 
-(defun my:load-with-keybindings-priority
-    (_file &optional _noerror _nomessage _nosuffix _must-suffix)
+(defun my:reorder-keybindings-priority ()
   "Try to ensure that my keybindings always have priority."
-  (if (not (eq (car (car minor-mode-map-alist)) 'my:global-key-mode))
-      (let* ((mykeys (assq 'my:global-key-mode minor-mode-map-alist))
-             (_ (assq-delete-all 'my:global-key-mode minor-mode-map-alist)))
-        (add-to-list 'minor-mode-map-alist mykeys))))
-(advice-add 'load :after #'my:load-with-keybindings-priority)
+  (unless (eq (car (car minor-mode-map-alist)) 'my:global-key-mode)
+    (let* ((mykeys (assq 'my:global-key-mode minor-mode-map-alist)))
+      (when mykeys
+        (setq minor-mode-map-alist
+              (cons mykeys (assq-delete-all
+                            'my:global-key-mode minor-mode-map-alist)))))))
+(add-hook 'after-change-major-mode-hook #'my:reorder-keybindings-priority)
 
 
 ;; install & configure packages
