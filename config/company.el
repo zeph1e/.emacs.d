@@ -126,7 +126,9 @@ They get inserted in front of `company-backends'.")
                    (cond
                     ((eq company-backend 'company-ispell) 'SpellCheck)
                     ((eq company-backend 'company-files)
-                     (if (file-directory-p (expand-file-name candidate))
+                     (if (file-directory-p
+                          (expand-file-name
+                           candidate (file-name-directory company-prefix)))
                          'Folder 'File)))))
   (letrec ((icon-image
             (lambda (file)
