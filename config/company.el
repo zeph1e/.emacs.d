@@ -27,6 +27,7 @@ INVERSE is non-nil, the behavior is toggled."
          (defun ,advice-fn (orig-fun command &optional arg &rest args)
            ,(format "Context-aware :around advice for %s." backend)
            (when (or (not (derived-mode-p 'prog-mode))
+                     (not (memq major-mode my:custom-prog-mode-list))
                      (xor ,inverse (null (nth 8 (syntax-ppss)))))
              (apply orig-fun command arg args)))
          (advice-add ',b-sym :around #',advice-fn))))

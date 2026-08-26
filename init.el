@@ -237,26 +237,26 @@ Key bindings:
   '(visual-line-mode flyspell-mode goto-address-mode)
   "Minor modes to apply in `text-mode'.")
 
-(defconst my:custom-prog-mode-hook-list nil
+(defconst my:custom-prog-mode-list nil
   "Major mode work's like `prog-mode' without deriving it.")
 
-(defconst my:custom-text-mode-hook-list
-  '(conf-mode-hook)
+(defconst my:custom-text-mode-list
+  '(conf-mode)
   "Major mode work's like `text-mode' without deriving it.")
 
 (mapc (lambda (mode)
         (add-hook 'prog-mode-hook mode)
-        (mapc (lambda (hook)
-                (add-hook hook mode))
-              my:custom-prog-mode-hook-list))
+        (mapc (lambda (prog)
+                (add-hook (intern (concat (symbol-name prog) "-hook")) mode))
+              my:custom-prog-mode-list))
       (append my:default-minor-mode-list
               my:default-prog-minor-mode-list))
 
 (mapc (lambda (mode)
         (add-hook 'text-mode-hook mode)
-        (mapc (lambda (hook)
-                (add-hook hook mode))
-              my:custom-text-mode-hook-list))
+        (mapc (lambda (text)
+                (add-hook (intern (concat (symbol-name text) "-hook")) mode))
+              my:custom-text-mode-list))
       (append my:default-minor-mode-list
               my:default-text-minor-mode-list))
 
