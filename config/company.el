@@ -119,6 +119,23 @@ They get inserted in front of `company-backends'.")
                                 (my:company-find-headers-qt)))))))
 
 (use-package company-box
+  :config
+  ;; company-box icon customization
+  (add-to-list 'company-box-icons-functions
+               #'(lambda (candidate)
+                   (cond
+                    ((eq company-backend 'company-ispell) 'SpellCheck)
+                    ((eq company-backend 'company-files)
+                     (if (file-directory-p (expand-file-name candidate))
+                         'Folder 'File)))))
+  (letrec ((icon-image
+            (lambda (file)
+              (let ((location (expand-file-name (concat "misc/res/" file)
+                                                user-emacs-directory)))
+                `(image :type png :file ,location :ascent center)))))
+    (setq company-box-icons-images
+          (append company-box-icons-images
+                  `((SpellCheck . ,(funcall icon-image "SpellCheck.png"))))))
   :hook (company-mode . company-box-mode))
 
 (use-package company-statistics
