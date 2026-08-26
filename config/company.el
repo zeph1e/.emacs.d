@@ -16,7 +16,7 @@
   (global-company-mode)
   :config
   (require 'cl-lib)
-  (defmacro my:wrap-backend (backend &optional inverse)
+  (defmacro my:make-context-aware (backend &optional inverse)
     "Advise a company backend to be context-aware.
 INVERSE is nil, the BACKEND skips in text/comments.
 INVERSE is non-nil, the behavior is toggled."
@@ -32,12 +32,12 @@ INVERSE is non-nil, the behavior is toggled."
              (apply orig-fun command arg args)))
          (advice-add ',b-sym :around #',advice-fn))))
 
-  (my:wrap-backend company-capf)
-  (my:wrap-backend company-keywords)
-  (my:wrap-backend company-dabbrev-code)
-  (my:wrap-backend company-ispell t)
-  (my:wrap-backend company-files t)
-  (my:wrap-backend company-dabbrev t)
+  (my:make-context-aware company-capf)
+  (my:make-context-aware company-keywords)
+  (my:make-context-aware company-dabbrev-code)
+  (my:make-context-aware company-ispell t)
+  (my:make-context-aware company-files t)
+  (my:make-context-aware company-dabbrev t)
 
   (defconst my:company-backends-alist
     '((web-mode . (company-web-html company-css))
