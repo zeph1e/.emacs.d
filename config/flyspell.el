@@ -34,4 +34,4 @@ otherwise.  When enabling interactively, also re-checks the whole buffer."
 (use-package flyspell-popup
   :bind
   (:map my:global-key-map
-  ("C-;" . flyspell-popup-correct)))
+  ("C-M-;" . flyspell-popup-correct)))

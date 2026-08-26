@@ -44,6 +44,10 @@
   (typescript-mode . lsp-deferred)
   (web-mode . lsp-deferred)
   (lsp-mode . lsp-enable-which-key-integration)
+  ;; Prevent lsp-completion-mode installs company-capf backend by itself
+  (lsp-completion-mode . (lambda ()
+                           (set (make-local-variable 'company-backends)
+                                (remq 'company-capf company-backends))))
   :ensure-system-package
   ((pylsp . "sudo apt install -y python3-pylsp")
    (tsc . "npm -g install typescript")

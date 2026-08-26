@@ -6,7 +6,7 @@
 (use-package company
   :bind
   (:map my:global-key-map
-   ("C-M-;" . company-complete)
+   ("C-;" . company-complete)
    :map company-active-map
    ("C-p" . company-select-previous)
    ("C-n" . company-select-next)
@@ -15,56 +15,60 @@
   :init
   (global-company-mode)
   :config
-  (defmacro my:install-company-backends (backend hook &rest body)
-    "Add company backends to hooks
+  (require 'cl-lib)
+  (defmacro my:wrap-backend (backend &optional inverse)
+    "Advise a company backend to be context-aware.
+INVERSE is nil, the BACKEND skips in text/comments.
+INVERSE is non-nil, the behavior is toggled."
+    (let* ((b-sym (if (listp backend) (car backend) backend))
+           (advice-fn (intern (format "my:%s--context-advice" b-sym))))
+      `(progn
+         (ignore-error
+             (require ',backend))
+         (defun ,advice-fn (orig-fun command &optional arg &rest args)
+           ,(format "Context-aware :around advice for %s." backend)
+           (when (or (not (derived-mode-p 'prog-mode))
+                     (xor ,inverse (null (nth 8 (syntax-ppss)))))
+             (apply orig-fun command arg args)))
+         (advice-add ',b-sym :around #',advice-fn))))
 
-\(fn COMPANY-BACKEND HOOK INIT-BODY...)"
-    `(add-hook (quote ,hook)
-               (lambda ()
-                 (add-to-list (make-local-variable `company-backends)
-                              (quote ,backend))
-                 ,@body
-                 )))
+  (my:wrap-backend company-capf)
+  (my:wrap-backend company-keywords)
+  (my:wrap-backend company-dabbrev-code)
+  (my:wrap-backend company-ispell t)
+  (my:wrap-backend company-files t)
+  (my:wrap-backend company-dabbrev t)
 
-  (defun my:company-ispell (command &optional arg &rest ignored)
-    "`company-ispell' wrapper to enable it only for text."
-    (interactive (list 'interactive))
-    (let ((face (save-excursion (backward-word) (face-at-point 'word)))
-          (face-to-activate '(font-lock-doc-face
-                              font-lock-comment-face
-                              font-lock-string-face
-                              flyspell-duplicate
-                              flyspell-incorrect)))
-      (when (or (derived-mode-p 'text-mode)
-                (member face face-to-activate))
-        (company-ispell command arg ignored))))
+  (defconst my:company-backends-alist
+    '((web-mode . (company-web-html company-css))
+      ((css-mode less-css-mode) . company-css)
+      ((c-mode c++-mode objc-mode) . company-c-headers)
+      (python-mode . company-anaconda))
+    "alist to specify list of company backends for each major modes.
+They get inserted in front of `company-backends'.")
 
-  (setq-default company-ispell-available t
-                company-backends
-                '((my:company-ispell :with company-files)
-                  (company-capf company-yasnippet company-dabbrev-code
-                   company-keywords company-dabbrev)))
-
-  ;; install company backends to certain major modes
-  ;; web
-  (my:install-company-backends company-web-html web-mode-hook)
-  (my:install-company-backends company-web-html sgml-mode-hook)
-  (my:install-company-backends company-css web-mode-hook)
-  (my:install-company-backends company-css css-mode-hook)
-  (my:install-company-backends company-css less-css-mode-hook)
-  (my:install-company-backends company-nxml nxml-mode-hook)
-
-  ;; C/C++
-  (my:install-company-backends company-c-headers c-mode-hook)
-  (my:install-company-backends company-c-headers c++-mode-hook)
-  (my:install-company-backends company-c-headers objc-mode-hook)
-
-  ;; python
-  (my:install-company-backends company-anaconda python-mode-hook)
+  (letrec ((handle-entry
+            (lambda (pair)
+              (let ((mode (car pair))
+                    (backends (cdr pair)))
+                (if (listp mode)
+                    (mapc handle-entry
+                          (mapcar #'(lambda (m) (cons m backends))
+                                  mode))
+                  (add-hook (intern (concat (symbol-name mode) "-hook"))
+                            #'(lambda ()
+                                (add-to-list
+                                 (make-local-variable 'company-backends)
+                                 backends))))))))
+    (mapc handle-entry my:company-backends-alist))
   :hook
   (after-init . global-company-mode)
   :custom
-  (company-tooltip-align-annotations t))
+  (company-tooltip-align-annotations t)
+  (company-backends
+   '((company-capf company-keywords company-dabbrev-code
+                   :with company-yasnippet)
+     company-files company-ispell company-dabbrev)))
 
 (use-package company-c-headers
   :ensure-system-package
