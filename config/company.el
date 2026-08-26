@@ -15,7 +15,6 @@
   :init
   (global-company-mode)
   :config
-  (require 'cl-lib)
   (defmacro my:make-context-aware (backend &optional inverse)
     "Advise a company backend to be context-aware.
 INVERSE is nil, the BACKEND skips in text/comments.
