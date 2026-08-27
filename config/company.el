@@ -42,18 +42,17 @@
     "Advise a company backend to be context-aware.
 INVERSE is nil, the BACKEND skips in text/comments.
 INVERSE is non-nil, the behavior is toggled."
-    (let* ((b-sym (if (listp backend) (car backend) backend))
-           (advice-fn (intern (format "my:%s--context-advice" b-sym))))
+    (let* ((advice-fun (intern (format "my:%s--context-advice" backend))))
       `(progn
          (ignore-error
              (require ',backend))
-         (defun ,advice-fn (orig-fun command &optional arg &rest args)
+         (defun ,advice-fun (orig-fun command &optional arg &rest args)
            ,(format "Context-aware :around advice for %s." backend)
            (when (or (not (or (derived-mode-p 'prog-mode)
                               (memq major-mode my:custom-prog-mode-list)))
                      (xor ,inverse (null (my:in-string-or-comment-p))))
              (apply orig-fun command arg args)))
-         (advice-add ',b-sym :around #',advice-fn))))
+         (advice-add ',backend :around #',advice-fun))))
 
   (my:make-context-aware company-capf)
   (my:make-context-aware company-keywords)
