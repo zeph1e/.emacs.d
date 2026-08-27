@@ -15,6 +15,29 @@
   :init
   (global-company-mode)
   :config
+  (defvar-local my:in-string-or-comment--cache nil)
+
+  (defun my:in-string-or-comment-p ()
+    "Returns non-nil when completing string or comment."
+    (let ((key (cons (buffer-chars-modified-tick) (point))))
+      (if (equal (car my:in-string-or-comment--cache) key)
+          (cdr my:in-string-or-comment--cache)
+        (let ((result
+               (or (nth 8 (syntax-ppss))
+                   ;; Fix for cc-mode derivation
+                   (when (and (boundp 'c-buffer-is-cc-mode) c-buffer-is-cc-mode)
+                     (let* ((bol (line-beginning-position)) (pos (1- (point))))
+                       (when (<= bol pos)
+                         (or (eq (get-text-property pos 'face)
+                                 'font-lock-string-face)
+                             (let ((qpos (save-excursion
+                                           (search-backward "\"" bol t))))
+                               (and qpos
+                                    (eq (get-text-property qpos 'face)
+                                        'font-lock-warning-face))))))))))
+          (setq my:in-string-or-comment--cache (cons key result))
+          result))))
+
   (defmacro my:make-context-aware (backend &optional inverse)
     "Advise a company backend to be context-aware.
 INVERSE is nil, the BACKEND skips in text/comments.
@@ -26,9 +49,9 @@ INVERSE is non-nil, the behavior is toggled."
              (require ',backend))
          (defun ,advice-fn (orig-fun command &optional arg &rest args)
            ,(format "Context-aware :around advice for %s." backend)
-           (when (or (not (derived-mode-p 'prog-mode))
-                     (not (memq major-mode my:custom-prog-mode-list))
-                     (xor ,inverse (null (nth 8 (syntax-ppss)))))
+           (when (or (not (or (derived-mode-p 'prog-mode)
+                              (memq major-mode my:custom-prog-mode-list)))
+                     (xor ,inverse (null (my:in-string-or-comment-p))))
              (apply orig-fun command arg args)))
          (advice-add ',b-sym :around #',advice-fn))))
 
