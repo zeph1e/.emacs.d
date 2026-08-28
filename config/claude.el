@@ -27,6 +27,8 @@
   (:repeat-map my-claude-code-map ("M" . claude-code-cycle-mode))
   :hook
   (claude-code-start-hook . (lambda () (setq-local line-spacing 0.1)))
+  (vterm-mode . (lambda ()
+                  (setenv "COLUMNS" (number-to-string (window-width)))))
   :custom
   (claude-code-terminal-backend 'vterm)
   (claude-code-display-window-fn
