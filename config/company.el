@@ -39,18 +39,25 @@
           result))))
 
   (defmacro my:make-context-aware (backend &optional inverse)
-    "Advise a company backend to be context-aware.
-INVERSE is nil, the BACKEND skips in text/comments.
-INVERSE is non-nil, the behavior is toggled."
+    "Add context-aware :around advice to BACKEND.
+
+In `prog-mode' or a mode in `my:custom-prog-mode-list':
+- INVERSE nil: BACKEND runs in code only.  It skips strings and comments.
+- INVERSE non-nil: BACKEND runs in strings and comments only.  It skips code.
+
+In all other modes:
+- INVERSE nil: BACKEND never runs.
+- INVERSE non-nil: BACKEND always runs."
     (let* ((advice-fun (intern (format "my:%s--context-advice" backend))))
       `(progn
          (ignore-error
              (require ',backend))
          (defun ,advice-fun (orig-fun command &optional arg &rest args)
            ,(format "Context-aware :around advice for %s." backend)
-           (when (or (not (or (derived-mode-p 'prog-mode)
-                              (memq major-mode my:custom-prog-mode-list)))
-                     (xor ,inverse (null (my:in-string-or-comment-p))))
+           (when (xor ,inverse
+                      (and (or (derived-mode-p 'prog-mode)
+                               (memq major-mode my:custom-prog-mode-list))
+                           (not (my:in-string-or-comment-p))))
              (apply orig-fun command arg args)))
          (advice-add ',backend :around #',advice-fun))))
 
