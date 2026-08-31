@@ -28,8 +28,8 @@
                                      "rustup run stable rustc --print sysroot"))
                                    "/lib/rustlib/src/rust/library"))))]))))
   :hook
-  ;; (c-mode . lsp)
-  ;; (c++-mode . lsp)
+  (c-mode . lsp-deferred)
+  (c++-mode . lsp-deferred)
   (js-mode . lsp-deferred)
   ;; Install kotlin-language-server/debug-adapter like below:
   ;; $ gh release download -R fwcd/kotlin-language-server -D /tmp -p server.zip \
@@ -49,7 +49,8 @@
                            (set (make-local-variable 'company-backends)
                                 (remq 'company-capf company-backends))))
   :ensure-system-package
-  ((pylsp . "sudo apt install -y python3-pylsp")
+  ((clangd . "sudo apt install -y clangd")
+   (pylsp . "sudo apt install -y python3-pylsp")
    (tsc . "npm -g install typescript")
    (typescript-language-server . "npm -g install typescript-language-server")
    (vscode-html-language-server . "npm -g install vscode-langservers-extracted")
