@@ -68,6 +68,24 @@ In all other modes:
   (my:make-context-aware company-files t)
   (my:make-context-aware company-dabbrev t)
 
+  (defun my:company-files--complete (_prefix)
+    "Fix not to gather entries in sub-directories."
+    (let* ((full-prefix (company-files--grab-existing-name))
+           (dir (file-name-directory full-prefix))
+           (file (file-name-nondirectory full-prefix))
+           (key (list file
+                      (expand-file-name dir)
+                      (nth 5 (file-attributes dir))))
+           (completion-ignore-case read-file-name-completion-ignore-case))
+      (unless (or (company-file--keys-match-p
+                   key (car company-files--completion-cache))
+                  (not (company-files--connected-p dir)))
+        (let ((candidates (company-files--directory-files dir file)))
+          (setq company-files--completion-cache
+                (cons key candidates))))
+      (all-completions file (cdr company-files--completion-cache))))
+  (advice-add 'company-files--complete :override #'my:company-files--complete)
+
   (defconst my:company-backends-alist
     '((web-mode . (company-web-html company-css))
       ((css-mode less-css-mode) . company-css)
