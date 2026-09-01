@@ -40,24 +40,46 @@
     (font-lock-add-keywords nil '((nb/unhide-current-line)) t)
     (add-hook 'post-command-hook #'nb/refontify-on-linemove nil t))
   :custom-face
-  (markdown-header-delimiter-face ((t (:foreground "#616161" :height 0.9))))
-  (markdown-header-face-1 ((t (:height 1.6  :foreground "#A3BE8C"
-                               :weight extra-bold
-                               :inherit markdown-header-face))))
-  (markdown-header-face-2 ((t (:height 1.4  :foreground "#EBCB8B"
-                               :weight extra-bold
-                               :inherit markdown-header-face))))
-  (markdown-header-face-3 ((t (:height 1.2  :foreground "#D08770"
-                               :weight extra-bold
-                               :inherit markdown-header-face))))
-  (markdown-header-face-4 ((t (:height 1.15 :foreground "#BF616A"
-                               :weight bold
-                               :inherit markdown-header-face))))
-  (markdown-header-face-5 ((t (:height 1.1  :foreground "#b48ead"
-                               :weight bold :inherit markdown-header-face))))
-  (markdown-header-face-6 ((t (:height 1.05 :foreground "#5e81ac"
-                               :weight semi-bold
-                               :inherit markdown-header-face))))
+  (markdown-header-delimiter-face
+   ((((background dark))  (:foreground "#616161" :height 0.9))
+    (((background light)) (:foreground "#a0a0a0" :height 0.9))))
+  ;; H1: Nord Green (Dark) vs Optimistic Coral Pink (Light)
+  (markdown-header-face-1
+   ((((background dark))  (:height 1.6 :foreground "#A3BE8C"
+                           :weight extra-bold :inherit markdown-header-face))
+    (((background light)) (:height 1.6 :foreground "#ff6b6b"
+                           :weight extra-bold :inherit markdown-header-face))))
+  ;; H2: Nord Yellow (Dark) vs Optimistic Sunny Orange (Light)
+  (markdown-header-face-2
+   ((((background dark))  (:height 1.4 :foreground "#EBCB8B"
+                           :weight extra-bold :inherit markdown-header-face))
+    (((background light)) (:height 1.4 :foreground "#f39c12"
+                           :weight extra-bold :inherit markdown-header-face))))
+  ;; H3: Nord Orange (Dark) vs Optimistic Warm Amber (Light)
+  (markdown-header-face-3
+   ((((background dark))  (:height 1.2 :foreground "#D08770"
+                           :weight extra-bold :inherit markdown-header-face))
+    (((background light)) (:height 1.2 :foreground "#d35400"
+                           :weight extra-bold :inherit markdown-header-face))))
+  ;; H4: Nord Red (Dark) vs Optimistic Mint/Teal (Light)
+  (markdown-header-face-4
+   ((((background dark))  (:height 1.15 :foreground "#BF616A"
+                           :weight bold :inherit markdown-header-face))
+    (((background light)) (:height 1.15 :foreground "#1abc9c"
+                           :weight bold :inherit markdown-header-face))))
+  ;; H5: Nord Purple (Dark) vs Optimistic Sky Blue (Light)
+  (markdown-header-face-5
+   ((((background dark))  (:height 1.1 :foreground "#b48ead"
+                           :weight bold :inherit markdown-header-face))
+    (((background light)) (:height 1.1 :foreground "#3498db"
+                           :weight bold :inherit markdown-header-face))))
+  ;; H6: Nord Blue (Dark) vs Optimistic Deep Amethyst (Light)
+  (markdown-header-face-6
+   ((((background dark))  (:height 1.05 :foreground "#5e81ac"
+                           :weight semi-bold :inherit markdown-header-face))
+    (((background light)) (:height 1.05 :foreground "#9b59b6"
+                           :weight semi-bold :inherit markdown-header-face))))
+
   :custom
   ((markdown-split-window-direction 'right)
    (markdown-coding-system 'utf-8)))
