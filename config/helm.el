@@ -35,6 +35,9 @@ search falls back to `default-directory'."
     (interactive "P")
     (let ((default-directory (or (vc-root-dir) default-directory)))
       (helm-do-grep-ag arg)))
+  ;; helm--get-theme-doc-1 returns nil when theme has no docstring,
+  ;; causing (propertize nil ...) crash in helm-completion-theme-affixation.
+  (advice-add 'helm--get-theme-doc-1 :filter-return (lambda (doc) (or doc "")))
   (helm-mode 1)
   :bind
   (:map my:global-key-map
