@@ -95,6 +95,13 @@
    ("M-o" . my:new-line-below)
    ("<f12>" . my:toggle-buffer-read-only)))
 
+(use-package redo+
+  :ensure nil
+  :bind
+  (:map my:global-key-map
+   ("C-_" . undo)
+   ("M-_" . redo)))
+
 (use-package block-travel
   :ensure nil
   :vc (:url "https://github.com/emacs-vs/block-travel" :rev :newest)
