@@ -38,7 +38,7 @@
           (setq my:in-string-or-comment--cache (cons key result))
           result))))
 
-  (defmacro my:make-context-aware (backend &optional inverse)
+  (defmacro my:make-context-aware (backend &optional inverse pred)
     "Add context-aware :around advice to BACKEND.
 
 In `prog-mode' or a mode in `my:custom-prog-mode-list':
@@ -47,23 +47,30 @@ In `prog-mode' or a mode in `my:custom-prog-mode-list':
 
 In all other modes:
 - INVERSE nil: BACKEND never runs.
-- INVERSE non-nil: BACKEND always runs."
+- INVERSE non-nil: BACKEND always runs.
+
+PRED is addition conditions to run BACKEND."
     (let* ((advice-fun (intern (format "my:%s--context-advice" backend))))
       `(progn
          (ignore-error
              (require ',backend))
          (defun ,advice-fun (orig-fun command &optional arg &rest args)
            ,(format "Context-aware :around advice for %s." backend)
-           (when (xor ,inverse
-                      (and (or (derived-mode-p 'prog-mode)
-                               (memq major-mode my:custom-prog-mode-list))
-                           (not (my:in-string-or-comment-p))))
+           (when (and (or (null ,pred) (apply ,pred nil))
+                      (xor ,inverse
+                           (and (or (derived-mode-p 'prog-mode)
+                                    (memq major-mode my:custom-prog-mode-list))
+                                (not (my:in-string-or-comment-p)))))
              (apply orig-fun command arg args)))
          (advice-add ',backend :around #',advice-fun))))
 
   (my:make-context-aware company-capf)
   (my:make-context-aware company-keywords)
   (my:make-context-aware company-dabbrev-code)
+  ;; gtags-cscope is being called through xcscope frontend.
+  (my:make-context-aware company-gtags nil
+                         #'(lambda () (and (boundp cscope-minor-mode)
+                                           cscope-minor-mode)))
   (my:make-context-aware company-ispell t)
   (my:make-context-aware company-files t)
   (my:make-context-aware company-dabbrev t)
@@ -113,7 +120,7 @@ They get inserted in front of `company-backends'.")
   :custom
   (company-tooltip-align-annotations t)
   (company-backends
-   '((company-capf company-keywords company-dabbrev-code
+   '((company-capf company-keywords company-dabbrev-code company-gtags
                    :with company-yasnippet)
      company-files company-ispell company-dabbrev)))
 
