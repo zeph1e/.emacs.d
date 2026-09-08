@@ -16,9 +16,3 @@
     (apply orig-fun face frame plist)))
 
 (advice-add 'set-face-attribute :around #'my:normalize-nil-face-attributes)
-
-(with-eval-after-load 'helm-mode
-    ;; helm--get-theme-doc-1 returns nil when theme has no docstring,
-  ;; causing (propertize nil ...) crash in helm-completion-theme-affixation.
-  (advice-add 'helm--get-theme-doc-1
-              :filter-return (lambda (doc) (or doc ""))))
