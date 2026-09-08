@@ -75,6 +75,8 @@ files are copied to a temp file first."
 
 (use-package mailcap
   :pin manual
+  :ensure-system-package
+  (run-mailcap . "sudo apt install mailcap")
   :config
   ;; This is to launch external viewer programs on Windows, not in WSL.
   (defun my:mailcap-mime-info (orig-fun &rest args)
