@@ -101,7 +101,7 @@ Defined in `config/compile.el`.
 | `config/editor.el` | Small ergonomic editing commands |
 | `config/window.el` | All window/frame navigation bindings |
 | `config/fileviewer.el` | External file/URL opener integration; detects WSL / SSH-remote / local host and routes dired `V`, `browse-url`, and `mailcap` viewers accordingly |
-| `config/claude.el` | Claude Code integration via `claude-code.el`; keybinding prefix `C-'`; uses `monet` for IDE server bridging (its `monet-diff-tool`/`monet-ediff-tool` custom block is commented out, so monet keeps its own default diff tool) and `inheritenv` for environment propagation; opens Claude in a right side window |
+| `config/claude.el` | Claude Code integration via `claude-code.el`; keybinding prefix `C-'`; uses `monet` for IDE server bridging (its `:custom` block for `monet-diff-tool`/`monet-diff-cleanup-tool` is commented out, so monet keeps its own default diff tool) and `inheritenv` for environment propagation; opens Claude in a right side window |
 | `config/pdf.el` | PDF viewing via `pdf-tools`; requires system package `epdfinfo` (installed via `sudo apt install -y elpa-pdf-tools-server`) |
 | `config/rust.el` | rust-mode config; includes cargo dependency-management commands (`my:rust-add-dependency`, searches the cargo registry) |
 | `config/agent-shell.el` | agent-shell integration |

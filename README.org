@@ -14,7 +14,7 @@ This repository contains my current Emacs configuration. I designed it to suit m
 This configuration depends on a number of external system packages.
 
  - [[https://git-scm.com/][Git]] for [[https://magit.vc/][magit]]
- - [[https://cscope.sourceforge.net/][Cscope]] for [[https://github.com/dkogan/xcscope.el][xcscope]]
+ - [[https://www.gnu.org/software/global/][GNU Global]] for [[https://github.com/dkogan/xcscope.el][xcscope]] (via its =gtags-cscope= backend)
  - [[https://nodejs.org/][Node.js]] / NPM for [[https://github.com/yasuyk/web-beautify][web-beautify]], [[https://github.com/typescript-language-server/typescript-language-server][typescript-language-server]], and the Claude Code / Codex / Gemini CLI agents used by [[https://github.com/xenodium/agent-shell][agent-shell]]
  - [[https://github.com/ggreer/the_silver_searcher][The Silver Searcher]] for [[https://github.com/Wilfred/ag.el][ag]] and [[https://github.com/emacsorphanage/helm-ag][helm-ag]]
  - [[https://www.python.org/][Python]] / [[https://github.com/python-lsp/python-lsp-server][pylsp]] for [[https://gitlab.com/python-mode-devs/python-mode][python-mode]] and [[https://github.com/pythonic-emacs/anaconda-mode][anaconda-mode]]
@@ -24,8 +24,11 @@ This configuration depends on a number of external system packages.
  - [[https://rustup.rs/][rustup]] for rust toolchain and rust-analyzer (Rust LSP)
  - [[https://github.com/vedang/pdf-tools][pdf-tools]]' bundled =epdfinfo= server for PDF viewing
  - [[https://groovy-lang.org/][Groovy]] for [[https://github.com/Groovy-Emacs-Modes/groovy-emacs-modes][groovy-mode]]'s =groovysh= REPL
+ - Mailcap for external viewer resolution
 
 The ~:ensure-system-package~ feature of use-package installs most of these automatically on first launch. Some need sudo, so Emacs can prompt you for your password.
+
+[[https://github.com/zeph1e/use-package-ensure-system-package-plus.el][use-package-ensure-system-package+]] runs these installs through one shell process, one at a time. Because of this, Emacs asks for your sudo password once per session, not once per package. =config/vterm.el= waits on this same queue: it does not compile the vterm module until its own system dependencies finish installing. A blocked sudo prompt during startup can look like a hang. It is not a hang.
 
 ** System Environment
 
@@ -33,7 +36,7 @@ Emacs 30 or newer is recommended. On Emacs 30 and newer, Emacs loads ~use-packag
 
 ** Compiler
 
-The C/C++ header path detection works with GCC. If you use a different compiler, automatic include path discovery can fail.
+The C/C++ header path detection needs GCC or Clang, found via =$CC= or on =$PATH=. With neither present, automatic include path discovery fails.
 
 ** Installation
 
@@ -58,7 +61,7 @@ The configuration is structured around a few top-level entry points:
  - =workaround.el= — Loads early. It contains targeted fixes for upstream bugs.
  - =custom.el= — =M-x customize= generates this file automatically. Git excludes it from version control.
 
-All custom keybindings live in ~my:global-key-map~, a minor mode that always takes precedence over major and minor mode keymaps. Bindings go into ~:map my:global-key-map~ inside ~use-package~ ~:bind~ blocks — never ~global-set-key~ directly.
+Almost all custom keybindings live in ~my:global-key-map~, a minor mode that always takes precedence over major and minor mode keymaps. Bindings go into ~:map my:global-key-map~ inside ~use-package~ ~:bind~ blocks — never ~global-set-key~ directly. The one exception is [[https://github.com/emacs-vs/block-travel][block-travel]]'s =M-p= / =M-n= bindings (see Custom Editing Commands below). They stay on the plain global map on purpose, so major and minor modes can still override them.
 
 * Basic Configuration
 
@@ -85,7 +88,7 @@ The built-in =package.el= is the package manager. It uses GNU ELPA, NonGNU ELPA,
 =init.el= installs three lists of default minor modes — one shared by both prog and text buffers, plus one each for prog-only and text-only:
 
 | List                              | Hooks                            | Minor modes                                                                                              |
-|-----------------------------------+----------------------------------+------------------------------------------------------------------------------------------------------------|
+|-----------------------------------+----------------------------------+----------------------------------------------------------------------------------------------------------|
 | ~my:default-minor-mode-list~      | both ~prog-mode~ and ~text-mode~ | ~display-line-numbers-mode~, ~my:whitespace-mode~                                                        |
 | ~my:default-prog-minor-mode-list~ | ~prog-mode~ only                 | ~flyspell-prog-mode~, ~display-fill-column-indicator-mode~, ~goto-address-prog-mode~, ~indent-bars-mode~ |
 | ~my:default-text-minor-mode-list~ | ~text-mode~ only                 | ~visual-line-mode~, ~flyspell-mode~, ~goto-address-mode~                                                 |
@@ -98,7 +101,7 @@ The built-in =package.el= is the package manager. It uses GNU ELPA, NonGNU ELPA,
 
 *** Theme
 
-I have used the Night Eighties variant of [[https://github.com/chriskempson/tomorrow-theme][Tomorrow Theme]] for most of my time with Emacs. The color contrast is well balanced and not too saturated. Emacs loads it from =plugins/color-theme-tomorrow=. My only change sets the ~highlight~ face background to =DeepSkyBlue4=, for better text contrast.
+I have used the Night Eighties variant of [[https://github.com/chriskempson/tomorrow-theme][Tomorrow Theme]] for most of my time with Emacs. The color contrast is well balanced and not too saturated. Emacs loads it from =plugins/color-theme-tomorrow=. My only change sets the ~highlight~ face background to =DeepSkyBlue4=, for better text contrast. You can set =$EMACS_THEME= to a theme name. Emacs loads that theme instead. If the variable is unset, or names a theme Emacs cannot load, Emacs uses Night Eighties.
 
 *** Mode Line
 
@@ -112,6 +115,7 @@ I customized the mode line myself, instead of using Powerline or similar package
  - Line and column
  - Input method indicator
  - Major mode
+ - Process status (for example, a compilation buffer's running/exit state)
  - A [[https://github.com/TeMPOraL/nyan-mode][Nyan Cat]] progress bar
  - Scroll percentage
  - The vc-mode branch
@@ -127,7 +131,7 @@ I used [[https://www.gnu.org/software/emacs/manual/html_mono/ido.html][ido]] and
 [[https://github.com/emacs-helm/helm][Helm]] replaces ido for all interactive selection, configured in =config/helm.el=. The most useful customization is ~my:helm-find-files-backward-dwim~. Pressing =<backspace>= in a file path deletes one directory level, instead of one character. This makes navigation of deep paths much faster.
 
 | Key                 | Command                                  |
-|---------------------+-------------------------------------------|
+|---------------------+------------------------------------------|
 | =M-x=               | ~helm-M-x~                               |
 | =C-x C-f=           | ~helm-find-files~                        |
 | =C-x b=             | ~helm-mini~                              |
@@ -142,20 +146,35 @@ I used [[https://www.gnu.org/software/emacs/manual/html_mono/ido.html][ido]] and
 
 *** Company
 
-[[https://company-mode.github.io/][Company]] is enabled globally. Completion is triggered with =C-;=. You navigate candidates with =C-p= / =C-n=, and page through them with =C-v= / =M-v=.
+[[https://company-mode.github.io/][Company]] is enabled globally, with stock trigger settings. It appears on its own a moment after you type, and =C-;= also triggers it right away. You navigate candidates with =C-p= / =C-n=, and page through them with =C-v= / =M-v=. [[https://github.com/sebastiencs/company-box][company-box]] renders candidates with icons — a spell-check icon for ~company-ispell~ matches, and separate folder / file icons for ~company-files~ matches. [[https://github.com/company-mode/company-statistics][company-statistics]] reorders candidates by how often you picked them before.
 
-The ~my:make-context-aware~ macro advises company backends so each one only fires in its matching context. In ~prog-mode~ buffers, and in major modes listed in ~my:custom-prog-mode-list~, ~company-capf~, ~company-keywords~, and ~company-dabbrev-code~ skip comments and strings, while ~company-ispell~, ~company-files~, and ~company-dabbrev~ fire only inside them. Outside those buffers — in ~text-mode~, for example — all backends fire without restriction.
+A buffer in a mode with its own entry (see the mode-specific backends table below) tries that entry first. Next comes one merged entry: ~company-capf~, ~company-keywords~, ~company-dabbrev-code~, and ~company-gtags~ combine into a single candidate list, with ~company-yasnippet~ included. ~company-files~, ~company-ispell~, and ~company-dabbrev~ follow as three separate entries, tried one at a time until one of them returns candidates:
 
-[[https://github.com/sebastiencs/company-box][company-box]] renders completion candidates with icons.
+| ~company-backends~ entry                  | Backends                                                                                               |
+|-------------------------------------------+--------------------------------------------------------------------------------------------------------|
+| Mode-specific entry (if any, tried first) | See the mode-specific backends table below                                                             |
+| Merged group for code context             | ~company-capf~, ~company-keywords~, ~company-dabbrev-code~, ~company-gtags~ (with ~company-yasnippet~) |
+| Sequential fallbacks (tried in order)     | ~company-files~, ~company-ispell~, ~company-dabbrev~                                                   |
 
-For C/C++, ~company-c-headers~ uses compiler include paths detected at runtime. It runs =gcc -x c -E -v -= and parses the output. It also picks up Qt headers automatically when =qmake= is available. Mode-specific backends:
+~company-gtags~ only returns candidates when ~cscope-minor-mode~ is on, because it reads the same GNU Global index as [[https://github.com/dkogan/xcscope.el][xcscope]].
 
-| Mode                        | Backends                       |
-|-----------------------------+---------------------------------|
-| web-mode                    | company-web-html, company-css  |
-| css-mode, less-css-mode     | company-css                    |
-| c-mode, c++-mode, objc-mode | company-c-headers               |
-| python-mode                 | company-anaconda                |
+The ~my:make-context-aware~ macro wraps each backend above in an :around advice, so it only fires in its matching context. The check has two parts: whether the buffer derives from ~prog-mode~ (or is listed in ~my:custom-prog-mode-list~), and whether point sits inside a string or comment.
+
+| Backend set                                        | Code in prog-mode | String/comment in prog-mode | text-mode (Org, commit messages, ...) |
+|----------------------------------------------------+-------------------+-----------------------------+---------------------------------------|
+| capf, keywords, dabbrev-code, gtags                | Fires             | Skipped                     | Never fires                           |
+| files, ispell, dabbrev                             | Skipped           | Fires                       | Always fires                          |
+
+In practice, a plain ~text-mode~ buffer only ever gets ~company-ispell~, ~company-files~, and ~company-dabbrev~ candidates. The merged group never runs there. As a result, completion stays limited to spelling, file paths, and whole-word matches. Code buffers get the opposite split: the merged group runs on real code, and the fallback backends run only inside strings and comments.
+
+For C/C++, ~company-c-headers~ uses compiler include paths detected at runtime. It runs the detected compiler — =$CC=, else =gcc=, else =clang= — with =-x <lang> -E -v -= and parses the output. It also finds Qt headers automatically when =qmake= is available. Mode-specific backends run ahead of the entries above, and are not subject to the context-aware wrapping:
+
+| Mode                        | Backends                      |
+|-----------------------------+-------------------------------|
+| web-mode                    | company-web-html, company-css |
+| css-mode, less-css-mode     | company-css                   |
+| c-mode, c++-mode, objc-mode | company-c-headers             |
+| python-mode                 | company-anaconda              |
 
 * Editing
 
@@ -184,6 +203,7 @@ A collection of small ergonomic commands in =config/editor.el=:
 | =M-o=         | Insert new line below                                           |
 | =M-p= / =M-n= | Move up / down by code block ([[https://github.com/emacs-vs/block-travel][block-travel]])                     |
 | =<f12>=       | Toggle buffer read-only                                         |
+| =C-x C-b=     | ~ibuffer~                                                        |
 
 An advice on ~kill-line~ cleans up leading whitespace after the kill. This prevents orphaned indentation.
 
@@ -193,35 +213,35 @@ An advice on ~kill-line~ cleans up leading whitespace after the kill. This preve
 
 ** Undo / Redo
 
-[[https://www.emacswiki.org/emacs/RedoPlus][redo+]] (=plugins/redo+=) adds conventional linear redo on top of Emacs' built-in undo system.
+[[https://www.emacswiki.org/emacs/RedoPlus][redo+]] (=plugins/redo+=) adds conventional linear redo on top of Emacs' built-in undo system. =C-_= runs undo, and =M-_= runs redo.
 
 * Window Management
 
 All bindings are in =config/window.el=.
 
 | Key               | Action                                       |
-|-------------------+------------------------------------------------|
+|-------------------+----------------------------------------------|
 | =C-<arrow>=       | Move focus to adjacent window                |
 | =S-<arrow>=       | Swap current window with adjacent ([[https://github.com/konstantinblaesi/windswap][windswap]]) |
 | =C-S-<arrow>=     | Copy buffer to adjacent window ([[https://github.com/dholm/windcopy][windcopy]])    |
 | =M-<arrow>=       | Move focus across frames ([[https://github.com/tlikonen/framemove][framemove]])         |
 | =C-x \= / =C-x -= | Split horizontally / vertically              |
-| =C-x \|= / =C-x _= | Split and move into new window ([[https://github.com/nex3/windsplit][windsplit]])  |
+| =C-x ǀ= / =C-x _= | Split and move into new window ([[https://github.com/nex3/windsplit][windsplit]])   |
 | =C-x x=           | Close current window                         |
 | =C-{= / =C-}=     | Shrink / enlarge window horizontally         |
 
-windcopy helps you duplicate a buffer into a split view without disturbing the other window. framemove hooks into windmove, so =C-<arrow>= wraps across frames automatically. A patch changes scrolling so =C-v= / =M-v= at the buffer boundary moves to the end or beginning, instead of signaling an error.
+windcopy helps you duplicate a buffer into a split view without disturbing the other window. framemove hooks into windmove, so =C-<arrow>= wraps across frames automatically. A patch changes scrolling behavior. The first =C-v= or =M-v= that crosses the buffer boundary moves point to the end or the beginning, instead of an error. If you press =C-v= or =M-v= again after point reaches the boundary, Emacs signals the usual end-of-buffer or beginning-of-buffer error.
 
 * Project Navigation & Search
 
 ** Projectile
 
-[[https://github.com/bbatsov/projectile][Projectile]] provides project-aware file finding and buffer switching, with one-week caching. [[https://github.com/bbatsov/helm-projectile][helm-projectile]] provides the helm front end. The project search root defaults to =~/Workspace=. Both =C-x C-p= and =C-x p= open the command map.
+[[https://github.com/bbatsov/projectile][Projectile]] provides project-aware file finding and buffer switching, with one-week caching. [[https://github.com/bbatsov/helm-projectile][helm-projectile]] provides the helm front end. Projectile discovers projects one directory level under =~/Workspace= (=projectile-project-search-path=). Both =C-x C-p= and =C-x p= open the command map.
 
 ** Search
 
 | Key       | Tool                                                             |
-|-----------+---------------------------------------------------------------------|
+|-----------+------------------------------------------------------------------|
 | =M-r=     | ~helm-occur~ — incremental in-buffer search                      |
 | =M-R=     | ~helm-do-grep-ag~ — full-text search across a directory tree     |
 | =C-M-r=   | ~my:helm-do-grep-vc-root-ag~ — same, rooted at the VCS repo root |
@@ -229,14 +249,14 @@ windcopy helps you duplicate a buffer into a split view without disturbing the o
 
 ** Cscope
 
-[[https://github.com/dkogan/xcscope.el][xcscope]] provides C/C++ symbol cross-referencing through ~cscope-setup~. It helps in large codebases where LSP indexing is impractical.
+[[https://github.com/dkogan/xcscope.el][xcscope]] provides C/C++ symbol cross-referencing through ~cscope-setup~. It runs its ~gtags-cscope~ backend, so indexing goes through GNU Global instead of the classic cscope database. It helps in large codebases where LSP indexing is impractical.
 
 * Version Control
 
 Git integration centers on [[https://magit.vc/][magit]], configured in =config/git.el=.
 
 | Key           | Command                       |
-|---------------+---------------------------------|
+|---------------+-------------------------------|
 | =C-x RET C-s= | Magit status                  |
 | =C-x RET C-h= | Log for HEAD                  |
 | =C-x RET C-b= | Blame                         |
@@ -249,7 +269,7 @@ Git integration centers on [[https://magit.vc/][magit]], configured in =config/g
 
 ** Claude Code
 
-[[https://github.com/stevemolitor/claude-code.el][claude-code.el]] (=config/claude.el=) runs the [[https://github.com/anthropics/claude-code][Claude Code]] CLI inside Emacs. It binds the CLI under the =C-'= keymap prefix and opens it in a right-side window. [[https://github.com/stevemolitor/monet][monet]] bridges IDE-style features back into Emacs. Claude Code's process environment hooks into =monet-start-server-function=. =config/claude.el= comments out the =:custom= block for =monet-diff-tool= and =monet-ediff-tool=. As a result, monet runs with its own default diff tool. [[https://github.com/purcell/inheritenv][inheritenv]] propagates buffer-local environment variables, for example Tramp connections, into the Claude Code subprocess. Inside the Claude Code map, =M= cycles auto-accept, plan, and confirm modes (~claude-code-cycle-mode~).
+[[https://github.com/stevemolitor/claude-code.el][claude-code.el]] (=config/claude.el=) runs the [[https://github.com/anthropics/claude-code][Claude Code]] CLI inside Emacs. It binds the CLI under the =C-'= keymap prefix and opens it in a right-side window. [[https://github.com/stevemolitor/monet][monet]] bridges IDE-style features back into Emacs. Claude Code's process environment hooks into =monet-start-server-function=. =config/claude.el= has a =:custom= block, written as a comment, for =monet-diff-tool= (set to =monet-ediff-tool=) and =monet-diff-cleanup-tool= (set to =monet-ediff-cleanup-tool=). Monet runs with its own default diff tool instead. [[https://github.com/purcell/inheritenv][inheritenv]] propagates buffer-local environment variables, for example Tramp connections, into the Claude Code subprocess. Inside the Claude Code map, =M= cycles auto-accept, plan, and confirm modes (~claude-code-cycle-mode~).
 
 ** Agent Shell
 
@@ -257,22 +277,23 @@ Git integration centers on [[https://magit.vc/][magit]], configured in =config/g
 
 * LSP
 
-[[https://emacs-lsp.github.io/lsp-mode/][lsp-mode]] is configured in =config/lsp.el= with the keymap prefix =C-c C-l=. Active language hooks: =js-mode=, =typescript-mode=, =python-mode=, =web-mode=, =rust-mode=, =kotlin-mode=. =config/lsp.el= comments out the C/C++ hooks.
+[[https://emacs-lsp.github.io/lsp-mode/][lsp-mode]] is configured in =config/lsp.el= with the keymap prefix =C-c C-l=. Active language hooks: =c-mode=, =c++-mode=, =js-mode=, =typescript-mode=, =python-mode=, =web-mode=, =rust-mode=, =kotlin-mode=.
 
 For Rust, a conditional setup function, ~my:lsp-rust-setup-conditional-project~, fills in a synthetic =lsp-rust-analyzer-linked-projects= entry. It runs when a buffer has no =Cargo.toml= or =rust-project.json= ancestor. This way, single-file =.rs= buffers still get rust-analyzer support.
 
 ~:ensure-system-package~ installs most required language servers automatically:
 
-| Language          | Server                       | Install command                               |
-|-------------------+-------------------------------+--------------------------------------------------|
-| JS / TS           | typescript-language-server   | ~npm -g install typescript-language-server~   |
-| HTML / CSS / JSON | vscode-langservers-extracted | ~npm -g install vscode-langservers-extracted~ |
-| Python            | pylsp                        | ~sudo apt install -y python3-pylsp~           |
+| Language          | Server                       | Install command                                                                                             |
+|-------------------+------------------------------+-------------------------------------------------------------------------------------------------------------|
+| C / C++           | clangd                       | ~sudo apt install -y clangd~                                                                                |
+| JS / TS           | typescript-language-server   | ~npm -g install typescript-language-server~                                                                 |
+| HTML / CSS / JSON | vscode-langservers-extracted | ~npm -g install vscode-langservers-extracted~                                                               |
+| Python            | pylsp                        | ~sudo apt install -y python3-pylsp~                                                                         |
 | Rust              | rust-analyzer (via rustup)   | ~sudo apt install -y rustup~ or the rustup.rs installer, then =rustup component add rust-analyzer rust-src= |
 
 Kotlin's language server is not auto-installed. =config/lsp.el= has commented-out =gh release download= commands for [[https://github.com/fwcd/kotlin-language-server][kotlin-language-server]] and [[https://github.com/fwcd/kotlin-debug-adapter][kotlin-debug-adapter]]. Fetch them manually and put their =bin/= directories on =$PATH=.
 
-[[https://emacs-lsp.github.io/lsp-ui/][lsp-ui]] provides inline diagnostics and hover documentation. [[https://github.com/emacs-lsp/helm-lsp][helm-lsp]] replaces ~xref-find-apropos~ with a helm workspace symbol search.
+[[https://emacs-lsp.github.io/lsp-ui/][lsp-ui]] provides hover documentation. Diagnostics render through [[https://www.flycheck.org/][Flycheck]] instead. =config/lsp.el= disables =lsp-ui-sideline-show-diagnostics=, and [[https://github.com/flycheck/flycheck-pos-tip][flycheck-pos-tip]] shows Flycheck's errors as a popup at point. [[https://github.com/emacs-lsp/helm-lsp][helm-lsp]] replaces ~xref-find-apropos~ with a helm workspace symbol search.
 
 * Language Support
 
@@ -286,7 +307,7 @@ Kotlin's language server is not auto-installed. =config/lsp.el= has commented-ou
 
 ** C / C++
 
-=.h= files open in =c++-mode=. Indentation uses spaces throughout. ~company-c-headers~ provides header completion with paths auto-detected from GCC and qmake. Symbol navigation uses xcscope. LSP is disabled here.
+=.h= files open in =c++-mode=. Indentation uses spaces throughout. ~company-c-headers~ provides header completion with paths auto-detected from the local compiler (=$CC=, GCC, or Clang) and qmake. Symbol navigation uses xcscope. =lsp-mode= also runs here, through =clangd=, alongside xcscope.
 
 ** Rust
 
@@ -294,18 +315,18 @@ Kotlin's language server is not auto-installed. =config/lsp.el= has commented-ou
 
 Three commands live in =config/rust.el=:
 
-| Key             | Command                           |
-|-----------------+-------------------------------------|
-| =C-c C-c C-a=   | ~my:rust-add-dependency~          |
-| =C-c C-c C-d=   | ~my:rust-remove-dependency~       |
-| =C-c C-c C-e=   | ~my:rust-explain-error-at-point~  |
+| Key           | Command                          |
+|---------------+----------------------------------|
+| =C-c C-c C-a= | ~my:rust-add-dependency~         |
+| =C-c C-c C-d= | ~my:rust-remove-dependency~      |
+| =C-c C-c C-e= | ~my:rust-explain-error-at-point~ |
 
 ~my:rust-add-dependency~ searches the cargo registry with =cargo search= through helm or =completing-read=. It caches results per keyword for the session, then runs =cargo add= on the chosen package. ~my:rust-remove-dependency~ lists the current workspace's direct dependencies with =cargo tree --depth 1= and runs =cargo remove=.
 
 #+CAPTION: my:rust-explain-error-at-point
 [[file:misc/res/rustexplain.png]]
 
-~my:rust-explain-error-at-point~ shows the =rustc --explain= output for the flycheck error at point, in a posframe popup. It syntax-highlights any embedded code blocks. When multiple errors overlap at point, it opens a company-box-style picker instead (=C-n= / =C-p= to cycle, =C-g= to dismiss). The picker lists each error next to its explanation, and suppresses lsp-ui-doc's and flycheck's own popups while it is shown.
+~my:rust-explain-error-at-point~ shows the =rustc --explain= output for the flycheck error at point, in a posframe popup. It syntax-highlights any embedded code blocks. When multiple errors overlap at point, it opens a picker posframe styled after company's tooltip faces instead (=C-n= / =C-p= to cycle, =C-g= to dismiss). The picker lists each error next to its explanation, and suppresses lsp-ui-doc's and flycheck's own popups while it is shown.
 
 ** Kotlin
 
@@ -314,6 +335,10 @@ Three commands live in =config/rust.el=:
 ** Groovy
 
 [[https://github.com/Groovy-Emacs-Modes/groovy-emacs-modes][groovy-mode]] handles =.groovy= files and runs the =groovysh= REPL.
+
+** Markdown
+
+[[https://jblevins.org/projects/markdown-mode/][markdown-mode]] (=config/markdown.el=) beautifies =.md= buffers for reading. It hides markup characters near point. It reveals them again when point moves onto that line. As a result, raw asterisks and backticks do not show during normal reading. Heading faces use different colors and sizes per level, and switch palette automatically between light and dark themes. The concealment technique comes from [[https://www.reddit.com/r/emacs/comments/10h9jf0/beautify_markdown_on_emacs/][this r/emacs thread]].
 
 * Build
 
@@ -324,7 +349,7 @@ Three commands live in =config/rust.el=:
 =config/fileviewer.el= routes external file opens and URL navigation to the host's default viewer, with awareness of where Emacs is running:
 
  - *WSL* — uses =wslview= so files and URLs open in the Windows host.
- - *SSH-remote* (=$SSH_CLIENT= set) — falls back to local =xdg-open= when a graphical display is available. Otherwise, it skips the operation.
+ - *SSH-remote* (=$SSH_CLIENT= set) — URL navigation connects back to the workstation over SSH and runs =xdg-open= there (see SSH-remote setup below). Dired =V= instead runs the *local* =xdg-open=, and only when a graphical display is available. Otherwise, it skips the operation.
  - *Local* — uses =xdg-open=, =gnome-open=, =kde-open=, or =open=, whichever is found.
 
 In dired, =V= invokes the resolved viewer on the file at point. For remote files, it first copies the file to a temp file. It rejects remote directories, and refuses remote files larger than 5 MB, so the local copy stays bounded. ~browse-url-browser-function~ points to the same opener, so external links land in the host browser. On WSL, =mailcap= viewer entries also route through =wslview=.
