@@ -22,12 +22,12 @@ A blocked sudo prompt during startup can look like a hang. It is not a hang.
 
 The configuration loads in a fixed sequence from `init.el`:
 
-1. **Locale / UI / server** — early options, font, and Emacs server start.
-2. **Package manager and use-package** — On Emacs versions before 30, `init.el` bootstraps `straight.el`, which clones into `straight/` under `user-emacs-directory`. Then `init.el` uses `straight.el` to install `use-package`. `straight.el` also serves `:vc` requests on this path. On every Emacs version, `init.el` starts the built-in `package.el` with the GNU, NonGNU, and MELPA archives. `init.el` also sets `use-package-always-ensure` to `t`. For packages that are not on an archive, `init.el` gets them with `:vc`: `package-vc-install` on Emacs 30 and later, `straight.el` on older versions.
-3. **`workaround.el`** — Loads immediately after step 2. It holds targeted fixes for bugs in upstream Emacs and bugs in installed packages.
-4. **`plugins/`** — Local packages not on ELPA or MELPA. Emacs byte-compiles them and makes autoloads for them on first load. See the `plugins/` load mechanism section that follows.
-5. **`config/*.el`** — One file for each feature area. Emacs loads these files in alphabetical order by file name, and byte-compiles them when Emacs quits.
-6. **`custom.el`** — `M-x customize` makes this file automatically. Git ignores this file.
+1. **Locale / UI / server**: early options, font, and Emacs server start.
+2. **Package manager and use-package**: On Emacs versions before 30, `init.el` bootstraps `straight.el`, which clones into `straight/` under `user-emacs-directory`. Then `init.el` uses `straight.el` to install `use-package`. `straight.el` also serves `:vc` requests on this path. On every Emacs version, `init.el` starts the built-in `package.el` with the GNU, NonGNU, and MELPA archives. `init.el` also sets `use-package-always-ensure` to `t`. For packages that are not on an archive, `init.el` gets them with `:vc`: `package-vc-install` on Emacs 30 and later, `straight.el` on older versions.
+3. **`workaround.el`**: Loads immediately after step 2. It holds targeted fixes for bugs in upstream Emacs and bugs in installed packages.
+4. **`plugins/`**: Local packages not on ELPA or MELPA. Emacs byte-compiles them and makes autoloads for them on first load. See the `plugins/` load mechanism section that follows.
+5. **`config/*.el`**: One file for each feature area. Emacs loads these files in alphabetical order by file name, and byte-compiles them when Emacs quits.
+6. **`custom.el`**: `M-x customize` makes this file automatically. Git ignores this file.
 
 ### `plugins/` load mechanism
 
@@ -61,8 +61,8 @@ To use changes during the same session, restart Emacs. Or run `byte-compile-file
 
 Two companion lists extend these minor modes to major modes that do **not** derive from `prog-mode` or `text-mode`:
 
-- `my:custom-prog-mode-list` — `nil` by default. Add a major-mode symbol to this list, not a hook symbol, to give that mode the prog-mode minor modes.
-- `my:custom-text-mode-list` — `'(conf-mode)` by default. Add a major-mode symbol to this list to give that mode the text-mode minor modes.
+- `my:custom-prog-mode-list`: `nil` by default. Add a major-mode symbol to this list, not a hook symbol, to give that mode the prog-mode minor modes.
+- `my:custom-text-mode-list`: `'(conf-mode)` by default. Add a major-mode symbol to this list to give that mode the text-mode minor modes.
 
 `config/company.el` also reads `my:custom-prog-mode-list` directly. As a result, a mode that you add to this list also gets the code-aware company backend split. See `config/company.el` for the implementation.
 
@@ -88,8 +88,8 @@ Emacs will recompile and make new autoloads for that plugin on the next launch.
 
 `init.el` installs three packages through `:vc`, in the same way as any other package:
 
-- `block-travel` — VS Code-style block navigation. `config/editor.el` binds it to `M-p` and `M-n`.
-- `rfcview` — declared in `config/rfcview.el`. `init.el` fetches it from the author's own fork.
+- `block-travel`: VS Code-style block navigation. `config/editor.el` binds it to `M-p` and `M-n`.
+- `rfcview`: declared in `config/rfcview.el`. `init.el` fetches it from the author's own fork.
 - `use-package-ensure-system-package+`.
 
 These packages go into `elpa/`. Git ignores this directory.
@@ -102,7 +102,7 @@ This Emacs configuration has no top-level build step. For compilation inside Ema
 
 | Key | Command |
 |-----|---------|
-| `<f7>` | `my:compile` — If a compilation buffer already exists, calls `recompile`. If not, opens the interactive prompt. |
+| `<f7>` | `my:compile`: If a compilation buffer already exists, calls `recompile`. If not, opens the interactive prompt. |
 | `C-<f7>` | Always opens the interactive `compile` prompt. |
 
 `config/compile.el` defines these commands.
@@ -111,11 +111,11 @@ This Emacs configuration has no top-level build step. For compilation inside Ema
 
 | Key | Command | Defined in |
 |-----|---------|------------|
-| `M-r` | `helm-occur` — in-buffer incremental search | `config/helm.el` |
-| `M-R` | `helm-do-grep-ag` — grep across a directory tree | `config/helm.el` |
-| `C-M-r` | `my:helm-do-grep-vc-root-ag` — same, rooted at the VCS repo root | `config/helm.el` |
-| `C-M-S-r` | `helm-grep-do-git-grep` — `git grep` through helm | `config/helm.el` |
-| `C-M-R` | `ag` (standalone `ag.el`) — `C-M-S-r` shadows this binding. Both use the same key. `helm.el` loads after `ag.el` in alphabetical order. As a result, this binding never takes effect. | `config/ag.el` |
+| `M-r` | `helm-occur`: in-buffer incremental search | `config/helm.el` |
+| `M-R` | `helm-do-grep-ag`: grep across a directory tree | `config/helm.el` |
+| `C-M-r` | `my:helm-do-grep-vc-root-ag`: same, rooted at the VCS repo root | `config/helm.el` |
+| `C-M-S-r` | `helm-grep-do-git-grep`: `git grep` through helm | `config/helm.el` |
+| `C-M-R` | `ag` (standalone `ag.el`): `C-M-S-r` shadows this binding. Both use the same key. `helm.el` loads after `ag.el` in alphabetical order. As a result, this binding never takes effect. | `config/ag.el` |
 
 `config/xcscope.el` loads `xcscope`. `xcscope` installs its own `C-c s` keymap for C/C++ symbol cross-reference, through `cscope-setup`. `my:global-key-map` has no entry for this keymap.
 
