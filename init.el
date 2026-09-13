@@ -149,6 +149,15 @@
   :vc (:url "https://github.com/zeph1e/use-package-ensure-system-package-plus.el"
        :rev :newest))
 
+(use-package exec-path-from-shell
+  :pin melpa
+  :init
+  (when (memq window-system '(mac x ns))
+    (exec-path-from-shell-initialize))
+  :hook
+  ;; pull updated (if any) variables into current Emacs session
+  (upesp+:command-executed . exec-path-from-shell-initialize))
+
 ;; add local package path to load path
 (let ((default-directory (locate-user-emacs-file "plugins")))
   (normal-top-level-add-subdirs-to-load-path) ; add sub-directories to load-path
