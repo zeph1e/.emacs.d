@@ -156,7 +156,7 @@
     (exec-path-from-shell-initialize))
   :hook
   ;; pull updated (if any) variables into current Emacs session
-  (upesp+:command-executed . exec-path-from-shell-initialize))
+  (upesp+:command-executed . (lambda (_) (exec-path-from-shell-initialize))))
 
 ;; add local package path to load path
 (let ((default-directory (locate-user-emacs-file "plugins")))
