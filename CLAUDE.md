@@ -14,9 +14,11 @@ On older Emacs versions, `init.el` bootstraps `straight.el`, from `radian-softwa
 
 Several packages declare `:ensure-system-package` rules that install system binaries on first launch. Some need sudo, for example `python3-pylsp` through apt or `epdfinfo` through `elpa-pdf-tools-server`. Others install globally through npm, for example `typescript-language-server` and `vscode-langservers-extracted`.
 
-`plugins/use-package-ensure-system-package+` serializes all installs through one persistent `/bin/bash` worker. As a result, sudo prompts appear once for each session, not once for each package.
+`elpa/use-package-ensure-system-package+` serializes all installs through one persistent `/bin/bash` worker. As a result, sudo prompts appear once for each session, not once for each package.
 
 A blocked sudo prompt during startup can look like a hang. It is not a hang.
+
+`init.el` also installs `exec-path-from-shell`. On a GUI session (`mac`, `x`, or `ns`), it copies the shell's `PATH` and other variables into Emacs. It runs again after each `:ensure-system-package` install, through the same `upesp+:command-executed` hook. As a result, a binary that `:ensure-system-package` just installed becomes visible to Emacs without a restart.
 
 ## Architecture
 
@@ -66,7 +68,7 @@ Two companion lists extend these minor modes to major modes that do **not** deri
 
 `config/company.el` also reads `my:custom-prog-mode-list` directly. As a result, a mode that you add to this list also gets the code-aware company backend split. See `config/company.el` for the implementation.
 
-### `plugins/use-package-ensure-system-package+`
+### `elpa/use-package-ensure-system-package+`
 
 This is the most complex local plugin. It serializes every `:ensure-system-package` install command through one persistent `/bin/bash` process. This prevents races between package managers that run at the same time.
 

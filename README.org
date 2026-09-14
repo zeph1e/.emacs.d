@@ -30,9 +30,11 @@ The ~:ensure-system-package~ feature of use-package installs most of these autom
 
 [[https://github.com/zeph1e/use-package-ensure-system-package-plus.el][use-package-ensure-system-package+]] runs these installs through one shell process, one at a time. Because of this, Emacs asks for your sudo password once per session, not once per package. =config/vterm.el= waits on this same queue: it does not compile the vterm module until its own system dependencies finish installing. A blocked sudo prompt during startup can look like a hang. It is not a hang.
 
+[[https://github.com/purcell/exec-path-from-shell][exec-path-from-shell]] copies your shell's =$PATH= and other variables into Emacs, on macOS or X11 graphical sessions. It runs again after each install, through the same hook. As a result, a binary that =:ensure-system-package= just installed works right away, without a restart.
+
 ** System Environment
 
-Emacs 30 or newer is recommended. On Emacs 30 and newer, Emacs loads ~use-package~ from its built-in copy. On older Emacs, =init.el= bootstraps [[https://github.com/radian-software/straight.el][straight.el]] and installs ~use-package~ through it.
+Use Emacs 30 or a later version. On Emacs 30 and later versions, Emacs loads ~use-package~ from its built-in copy. On older Emacs, =init.el= bootstraps [[https://github.com/radian-software/straight.el][straight.el]] and installs ~use-package~ through it.
 
 ** Compiler
 
