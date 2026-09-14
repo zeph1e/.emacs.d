@@ -3,13 +3,13 @@
   ;; Workaround to install system dependencies of vterm
   ;; vterm-module cannot be installed using `:ensure-system-package'.
   (defvar my:vterm-system-deps
-    '((gcc . build-essential) (cmake . cmake)(libtool . libtool-bin)))
+    '((gcc . build-essential) (cmake . cmake) (libtool . libtool-bin)))
 
-  (defun my:vterm-dependencies-checker (&optional cmd)
+  (defun my:vterm-dependencies-checker (&optional cmd res)
     "Drop the package installed by CMD from `my:vterm-system-deps'.
 Exit the recursive edit started by `my:vterm-module-compile' once every
 dependency in `my:vterm-system-deps' has been installed."
-    (when (stringp cmd)
+    (when (and (stringp cmd) (eq res 'succeeded))
       (let ((pkg (intern (car (last (split-string cmd))))))
         (setq my:vterm-system-deps
               (cl-remove-if #'(lambda (dep) (equal (cdr dep) pkg))
