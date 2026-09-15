@@ -88,18 +88,22 @@ Otherwise binary (application) template."
     (interactive "DCreate new Cargo Package at: ")
     (if (file-directory-p dir) ; exist and directory
         (if (directory-empty-p dir)
-            (rust--compile nil "%s init %s %S" rust-cargo-bin
-                           (if lib "--lib" "--bin") dir)
+            (let ((rust-buffer-project dir))
+              (rust--compile nil "%s init %s" rust-cargo-bin
+                             (if lib "--lib" "--bin")))
           (error "Existing directory, %S is not empty!" dir))
       (let ((parent-dir (file-name-directory (directory-file-name dir))))
         (if (file-directory-p parent-dir)
-            (rust--compile nil "%s new %s %S" rust-cargo-bin
-                           (if lib "--lib" "--bin") dir)
+            (let ((rust-buffer-project parent-dir))
+              (message "parent-dir : %S" parent-dir)
+              (rust--compile nil "%s new %s %S" rust-cargo-bin
+                             (if lib "--lib" "--bin")
+                             (directory-file-name dir)))
           (error "Parent directory, %S does not exist!" parent-dir)))))
 
   (defun my:rust-new-cargo-library (dir)
     (interactive "DCreate new Cargo Library at: ")
-    (my:rust-new-cargo-package dir))
+    (my:rust-new-cargo-package dir t))
 
   (defvar my:rust-explain-error-buffer " *rust-explain-error*"
     "Buffer name for the `rustc --explain' documentation posframe.")
