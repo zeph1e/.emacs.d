@@ -152,6 +152,22 @@
 (use-package exec-path-from-shell
   :pin melpa
   :init
+  (with-eval-after-load 'exec-path-from-shell
+    ;; prevent to accumulate duplicated paths
+    (advice-add 'exec-path-from-shell-getenvs
+                :filter-return
+                (lambda (pairs)
+                  (mapcar (lambda (pair)
+                            (let ((name (car pair)) (value (cdr pair)))
+                              (if (and (stringp name) (stringp value)
+                                       (string-match-p "^[A-Z_]*PATH$" name))
+                                  (cons name
+                                        (mapconcat #'identity
+                                                   (delete-dups
+                                                    (split-string value ":"))
+                                                   ":"))
+                                pair)))
+                          pairs))))
   (when (memq window-system '(mac x ns))
     (exec-path-from-shell-initialize))
   :hook
