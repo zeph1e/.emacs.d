@@ -80,6 +80,27 @@
                                          " v.+[ \r\n]+" t))))
                         nil t))))
 
+  (defun my:rust-new-cargo-package (dir &optional lib)
+    "Create a new cargo package at DIR.
+If DIR is not existing it will create DIR. Otherwise init cargo in it.
+If lib is non-nil, then the cargo package is created as library template.
+Otherwise binary (application) template."
+    (interactive "DCreate new Cargo Package at: ")
+    (if (file-directory-p dir) ; exist and directory
+        (if (directory-empty-p dir)
+            (rust--compile nil "%s init %s %S" rust-cargo-bin
+                           (if lib "--lib" "--bin") dir)
+          (error "Existing directory, %S is not empty!" dir))
+      (let ((parent-dir (file-name-directory (directory-file-name dir))))
+        (if (file-directory-p parent-dir)
+            (rust--compile nil "%s new %s %S" rust-cargo-bin
+                           (if lib "--lib" "--bin") dir)
+          (error "Parent directory, %S does not exist!" parent-dir)))))
+
+  (defun my:rust-new-cargo-library (dir)
+    (interactive "DCreate new Cargo Library at: ")
+    (my:rust-new-cargo-package dir))
+
   (defvar my:rust-explain-error-buffer " *rust-explain-error*"
     "Buffer name for the `rustc --explain' documentation posframe.")
   (defvar my:rust-explain-error-list-buffer " *rust-explain-error-list*"
@@ -371,4 +392,9 @@ With LIST-FRAME, position the doc frame beside it instead of at POS."
   (:map rust-mode-map
    ("C-c C-c C-a" . 'my:rust-add-dependency)
    ("C-c C-c C-d" . 'my:rust-remove-dependency)
-   ("C-c C-c C-e" . 'my:rust-explain-error-at-point)))
+   ("C-c C-c C-e" . 'my:rust-explain-error-at-point)
+   ("C-c C-c C-n C-a" . 'my:rust-new-cargo-package)
+   ("C-c C-c C-n C-l" . 'my:rust-new-cargo-library))
+  (:map dired-mode-map
+   ("r n a" . 'my:rust-new-cargo-package)
+   ("r n l" . 'my:rust-new-cargo-library)))
