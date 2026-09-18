@@ -118,7 +118,7 @@ I customized the mode line myself, instead of using Powerline or similar package
  - Input method indicator
  - Major mode
  - Process status (for example, a compilation buffer's running/exit state)
- - A [[https://github.com/TeMPOraL/nyan-mode][Nyan Cat]] progress bar
+ - A [[https://github.com/TeMPOraL/nyan-mode][Nyan Cat]] progress bar, sized live to fill the remaining mode-line width as windows split or resize
  - Scroll percentage
  - The vc-mode branch
 
@@ -309,7 +309,7 @@ Kotlin's language server is not auto-installed. =config/lsp.el= has commented-ou
 
 ** C / C++
 
-=.h= files open in =c++-mode=. Indentation uses spaces throughout. ~company-c-headers~ provides header completion with paths auto-detected from the local compiler (=$CC=, GCC, or Clang) and qmake. Symbol navigation uses xcscope. =lsp-mode= also runs here, through =clangd=, alongside xcscope.
+=.h= files open in =c++-mode=. Indentation uses spaces throughout, following Google's C/C++ style via the ~google-c-style~ package (=config/google.el=). ~company-c-headers~ provides header completion with paths auto-detected from the local compiler (=$CC=, GCC, or Clang) and qmake. Symbol navigation uses xcscope. =lsp-mode= also runs here, through =clangd=, alongside xcscope.
 
 ** Rust
 
@@ -377,6 +377,14 @@ For dired =V= on the SSH-remote case, Emacs does not use reverse SSH. It runs th
 * PDF Viewing
 
 [[https://github.com/vedang/pdf-tools][pdf-tools]] (=config/pdf.el=) opens =.pdf= files in ~pdf-view-mode~, backed by the =epdfinfo= server process from the =elpa-pdf-tools-server= system package.
+
+* RFC Viewing
+
+[[https://github.com/zeph1e/rfcview.el][rfcview]] (=config/rfcview.el=) formats IETF RFC text files for easier reading. Emacs installs it through use-package's =:vc= keyword, from the author's own fork rather than an ELPA archive.
+
+* Translation
+
+[[https://github.com/atykhonov/google-translate][google-translate]] (=config/google.el=, =M-+= / =C-+=) translates the region or the word at point. An advice guesses the source language from the text's Unicode range (Korean, Japanese, or German) and picks the matching target language from a configured set of direction pairs, so you don't have to pick languages by hand each time.
 
 * Snippets & Note Taking
 
