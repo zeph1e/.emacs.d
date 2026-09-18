@@ -111,9 +111,10 @@ I have used the Night Eighties variant of [[https://github.com/chriskempson/tomo
 
 I customized the mode line myself, instead of using Powerline or similar packages. I wanted only the information I actually read:
 
+ - Read-only indicator (lock icon, red background)
  - Buffer size
  - Modification flag
- - Buffer name (red background when read-only)
+ - Buffer name
  - Line and column
  - Input method indicator
  - Major mode
