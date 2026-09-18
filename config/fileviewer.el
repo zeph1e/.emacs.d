@@ -33,10 +33,15 @@
                 my:view-file-viewer-candidates)))
   "The executable which opens file in external viewer")
 
-
 (use-package dired
   :ensure nil
   :pin manual
+  :init
+  ;; wsl-utilities installation
+  (when (and my:wslp (null (executable-find "wslview")))
+    (let ((command (cdr (use-package-ensure-system-package-consify
+                         '(wslview . "sudo apt install -y wslu")))))
+      (apply (car command) (cdr command))))
   :config
   ;; http://superuser.com/q/1728902
   ;; If there's an issue in opening files with wslview, it would be from a bug
@@ -73,6 +78,7 @@ files are copied to a temp file first."
    :map dired-mode-map
    ("V" . my:view-file-external)))
 
+
 (use-package mailcap
   :pin manual
   :ensure-system-package
@@ -98,6 +104,7 @@ so files are launched through the Windows host."
 wslview in WSL, as well as local xdg-open when emacs is running at remote.
 The optional argument NEW-WINDOW is not used."
     (let* ((args (cond
+                  ((null my:view-file-viewer) nil)
                   ((stringp my:view-file-viewer)
                     `(,my:view-file-viewer nil 0 nil ,url))
                   ((listp my:view-file-viewer)
