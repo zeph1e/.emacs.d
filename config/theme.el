@@ -120,14 +120,14 @@ WIDTH and HEIGHT determine the pixel dimensions."
                                  (right . ,(char-to-string #x25e3)))))))))
         (propertize (cdr (assq direction fallback)) 'face face)))))
 
-;; (defconst my:mode-line-buffer-name-maxlen 35)
+(defconst my:mode-line-buffer-name-maxlen 40)
 
-;; (defun my:mode-line-adjusted-buffer-name ()
-;;   (let* ((name (buffer-name))
-;;          (tr-name (truncate-string-to-width
-;;                    name my:mode-line-buffer-name-maxlen)))
-;;     (if (string= name tr-name) name
-;;       (concat tr-name (truncate-string-ellipsis)))))
+(defun my:mode-line-adjusted-buffer-name ()
+  (let* ((name (buffer-name))
+         (tr-name (truncate-string-to-width
+                   name my:mode-line-buffer-name-maxlen)))
+    (if (string= name tr-name) name
+      (concat tr-name (truncate-string-ellipsis)))))
 
 (defun my:mode-line-buffer-name-tab ()
   (let* ((tab-face (if buffer-read-only
@@ -137,8 +137,25 @@ WIDTH and HEIGHT determine the pixel dimensions."
          (left-slant  (propertize " " 'display left-img 'face tab-face))
          (right-slant (propertize " " 'display right-img
                                   'face 'my:mode-line-tab))
-         (buffer-text (propertize (format "  %-10s  " (buffer-name))
-                                  'face 'my:mode-line-buffer-id)))
+         (buffer-text (propertize (format "  %-10s  "
+                                          (my:mode-line-adjusted-buffer-name))
+                                  'face 'my:mode-line-buffer-id
+                                  'help-echo
+                                  (format
+                                   (concat "Buffer name: %s\n"
+                                           "mouse-1: Previous buffer\n"
+                                           "mouse-3: Next buffer")
+                                   (buffer-name))
+                                  'mouse-face 'mode-line-highlight 'local-map
+                                  '(keymap
+                                    (header-line
+                                     keymap (mouse-3 . mode-line-next-buffer)
+                                     (down-mouse-3 . ignore)
+                                     (mouse-1 . mode-line-previous-buffer)
+                                     (down-mouse-1 . ignore))
+                                    (mode-line
+                                     keymap (mouse-3 . mode-line-next-buffer)
+                                     (mouse-1 . mode-line-previous-buffer))))))
     (concat left-slant buffer-text right-slant)))
 
 (defun my:mode-line-trait-readonly ()
