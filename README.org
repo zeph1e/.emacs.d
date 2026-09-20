@@ -107,7 +107,9 @@ I have used the Night Eighties variant of [[https://github.com/chriskempson/tomo
 
 *** Mode Line
 
-#+HTML: <img src="https://github.com/zeph1e/.emacs.d/blob/master/misc/res/modeline.png?raw=true">
+#+CAPTION: mode-line
+[[file:misc/res/modeline.png]]
+
 
 I customized the mode line myself, instead of using Powerline or similar packages. I wanted only the information I actually read:
 
