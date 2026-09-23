@@ -24,12 +24,12 @@
 
   (when window-system
     (nyan-mode 1)
-    (nyan-start-animation)
+    (nyan-start-animation))
 
     ;; Recompute per-window nyan-bar-length only when window layout
     ;; actually changes (splits/resizes/new frames), never on every
     ;; mode-line redraw.
-    (add-hook 'window-configuration-change-hook #'my:nyan-fit-windows)
+    ;; (add-hook 'window-configuration-change-hook #'my:nyan-fit-windows)
 
     ;; Fit once eagerly, guarded by fboundp since `my:nyan-fit-windows'
     ;; is defined later in this file: on a cold start this is a no-op
@@ -37,8 +37,8 @@
     ;; anyway, during initial frame setup) and on a live `load-file'
     ;; reload during development, the previous load's definition is
     ;; still bound at this point, so it fires immediately.
-    (when (fboundp 'my:nyan-fit-windows)
-      (my:nyan-fit-windows)))
+    ;; (when (fboundp 'my:nyan-fit-windows)
+    ;;   (my:nyan-fit-windows)))
   :custom
   ((nyan-wavy-trail t)))
 
@@ -261,6 +261,8 @@ on every redisplay."
   '("" mode-line-process)
   " "
   ;; nyan-mode!!!!!
-  '(:eval (my:mode-line-buffer-pos))
+  '(:eval (list (nyan-create)))
+  " %p "
+  ;; '(:eval (my:mode-line-buffer-pos))
   '(:eval (my:mode-line-align-right (my:mode-line-vc-rev)))
   ))
