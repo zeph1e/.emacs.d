@@ -148,11 +148,6 @@ WIDTH and HEIGHT determine the pixel dimensions."
                                    (buffer-name))
                                   'mouse-face 'mode-line-highlight 'local-map
                                   '(keymap
-                                    (header-line
-                                     keymap (mouse-3 . mode-line-next-buffer)
-                                     (down-mouse-3 . ignore)
-                                     (mouse-1 . mode-line-previous-buffer)
-                                     (down-mouse-1 . ignore))
                                     (mode-line
                                      keymap (mouse-3 . mode-line-next-buffer)
                                      (mouse-1 . mode-line-previous-buffer))))))
@@ -253,7 +248,17 @@ on every redisplay."
   '(:eval (propertize (if current-input-method-title
                           current-input-method-title
                         "ENG")
-                      'face '(:height 0.8)))
+                      'face '(:height 0.8)
+                      'help-echo (format
+                                  (concat "Input Method: %S\n"
+                                          "mouse-1: Toggle Input Method\n")
+                                  (or current-input-method
+                                      "english-default"))
+                      'mouse-face 'mode-line-highlight 'local-map
+                                  '(keymap
+                                    (mode-line
+                                     keymap
+                                     (mouse-1 . toggle-korean-input-method)))))
   " "
   ;; major mode
   (propertize "%m" 'face 'bold)
