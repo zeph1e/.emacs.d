@@ -22,23 +22,121 @@
   (defconst my:nyan-blacklisted-modes
     '(vterm-mode))
 
+  ;; The stock `nyan-create' rebuilds the whole bar on every redraw.
+  (defvar my:nyan-string-cache (make-hash-table :test 'equal)
+    "Bar strings keyed by (LENGTH RAINBOWS CAT-FACE ANIM-FRAME WAVY).")
+
+  (defun my:nyan--build (len rainbows animating)
+    ;; Each unit needs its own image spec: Emacs merges neighbours that share one.
+    (let* ((xpm (image-type-available-p 'xpm))
+           (cat (propertize (aref (nyan-catface) (nyan-catface-index))
+                            'display (nyan-get-anim-frame)))
+           (units nil))
+      (dotimes (n rainbows)
+        (push (if xpm
+                  (propertize
+                   "|" 'display
+                   (create-image
+                    nyan-rainbow-image 'xpm nil
+                    :ascent (or (and nyan-wavy-trail
+                                     (nyan-wavy-rainbow-ascent n))
+                                (if animating 95 'center))))
+                "|")
+              units))
+      (push cat units)
+      (dotimes (_ (- len rainbows nyan-cat-size))
+        (push (if xpm
+                  (propertize "-" 'display
+                              (create-image nyan-outerspace-image 'xpm nil
+                                            :ascent (if animating 95 'center)))
+                "-")
+              units))
+      ;; my:nyan-layout: (RAINBOWS CAT-LENGTH LEN), read by `my:nyan-scroll-click'.
+      (propertize (apply #'concat (nreverse units))
+                  'help-echo nyan-modeline-help-string
+                  'keymap '(keymap (mode-line keymap
+                                              (down-mouse-1
+                                               . my:nyan-scroll-click)))
+                  'my:nyan-layout (list rainbows (length cat) len))))
+
+  (defun my:nyan-create ()
+    "Cached replacement for `nyan-create'."
+    (if (or (< (window-width) nyan-minimum-window-width)
+            (memq major-mode my:nyan-blacklisted-modes))
+        ""
+      (let* ((nyan-bar-length (or (window-parameter nil 'my:nyan-bar-length)
+                                  nyan-bar-length))
+             (rainbows (nyan-number-of-rainbows))
+             (animating (nyan--is-animating-p))
+             (key (list nyan-bar-length rainbows (nyan-catface-index)
+                        (and animating nyan-current-frame) nyan-wavy-trail)))
+        (or (gethash key my:nyan-string-cache)
+            (progn
+              (when (>= (hash-table-count my:nyan-string-cache) 128)
+                (clrhash my:nyan-string-cache))
+              (puthash key (my:nyan--build nyan-bar-length rainbows animating)
+                       my:nyan-string-cache))))))
+
+  (defun my:nyan-scroll-click (event)
+    "Scroll to the place clicked on the nyan bar."
+    (interactive "e")
+    (let* ((posn (event-start event))
+           (hit (posn-string posn))
+           (layout (and hit (get-text-property (cdr hit) 'my:nyan-layout
+                                               (car hit)))))
+      (when layout
+        (let* ((rainbows (nth 0 layout))
+               (cat-length (nth 1 layout))
+               (len (nth 2 layout))
+               (index (cdr hit))
+               (unit (cond ((< index rainbows) index)
+                           ((>= index (+ rainbows cat-length))
+                            (+ rainbows nyan-cat-size
+                               (- index rainbows cat-length))))))
+          (when unit
+            (nyan-scroll-buffer (/ (float unit) len)
+                                (window-buffer (posn-window posn))))))))
+
+  (defun my:nyan-fit-frame (frame)
+    "Fit each window's nyan bar on FRAME to its mode-line."
+    (when (and (bound-and-true-p nyan-mode)
+               (display-graphic-p frame)
+               (not (frame-parent frame)))
+      (dolist (window (window-list frame 'nomini))
+        (let* ((buffer (window-buffer window))
+               (width (window-total-width window))
+               (mode (buffer-local-value 'major-mode buffer))
+               (fmt (buffer-local-value 'mode-line-format buffer))
+               (tail (and (listp fmt)
+                          (member '(:eval (list (nyan-create))) fmt)))
+               (signature (list width buffer (buffer-name buffer) mode
+                                (buffer-local-value 'vc-mode buffer))))
+          (when (and tail
+                     (not (memq mode my:nyan-blacklisted-modes))
+                     (>= width nyan-minimum-window-width)
+                     (not (equal signature
+                                 (window-parameter window
+                                                   'my:nyan-fit-signature))))
+            (set-window-parameter window 'my:nyan-fit-signature signature)
+            (let* ((other (+ (string-width
+                              (format-mode-line (butlast fmt (length tail))
+                                                nil window buffer))
+                             (string-width
+                              (format-mode-line (cdr tail) nil window buffer))))
+                   ;; One nyan unit is an 8 px image.
+                   (len (max nyan-cat-size
+                             (floor (* (- width other 1) (frame-char-width frame))
+                                    8))))
+              (unless (eql len (window-parameter window 'my:nyan-bar-length))
+                (set-window-parameter window 'my:nyan-bar-length len)
+                (force-mode-line-update t))))))))
+
   (when window-system
+    (advice-add 'nyan-create :override #'my:nyan-create)
+    (add-hook 'window-size-change-functions #'my:nyan-fit-frame)
     (nyan-mode 1)
-    (nyan-start-animation))
-
-    ;; Recompute per-window nyan-bar-length only when window layout
-    ;; actually changes (splits/resizes/new frames), never on every
-    ;; mode-line redraw.
-    ;; (add-hook 'window-configuration-change-hook #'my:nyan-fit-windows)
-
-    ;; Fit once eagerly, guarded by fboundp since `my:nyan-fit-windows'
-    ;; is defined later in this file: on a cold start this is a no-op
-    ;; (harmless -- window-configuration-change-hook fires soon after
-    ;; anyway, during initial frame setup) and on a live `load-file'
-    ;; reload during development, the previous load's definition is
-    ;; still bound at this point, so it fires immediately.
-    ;; (when (fboundp 'my:nyan-fit-windows)
-    ;;   (my:nyan-fit-windows)))
+    (nyan-start-animation)
+    (mapc #'my:nyan-fit-frame (frame-list)))
   :custom
   ((nyan-wavy-trail t)))
 
@@ -164,13 +262,6 @@ WIDTH and HEIGHT determine the pixel dimensions."
     (list (propertize " " 'display `(space :align-to (- right ,(- len 3))))
           str)))
 
-(defun my:mode-line-buffer-pos ()
-  (unless (and (boundp 'my:nyan-blacklisted-modes)
-               (memq major-mode my:nyan-blacklisted-modes))
-    (let ((nyan-bar-length (or (window-parameter (selected-window) 'my:nyan-bar-length)
-                                nyan-bar-length)))
-      (list (nyan-create) " %p "))))
-
 (defun my:mode-line-vc-rev ()
   (if vc-mode
       (let* ((left-img (my:mode-line-tab-image 'left 'my:mode-line-vc-tab t))
@@ -180,53 +271,6 @@ WIDTH and HEIGHT determine the pixel dimensions."
                                   'face 'my:mode-line-vc)))
         (concat left-slant vc-text))
     ""))
-
-(defconst my:mode-line-nyan-segment '(:eval (my:mode-line-buffer-pos))
-  "The nyan-bar mode-line construct, as it literally appears in `mode-line-format'.
-Used by `my:nyan-fit-window' to find, via `equal', where in a buffer's
-`mode-line-format' the nyan segment sits, so the segments before it
-can be measured without duplicating them into a separate list.")
-
-(defun my:nyan-fit-window (window)
-  "Recompute and store a fitted `nyan-bar-length' value for WINDOW."
-  (let* ((buffer (window-buffer window))
-         (format (buffer-local-value 'mode-line-format buffer))
-         (before-nyan (and (listp format)
-                            (seq-take-while
-                             (lambda (seg)
-                               (not (equal seg my:mode-line-nyan-segment)))
-                             format))))
-    (when (and before-nyan
-               (not (equal before-nyan format)) ; marker actually found
-               (not (memq (buffer-local-value 'major-mode buffer)
-                          my:nyan-blacklisted-modes)))
-      (let* ((current-length (or (window-parameter window 'my:nyan-bar-length)
-                                  nyan-bar-length))
-             (before-nyan-width
-              (string-width
-               (format-mode-line before-nyan nil window buffer)))
-             (vc-text-width
-              (string-width
-               (format-mode-line '(:eval (my:mode-line-vc-rev))
-                                 nil window buffer)))
-             (current-nyan-width
-              (string-width
-               (format-mode-line my:mode-line-nyan-segment nil window buffer)))
-             (new-length
-              (max 3
-                   (+ current-length
-                      (- (window-total-width window)
-                         before-nyan-width
-                         vc-text-width
-                         current-nyan-width)))))
-        (set-window-parameter window 'my:nyan-bar-length new-length)))))
-
-(defun my:nyan-fit-windows ()
-  "Refit the nyan bar length for every live window on every frame.
-Intended for `window-configuration-change-hook' only -- must not run
-on every redisplay."
-  (when (bound-and-true-p nyan-mode)
-    (walk-windows #'my:nyan-fit-window nil t)))
 
 (setq-default
  mode-line-format
@@ -268,6 +312,5 @@ on every redisplay."
   ;; nyan-mode!!!!!
   '(:eval (list (nyan-create)))
   " %p "
-  ;; '(:eval (my:mode-line-buffer-pos))
   '(:eval (my:mode-line-align-right (my:mode-line-vc-rev)))
   ))
