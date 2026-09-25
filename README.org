@@ -194,6 +194,11 @@ For C/C++, ~company-c-headers~ uses compiler include paths detected at runtime. 
 | =M-/= | Mark all like this      |
 | =M-?= | Edit lines in region    |
 
+When =M-.= or =M-,= adds a cursor on a match that is not visible, the view
+moves to that match and centers it. After 1.5 seconds of idle time, or when
+you give a different command, the view and the real cursor go back to the
+first cursor. This also applies to the =-word= and =-symbol= variants.
+
 ** Custom Editing Commands
 
 A collection of small ergonomic commands in =config/editor.el=:
