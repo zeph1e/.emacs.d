@@ -9,39 +9,40 @@
    ("C-M-#" . iedit-mode)))
 
 (use-package multiple-cursors
-  :config
-  (defvar my:mc--peek-origin nil)  ; marker at the original cursor
-  (defvar my:mc--peek-start nil)   ; window-start before the peek
-  (defvar my:mc--peek-timer nil)
+  :init
+  (with-eval-after-load 'mc-mark-more
+    (defvar my:mc--peek-origin nil)  ; marker at the original cursor
+    (defvar my:mc--peek-start nil)   ; window-start before the peek
+    (defvar my:mc--peek-timer nil)
 
-  (defun my:mc--peek-end ()
-    "Cycle back to the original cursor and restore its view."
-    (let ((origin (and my:mc--peek-origin
-                       (eq (marker-buffer my:mc--peek-origin) (current-buffer))
-                       (mc/fake-cursor-at-point
-                        (marker-position my:mc--peek-origin)))))
-      (when origin
-        (mc/cycle origin nil nil)
-        (set-window-start nil my:mc--peek-start t)))
-    (when my:mc--peek-origin (set-marker my:mc--peek-origin nil))
-    (when my:mc--peek-timer (cancel-timer my:mc--peek-timer))
-    (setq my:mc--peek-origin nil my:mc--peek-timer nil)
-    (remove-hook 'pre-command-hook #'my:mc--peek-end))
+    (defun my:mc--peek-end ()
+      "Cycle back to the original cursor and restore its view."
+      (let ((origin (and my:mc--peek-origin
+                         (eq (marker-buffer my:mc--peek-origin) (current-buffer))
+                         (mc/fake-cursor-at-point
+                          (marker-position my:mc--peek-origin)))))
+        (when origin
+          (mc/cycle origin nil nil)
+          (set-window-start nil my:mc--peek-start t)))
+      (when my:mc--peek-origin (set-marker my:mc--peek-origin nil))
+      (when my:mc--peek-timer (cancel-timer my:mc--peek-timer))
+      (setq my:mc--peek-origin nil my:mc--peek-timer nil)
+      (remove-hook 'pre-command-hook #'my:mc--peek-end))
 
-  (defun my:mc--reveal-newest-cursor (_skip-last direction)
-    "Cycle to the newest match when it is off screen."
-    (let ((newest (if (eq direction 'forwards)
-                      (mc/furthest-cursor-after-point)
-                    (mc/furthest-cursor-before-point))))
-      (when (and newest
-                 (not (pos-visible-in-window-p (overlay-get newest 'point))))
-        (setq my:mc--peek-start (window-start)
-              my:mc--peek-origin (point-marker))
-        (mc/cycle newest nil nil)
-        (add-hook 'pre-command-hook #'my:mc--peek-end)
-        (setq my:mc--peek-timer
-              (run-with-idle-timer 1.5 nil #'my:mc--peek-end)))))
-  (advice-add 'mc/mark-more-like-this :after #'my:mc--reveal-newest-cursor)
+    (defun my:mc--reveal-newest-cursor (_skip-last direction)
+      "Cycle to the newest match when it is off screen."
+      (let ((newest (if (eq direction 'forwards)
+                        (mc/furthest-cursor-after-point)
+                      (mc/furthest-cursor-before-point))))
+        (when (and newest
+                   (not (pos-visible-in-window-p (overlay-get newest 'point))))
+          (setq my:mc--peek-start (window-start)
+                my:mc--peek-origin (point-marker))
+          (mc/cycle newest nil nil)
+          (add-hook 'pre-command-hook #'my:mc--peek-end)
+          (setq my:mc--peek-timer
+                (run-with-idle-timer 1.5 nil #'my:mc--peek-end)))))
+    (advice-add 'mc/mark-more-like-this :after #'my:mc--reveal-newest-cursor))
   :bind
   (:map my:global-key-map
    ("M-?" . mc/edit-lines)
