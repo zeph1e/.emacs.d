@@ -127,14 +127,9 @@
    ("M-S-SPC" . just-one-space)
    ("C-o" . my:open-line-above)
    ("M-o" . my:new-line-below)
-   ("<f12>" . my:toggle-buffer-read-only)))
-
-(use-package redo+
-  :ensure nil
-  :bind
-  (:map my:global-key-map
    ("C-_" . undo)
-   ("M-_" . redo)))
+   ("M-_" . undo-redo)
+   ("<f12>" . my:toggle-buffer-read-only)))
 
 (use-package block-travel
   :ensure nil

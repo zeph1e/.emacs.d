@@ -24,3 +24,5 @@ projectile-bookmarks*
 session.*
 *-autoloads.el
 straight
+projectile-frecency.eld
+projects
