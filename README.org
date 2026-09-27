@@ -223,7 +223,7 @@ An advice on ~kill-line~ cleans up leading whitespace after the kill. This preve
 
 ** Undo / Redo
 
-[[https://www.emacswiki.org/emacs/RedoPlus][redo+]] (=plugins/redo+=) adds conventional linear redo on top of Emacs' built-in undo system. =C-_= runs undo, and =M-_= runs redo.
+Emacs 28 and later versions have a built-in linear redo command, ~undo-redo~. =C-_= runs ~undo~, and =M-_= runs ~undo-redo~. =config/editor.el= sets these bindings.
 
 * Window Management
 
