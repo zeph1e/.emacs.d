@@ -197,11 +197,20 @@ WIDTH and HEIGHT determine the pixel dimensions."
     ;; Combine everything into a single multi-line XPM string
     (mapconcat 'identity (append header rows '("};")) "\n")))
 
+(defun my:safe-mode-line-pixel-height ()
+  "Safely calculate mode-line font height in pixels based on face attributes."
+  (let* ((face (if (facep 'mode-line-active) 'mode-line-active 'mode-line))
+         (font (face-font face)))
+    (if font
+        (+ (aref (font-info font) 8)   ; Ascent (pixels above baseline)
+           (aref (font-info font) 9))  ; Descent (pixels below baseline)
+      0)))
+
 (defun my:mode-line-tab-image (direction face &optional reverse)
   "Create an Emacs image object from a dynamically generated XPM slant."
   (let* ((tab-color (face-attribute face :foreground nil t))
          ;; Dynamically scale height to match the current line/font height roughly
-         (height (frame-char-height))
+         (height (my:safe-mode-line-pixel-height))
          ;; Width controls how aggressive or shallow the slant angle is
          (width (truncate (* height 0.6))))
     (if window-system
