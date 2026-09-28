@@ -3,6 +3,46 @@
 ;; Written by Yunsik Jang <z3ph1e@gmail.com>
 ;; You can use/modify/redistribute this freely.
 
+(use-package window
+  :ensure nil
+  :pin manual
+  :config
+  (defun my:scroll-up-command (&optional arg)
+    "Modify scroll-up behavior to make it move to the end of buffer."
+    (interactive "P")
+    (if (eq (point)(point-max))
+        (signal 'end-of-buffer '())
+      (condition-case e
+          (scroll-up-command arg)
+        (end-of-buffer (goto-char (point-max))))))
+
+  (defun my:scroll-down-command (&optional arg)
+    "Modify scroll-down behaviour to make it move to the beginning of buffer."
+    (interactive "P")
+    (if (eq (point)(point-min))
+        (signal 'beginning-of-buffer '())
+      (condition-case e
+          (scroll-down-command arg)
+        (beginning-of-buffer (goto-char (point-min))))))
+
+  ;; split horizontally first from :
+  ;; http://www.emacswiki.org/emacs/HorizontalSplitting
+  (defun my:split-window-prefer-horizonally (window)
+    "If there's only one window (excluding any possibly active
+     minibuffer), then split the current window horizontally."
+    (if (and (one-window-p t)
+             (not (active-minibuffer-window)))
+        (let ((split-height-threshold nil))
+          (split-window-sensibly window))
+      (split-window-sensibly window)))
+  (setq split-window-preferred-function 'my:split-window-prefer-horizonally)
+  :bind
+  (:map my:global-key-map
+   ("C-M-q" . bury-buffer)
+   ("C-S-M-q" . unbury-buffer)
+   ("C-v" . my:scroll-up-command)
+   ("M-v" . my:scroll-down-command)))
+
 (use-package windswap
   :bind
   (:map my:global-key-map
@@ -55,43 +95,3 @@
   :commands
   (windsplit-horizontally-and-move-right
    windsplit-vertically-and-move-down))
-
-(use-package window
-  :ensure nil
-  :pin manual
-  :config
-  (defun my:scroll-up-command (&optional arg)
-    "Modify scroll-up behavior to make it move to the end of buffer."
-    (interactive "P")
-    (if (eq (point)(point-max))
-        (signal 'end-of-buffer '())
-      (condition-case e
-          (scroll-up-command arg)
-        (end-of-buffer (goto-char (point-max))))))
-
-  (defun my:scroll-down-command (&optional arg)
-    "Modify scroll-down behaviour to make it move to the beginning of buffer."
-    (interactive "P")
-    (if (eq (point)(point-min))
-        (signal 'beginning-of-buffer '())
-      (condition-case e
-          (scroll-down-command arg)
-        (beginning-of-buffer (goto-char (point-min))))))
-
-  ;; split horizontally first from :
-  ;; http://www.emacswiki.org/emacs/HorizontalSplitting
-  (defun my:split-window-prefer-horizonally (window)
-    "If there's only one window (excluding any possibly active
-     minibuffer), then split the current window horizontally."
-    (if (and (one-window-p t)
-             (not (active-minibuffer-window)))
-        (let ((split-height-threshold nil))
-          (split-window-sensibly window))
-      (split-window-sensibly window)))
-  (setq split-window-preferred-function 'my:split-window-prefer-horizonally)
-  :bind
-  (:map my:global-key-map
-   ("C-M-q" . bury-buffer)
-   ("C-S-M-q" . unbury-buffer)
-   ("C-v" . my:scroll-up-command)
-   ("M-v" . my:scroll-down-command)))

@@ -3,53 +3,6 @@
 ;; Written by Yunsik Jang <z3ph1e@gmail.com>
 ;; You can use/modify/redistribute this freely.
 
-(use-package iedit
-  :bind
-  (:map my:global-key-map
-   ("C-M-#" . iedit-mode)))
-
-(use-package multiple-cursors
-  :init
-  (with-eval-after-load 'mc-mark-more
-    (defvar my:mc--peek-origin nil)  ; marker at the original cursor
-    (defvar my:mc--peek-start nil)   ; window-start before the peek
-    (defvar my:mc--peek-timer nil)
-
-    (defun my:mc--peek-end ()
-      "Cycle back to the original cursor and restore its view."
-      (let ((origin (and my:mc--peek-origin
-                         (eq (marker-buffer my:mc--peek-origin) (current-buffer))
-                         (mc/fake-cursor-at-point
-                          (marker-position my:mc--peek-origin)))))
-        (when origin
-          (mc/cycle origin nil nil)
-          (set-window-start nil my:mc--peek-start t)))
-      (when my:mc--peek-origin (set-marker my:mc--peek-origin nil))
-      (when my:mc--peek-timer (cancel-timer my:mc--peek-timer))
-      (setq my:mc--peek-origin nil my:mc--peek-timer nil)
-      (remove-hook 'pre-command-hook #'my:mc--peek-end))
-
-    (defun my:mc--reveal-newest-cursor (_skip-last direction)
-      "Cycle to the newest match when it is off screen."
-      (let ((newest (if (eq direction 'forwards)
-                        (mc/furthest-cursor-after-point)
-                      (mc/furthest-cursor-before-point))))
-        (when (and newest
-                   (not (pos-visible-in-window-p (overlay-get newest 'point))))
-          (setq my:mc--peek-start (window-start)
-                my:mc--peek-origin (point-marker))
-          (mc/cycle newest nil nil)
-          (add-hook 'pre-command-hook #'my:mc--peek-end)
-          (setq my:mc--peek-timer
-                (run-with-idle-timer 1.5 nil #'my:mc--peek-end)))))
-    (advice-add 'mc/mark-more-like-this :after #'my:mc--reveal-newest-cursor))
-  :bind
-  (:map my:global-key-map
-   ("M-?" . mc/edit-lines)
-   ("M-." . mc/mark-next-like-this)
-   ("M-," . mc/mark-previous-like-this)
-   ("M-/" . mc/mark-all-like-this)))
-
 (use-package simple
   :ensure nil
   :pin manual
@@ -131,6 +84,53 @@
    ("M-_" . undo-redo)
    ("<f12>" . my:toggle-buffer-read-only)))
 
+(use-package iedit
+  :bind
+  (:map my:global-key-map
+   ("C-M-#" . iedit-mode)))
+
+(use-package multiple-cursors
+  :init
+  (with-eval-after-load 'mc-mark-more
+    (defvar my:mc--peek-origin nil)  ; marker at the original cursor
+    (defvar my:mc--peek-start nil)   ; window-start before the peek
+    (defvar my:mc--peek-timer nil)
+
+    (defun my:mc--peek-end ()
+      "Cycle back to the original cursor and restore its view."
+      (let ((origin (and my:mc--peek-origin
+                         (eq (marker-buffer my:mc--peek-origin) (current-buffer))
+                         (mc/fake-cursor-at-point
+                          (marker-position my:mc--peek-origin)))))
+        (when origin
+          (mc/cycle origin nil nil)
+          (set-window-start nil my:mc--peek-start t)))
+      (when my:mc--peek-origin (set-marker my:mc--peek-origin nil))
+      (when my:mc--peek-timer (cancel-timer my:mc--peek-timer))
+      (setq my:mc--peek-origin nil my:mc--peek-timer nil)
+      (remove-hook 'pre-command-hook #'my:mc--peek-end))
+
+    (defun my:mc--reveal-newest-cursor (_skip-last direction)
+      "Cycle to the newest match when it is off screen."
+      (let ((newest (if (eq direction 'forwards)
+                        (mc/furthest-cursor-after-point)
+                      (mc/furthest-cursor-before-point))))
+        (when (and newest
+                   (not (pos-visible-in-window-p (overlay-get newest 'point))))
+          (setq my:mc--peek-start (window-start)
+                my:mc--peek-origin (point-marker))
+          (mc/cycle newest nil nil)
+          (add-hook 'pre-command-hook #'my:mc--peek-end)
+          (setq my:mc--peek-timer
+                (run-with-idle-timer 1.5 nil #'my:mc--peek-end)))))
+    (advice-add 'mc/mark-more-like-this :after #'my:mc--reveal-newest-cursor))
+  :bind
+  (:map my:global-key-map
+   ("M-?" . mc/edit-lines)
+   ("M-." . mc/mark-next-like-this)
+   ("M-," . mc/mark-previous-like-this)
+   ("M-/" . mc/mark-all-like-this)))
+
 (use-package block-travel
   :ensure nil
   :vc (:url "https://github.com/emacs-vs/block-travel" :rev :newest)
@@ -148,3 +148,28 @@
 (use-package indent-bars
   :ensure t
   :pin gnu)
+
+(use-package whitespace
+  :pin manual
+  :init
+  (define-minor-mode my:whitespace-mode
+    "Setup Whitespace mode for each major modes"
+    :variable my:whitespace-mode
+    (hack-local-variables)
+    (if my:whitespace-mode
+        (progn
+          (cond ((derived-mode-p 'prog-mode)
+                 (setq-local whitespace-line-column fill-column)
+                 (setq-local whitespace-style
+                             '(face trailing lines-tail tabs tab-mark)))
+                ((derived-mode-p 'text-mode)
+                 (setq-local whitespace-line-column fill-column)
+                 (setq-local whitespace-style
+                             '(face trailing tabs tab-mark)))
+                (t
+                 (setq-local whitespace-line-column nil)
+                 (setq-local whitespace-style '(face trailing))))
+          (whitespace-mode t))
+      (whitespace-mode -1)))
+  :custom-face
+  (whitespace-tab ((t (:foreground "gray50" :background "dark slate gray")))))
