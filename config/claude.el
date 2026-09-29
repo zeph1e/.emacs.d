@@ -4,9 +4,6 @@
 ;; You can use/modify/redistribute this freely.
 
 
-(use-package inheritenv
-  :vc (:url "https://github.com/purcell/inheritenv" :rev :newest))
-
 (use-package monet
   :vc (:url "https://github.com/stevemolitor/monet" :rev :newest)
   :demand t)
@@ -43,4 +40,5 @@
             #'monet-start-server-function)
   (monet-mode 1)
 
-  (claude-code-mode))
+  (claude-code-mode)
+  :after (inheritenv))

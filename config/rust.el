@@ -401,4 +401,4 @@ With LIST-FRAME, position the doc frame beside it instead of at POS."
    ("C-c C-c C-n" . 'my:rust-new-cargo-package)
 
   (:map dired-mode-map
-   ("r n" . 'my:rust-new-cargo-package))))
+   ("C-c C-c" . 'my:rust-new-cargo-package))))
