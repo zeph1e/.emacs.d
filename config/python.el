@@ -28,10 +28,8 @@
 
 (use-package company-anaconda)
 
-(use-package buffer-env
+(use-package pyvenv-auto
   :pin melpa
-  :custom
-  (buffer-env-script-name '(".envrc" ".venv/bin/activate" "venv/bin/activate"))
   :hook
-  (hack-local-variables . buffer-env-update)
-  (shell-mode . buffer-env-update))
+  ((python-mode . pyvenv-auto-run)
+   (dired-mode . pyvenv-auto-run)))
