@@ -227,27 +227,38 @@ Key bindings:
 
 ;; install & configure packages
 (let* ((dir (locate-user-emacs-file "config"))
-       (files
-        (when (file-directory-p dir)
-          (remq nil (mapcar (lambda (file)
-                              (when
-                                  (and (not (file-symlink-p file))
-                                       (not (file-directory-p file))
-                                       (string-match "\\([^.]+\\).el\\'" file))
-                                (let ((byte-compile-warnings nil))
-                                  (load-file (concat dir "/" file)))
-                                (concat dir "/" file)))
-                            (directory-files dir))))))
-    ;; byte-compile them on quit
-    (add-hook 'kill-emacs-hook
-              `(lambda ()
-                 (mapc (lambda (filename)
-                         (let ((target (concat filename "c")))
-                           (unless (and (file-exists-p target)
-                                        (file-newer-than-file-p target
-                                                                filename))
-                             (byte-compile-file filename))))
-                    (list ,@files)))))
+       (files (when (file-directory-p dir)
+                (remq nil (mapcar (lambda (file)
+                                    (when (and (not (file-symlink-p file))
+                                               (not (file-directory-p file)))
+                                      file))
+                                  (directory-files dir)))))
+       (configs (remq nil
+                      (mapcar (lambda (file)
+                                (when (string-match "\\([^.]+\\).el\\'" file)
+                                  (file-name-sans-extension file)))
+                              files)))
+       (compiled (remq nil
+                       (mapcar (lambda (file)
+                                 (when (string-match "\\([^.]+\\).elc\\'" file)
+                                   (file-name-sans-extension file)))
+                               files))))
+  ;; load config files
+  (mapc (lambda (file) (load-file (concat dir "/" file ".el"))) configs)
+
+  ;; remove orphan byte-compiled right away
+  (mapc (lambda (file) (delete-file (concat dir "/" file ".elc")))
+        (cl-set-difference compiled configs :test 'string=))
+
+  ;; install hook to byte-compile updated on quit
+  (add-hook 'kill-emacs-hook
+            `(lambda ()
+               (mapc (lambda (file)
+                       (let* ((source (concat ,dir "/" file ".el"))
+                              (target (byte-compile-dest-file source)))
+                         (when (file-newer-than-file-p source target)
+                           (byte-compile-file source))))
+                     (list ,@configs)))))
 
 ;; define default major modes
 (defconst my:default-minor-mode-list
