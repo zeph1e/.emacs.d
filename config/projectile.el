@@ -13,5 +13,6 @@
   (projectile-enable-caching t)
   (projectile-file-exists-remote-cache-expire (* 7 24 60 60)) ; a week
   (projectile-file-exists-local-cache-expire (* 7 24 60 60)) ; a week
-  (projectile-switch-project-action 'projectile-find-file-dwim)
+  (projectile-completion-system 'helm)
+  (projectile-switch-project-action 'helm-projectile-find-file-dwim)
   (projectile-project-search-path '(("~/Workspace" . 1))))
