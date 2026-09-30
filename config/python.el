@@ -5,7 +5,7 @@
 
 (use-package python-mode
   :ensure-system-package
-  ((python3 . "sudo apt install -y python3")
+  ((python3 . "sudo apt install -y python3-full")
    (python . "sudo apt install -y python-is-python3"))
   :init
   (defun my:python-venv-new (dir &optional venv)
@@ -40,6 +40,7 @@
                                  (executable-find "python")))))
 
 (use-package anaconda-mode
+  :pin melpa
   :hook
   ((python-mode . anaconda-mode)
    (python-mode . anaconda-eldoc-mode))
@@ -47,7 +48,8 @@
   (anaconda-mode-installation-directory
    (concat (file-name-directory user-init-file) ".anaconda-mode")))
 
-(use-package company-anaconda)
+(use-package company-anaconda
+  :pin melpa)
 
 (use-package buffer-env
   :pin melpa
