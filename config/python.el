@@ -53,7 +53,6 @@
 (use-package buffer-env
   :pin melpa
   :custom
-  (buffer-env-script-name
-   '(".envrc" ".env" ".venv/bin/activate" "venv/bin/activate"))
+  (buffer-env-script-name '(".envrc" ".venv/bin/activate" "venv/bin/activate"))
   :hook
   ((hack-local-variables . buffer-env-update)))
