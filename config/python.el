@@ -35,9 +35,8 @@
   (:map dired-mode-map
    ("C-c C-v" . my:python-venv-new))
   :custom
-  ((python-indent-offset 2)
-   (python-shell-interpreter (or (executable-find "python3")
-                                 (executable-find "python")))))
+  (python-indent-offset 2)
+  (python-shell-interpreter "python"))
 
 (use-package anaconda-mode
   :pin melpa
@@ -54,6 +53,7 @@
 (use-package buffer-env
   :pin melpa
   :custom
-  (buffer-env-script-name '(".envrc" ".venv/bin/activate" "venv/bin/activate"))
+  (buffer-env-script-name
+   '(".envrc" ".env" ".venv/bin/activate" "venv/bin/activate"))
   :hook
   ((hack-local-variables . buffer-env-update)))
