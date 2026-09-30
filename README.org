@@ -146,6 +146,7 @@ I used [[https://www.gnu.org/software/emacs/manual/html_mono/ido.html][ido]] and
 | =C-h a=             | ~helm-apropos~                           |
 | =C-h b=             | ~helm-descbinds~                         |
 | =C-x C-p= / =C-x p= | Projectile command map (helm-projectile) |
+| =C-x g f=           | ~helm-ls-git~                            |
 
 [[https://github.com/emacs-lsp/helm-lsp][helm-lsp]] replaces ~xref-find-apropos~ with a helm-powered workspace symbol search when LSP is active.
 
@@ -246,7 +247,7 @@ windcopy helps you duplicate a buffer into a split view without disturbing the o
 
 ** Projectile
 
-[[https://github.com/bbatsov/projectile][Projectile]] provides project-aware file finding and buffer switching, with one-week caching. [[https://github.com/bbatsov/helm-projectile][helm-projectile]] provides the helm front end. Projectile discovers projects one directory level under =~/Workspace= (=projectile-project-search-path=). Both =C-x C-p= and =C-x p= open the command map.
+[[https://github.com/bbatsov/projectile][Projectile]] provides project-aware file finding and buffer switching. It uses external tools to index files (=alien= indexing) and caches results for one week. [[https://github.com/bbatsov/helm-projectile][helm-projectile]] provides the helm front end. Projectile discovers projects one directory level under =~/Workspace= (=projectile-project-search-path=). Both =C-x C-p= and =C-x p= open the command map.
 
 ** Search
 

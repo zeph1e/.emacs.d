@@ -85,6 +85,11 @@ search falls back to `default-directory'."
   (helm-source-names-using-follow
    '("AG" "Git-Grep" "global-mark-ring" "mark-ring")))
 
+(use-package helm-ls-git
+  :pin melpa
+  :bind
+  (:map my:global-key-map
+   ("C-x g f" . helm-ls-git)))
 
 (use-package helm-projectile
   :bind-keymap
@@ -92,6 +97,9 @@ search falls back to `default-directory'."
    ("C-x p"   . projectile-command-map))
   :init
   (helm-projectile-on)
+  :custom
+  (helm-projectile-fuzzy-match nil)
+  ;; (helm-projectile-sources-list '(helm-source-projectile-files-list))
   :after (helm projectile))
 
 (use-package helm-descbinds
