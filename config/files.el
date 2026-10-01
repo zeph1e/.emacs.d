@@ -129,6 +129,18 @@ Runs revert-buffer--default internally"
       (apply orig-fun args)))
   (advice-add 'save-some-buffers :around #'my:save-some-buffers-around)
 
+  (with-eval-after-load 'userlock
+    (defun my:ask-user-about-lock-around (orig file opponent)
+      "Around advice: redirect `read-char' inside ORIG to `read-char-from-minibuffer'."
+      (cl-letf (((symbol-function 'read-char)
+                 (lambda (&rest _)
+                   (condition-case nil
+                       (read-char-from-minibuffer
+                        (concat (current-message) " ")
+                        (list ?s ?p ?q ?? help-char))
+                     (quit ?\C-g)))))
+        (funcall orig file opponent)))
+    (advice-add 'ask-user-about-lock :around #'my:ask-user-about-lock-around))
   :bind
   (:map my:global-key-map
    ("<f5>" . revert-buffer)
