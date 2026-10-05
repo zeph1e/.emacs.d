@@ -46,8 +46,19 @@
     ;; Symbol: https://github.com/dejavu-fonts/dejavu-fonts
     (let ((font-set '(("NanumGothicCoding-10" . (hangul han cjk-misc))
                       ("M PLUS U-9" . (kana bopomofo))
-                      ("DejaVu Sans Mono-10" . (symbol)))))
-      (set-face-font 'default "Lucida Console-10")
+                      ("DejaVu Sans Mono-10" . (symbol))))
+          (preferred `("Cousine-10"
+                       "Lucida Console-10"
+                       "SometypeMono-10"
+                       "Inconsolata-10"
+                       "JetBrainsMono-10"
+                       ,(concat (car (split-string (font-get-system-font)))
+                                "-10"))))
+      (catch 'found
+        (dolist (font preferred)
+          (when (find-font (font-spec :name font))
+            (set-face-font 'default font)
+            (throw 'found font))))
       (mapc (lambda (f)
               (let ((spec (car f))
                     (charsets (cdr f)))
