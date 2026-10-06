@@ -49,10 +49,13 @@
                       ("DejaVu Sans Mono-10" . (symbol))))
           (preferred `("Cousine-10"
                        "Lucida Console-10"
+                       "PTMono-10"
                        "SometypeMono-10"
                        "Inconsolata-10"
                        "JetBrainsMono-10"
-                       ,(concat (car (split-string (font-get-system-font)))
+                       ,(concat (string-join
+                                 (butlast (split-string (font-get-system-font)))
+                                 " ")
                                 "-10"))))
       (catch 'found
         (dolist (font preferred)
