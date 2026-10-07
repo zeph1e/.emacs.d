@@ -276,6 +276,8 @@ Git integration centers on [[https://magit.vc/][magit]], configured in =config/g
 
 [[https://github.com/jonathanchu/magit-gh][magit-gh]] integrates GitHub CLI (=gh=) actions into the magit interface. Commit message buffers narrow ~fill-column~ to 70, to keep subject lines within the conventional limit.
 
+The =magit-patch-create= transient has a =Yocto arguments= group. It adds the patch trailers that the Yocto recipe style guide requires. Press ~=U~ to set the =Upstream-Status= value, ~=C~ to enter one or more =CVE= ids, and ~-s~ to add a =Signed-off-by= line. This works for one patch from a single commit. Magit puts the trailers into the commit message, before the diff.
+
 * AI Agent Integration
 
 ** Claude Code
