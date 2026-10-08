@@ -173,3 +173,8 @@
       (whitespace-mode -1)))
   :custom-face
   (whitespace-tab ((t (:foreground "gray50" :background "dark slate gray")))))
+
+(use-package page-break-lines
+  :pin melpa
+  :custom
+  (global-page-break-lines-mode  t))
