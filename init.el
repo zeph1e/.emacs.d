@@ -32,6 +32,8 @@
  visible-bell t           ; ring a visible bell
  inhibit-startup-screen t ; no startup screen
  help-window-select t     ; always select the help window
+ display-fill-column-indicator-character
+ (if (fontp (char-displayable-p #x2502)) #x2502 #x7c)
  )
 (tool-bar-mode -1)        ; do not shows toolbar
 (menu-bar-mode -1)        ; do not shows menu
