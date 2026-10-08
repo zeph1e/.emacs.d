@@ -3,15 +3,15 @@
 ;; Written by Yunsik Jang <z3ph1e@gmail.com>
 ;; You can use/modify/redistribute this freely.
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; basic option
-
 (require 'derived)
 (require 'server)
 (require 'tramp)
 (require 'warnings)
 
-;; load workaround
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; basic option
+
+;; load workaround first
 (load (locate-user-emacs-file "workaround.el"))
 
 ;; language
@@ -122,8 +122,35 @@
       version-control t
       kept-new-versions 5
       kept-old-versions 2)
+
+;; Defines a global key map which always overrides other keybindings
+;; https://stackoverflow.com/q/683425/
+(defvar my:global-key-map
+  (let ((map (make-sparse-keymap)))
+    map)
+  "My global key map.")
+
+(define-minor-mode my:global-key-mode
+  "My global key mode to keep my keybindings overrides major modes keybindings.
+Key bindings:
+\\{my:global-key-map}"
+  :init-value t :lighter nil :keymap my:global-key-map)
+(my:global-key-mode t)
+
+(defun my:reorder-keybindings-priority ()
+  "Try to ensure that my keybindings always have priority."
+  (unless (eq (car (car minor-mode-map-alist)) 'my:global-key-mode)
+    (let* ((mykeys (assq 'my:global-key-mode minor-mode-map-alist)))
+      (when mykeys
+        (setq minor-mode-map-alist
+              (cons mykeys (assq-delete-all
+                            'my:global-key-mode minor-mode-map-alist)))))))
+(add-hook 'after-change-major-mode-hook #'my:reorder-keybindings-priority)
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; straight & package & use-package initialization
+;; package manager & package configurations bootstrap
+
 (when (< (string-to-number emacs-version) 30) ; lower than v30
   (defvar bootstrap-version)
   (setq warning-suppress-types '((straight package)))
@@ -145,8 +172,6 @@
       (straight-use-package 'use-package)
     (error "Bootstrapping straight failed")))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; package & use-package initialization
 (require 'package)
 ;; Add various package archives
 (setq package-archives
@@ -216,31 +241,6 @@
                                        "-autoloads"))))))
           (directory-files default-directory)))
 
-;; Defines a global key map which always overrides other keybindings
-;; https://stackoverflow.com/q/683425/
-(defvar my:global-key-map
-  (let ((map (make-sparse-keymap)))
-    map)
-  "My global key map.")
-
-(define-minor-mode my:global-key-mode
-  "My global key mode to keep my keybindings overrides major modes keybindings.
-Key bindings:
-\\{my:global-key-map}"
-  :init-value t :lighter nil :keymap my:global-key-map)
-(my:global-key-mode t)
-
-(defun my:reorder-keybindings-priority ()
-  "Try to ensure that my keybindings always have priority."
-  (unless (eq (car (car minor-mode-map-alist)) 'my:global-key-mode)
-    (let* ((mykeys (assq 'my:global-key-mode minor-mode-map-alist)))
-      (when mykeys
-        (setq minor-mode-map-alist
-              (cons mykeys (assq-delete-all
-                            'my:global-key-mode minor-mode-map-alist)))))))
-(add-hook 'after-change-major-mode-hook #'my:reorder-keybindings-priority)
-
-
 ;; install & configure packages
 (let* ((dir (locate-user-emacs-file "config"))
        (files (when (file-directory-p dir)
@@ -276,7 +276,11 @@ Key bindings:
                            (byte-compile-file source))))
                      (list ,@configs)))))
 
-;; define default major modes
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; minor mode configuration
+
 (defconst my:default-minor-mode-list
   '(display-line-numbers-mode my:whitespace-mode)
   "Minor modes to apply in both of text and prog modes.")
