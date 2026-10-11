@@ -23,7 +23,11 @@
                                    venv))))
   (with-eval-after-load 'inheritenv
     (mapc (lambda (fn) (inheritenv-add-advice fn))
-          '(run-python shell compile async-shell-command shell-command)))
+          '(run-python
+            shell compile
+            async-shell-command
+            shell-command
+            shell-command-to-string)))
   :bind
   (:map python-mode-map
    ("C-c C-." . python-indent-shift-right)
@@ -56,3 +60,9 @@
   (buffer-env-script-name '(".envrc" ".venv/bin/activate" "venv/bin/activate"))
   :hook
   ((hack-local-variables . buffer-env-update)))
+
+(use-package pip
+  :vc (:url "https://github.com/zeph1e/pip.el")
+  :hook
+  (dired-mode . pip-mode)
+  (python-mode . pip-mode))
