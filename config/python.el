@@ -21,13 +21,6 @@
       (async-shell-command (format "%s -m venv %s"
                                    (or python-shell-interpreter "python")
                                    venv))))
-  (with-eval-after-load 'inheritenv
-    (mapc (lambda (fn) (inheritenv-add-advice fn))
-          '(run-python
-            shell compile
-            async-shell-command
-            shell-command
-            shell-command-to-string)))
   :bind
   (:map python-mode-map
    ("C-c C-." . python-indent-shift-right)

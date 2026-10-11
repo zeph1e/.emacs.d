@@ -4,4 +4,11 @@
 ;; You can use/modify/redistribute this freely.
 
 (use-package inheritenv
-  :vc (:url "https://github.com/purcell/inheritenv" :rev :newest))
+  :vc (:url "https://github.com/purcell/inheritenv" :rev :newest)
+  :config
+  (mapc (lambda (fn) (inheritenv-add-advice fn))
+          '(run-python
+            shell compile
+            async-shell-command
+            shell-command
+            shell-command-to-string)))
