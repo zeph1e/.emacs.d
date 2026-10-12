@@ -14,13 +14,33 @@
      (list (read-directory-name "Create new Python venv at: ")
            (intern (completing-read "`venv' directory: " nil
                                     nil nil ".venv"))))
-    (let ((default-directory dir)
-          (display-buffer-alist
-           (list (cons "\\*Async Shell Command\\*.*"
-                       (cons #'display-buffer-no-window nil)))))
-      (async-shell-command (format "%s -m venv %s"
-                                   (or python-shell-interpreter "python")
-                                   venv))))
+    (let* ((default-directory dir)
+           (task "python venv")
+           (display-buffer-alist
+            (list (cons (format "\\*%s\\*.*" task)
+                        (cons #'display-buffer-no-window nil))))
+           (proc (start-process-shell-command
+                  task (format "*%s*" task)
+                  (format "%s -m venv %s"
+                          (or python-shell-interpreter "python")
+                          venv))))
+      ;; Update buffers under venv
+      (set-process-sentinel
+       proc
+       (lambda (process signal)
+         (when (memq (process-status process) '(exit signal))
+           (if (eq (process-exit-status process) 0)
+               (mapc (lambda (buffer)
+                       (let ((buffer-dir
+                              (buffer-local-value 'default-directory buffer)))
+                         (when (and buffer-dir
+                                    (file-in-directory-p buffer-dir dir)
+                                    (with-current-buffer buffer
+                                      (not buffer-env-active)))
+                           (with-current-buffer buffer
+                             (buffer-env-update)))))
+                     (buffer-list))
+             (error "Failed to create virtualenv in %s" dir)))))))
   :bind
   (:map python-mode-map
    ("C-c C-." . python-indent-shift-right)
