@@ -24,22 +24,25 @@
                   (format "%s -m venv %s"
                           (or python-shell-interpreter "python")
                           venv))))
+      (message "Installing virtualenv under %s..." dir)
       ;; Update buffers under venv
       (set-process-sentinel
        proc
        (lambda (process signal)
          (when (memq (process-status process) '(exit signal))
            (if (eq (process-exit-status process) 0)
-               (mapc (lambda (buffer)
-                       (let ((buffer-dir
-                              (buffer-local-value 'default-directory buffer)))
-                         (when (and buffer-dir
-                                    (file-in-directory-p buffer-dir dir)
-                                    (with-current-buffer buffer
-                                      (not buffer-env-active)))
-                           (with-current-buffer buffer
-                             (buffer-env-update)))))
-                     (buffer-list))
+               (progn
+                 (message "virtualenv installation completed.")
+                 (mapc (lambda (buffer)
+                         (let ((buffer-dir
+                                (buffer-local-value 'default-directory buffer)))
+                           (when (and buffer-dir
+                                      (file-in-directory-p buffer-dir dir)
+                                      (with-current-buffer buffer
+                                        (not buffer-env-active)))
+                             (with-current-buffer buffer
+                               (buffer-env-update)))))
+                       (buffer-list)))
              (error "Failed to create virtualenv in %s" dir)))))))
   :bind
   (:map python-mode-map
