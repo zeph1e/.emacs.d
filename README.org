@@ -18,7 +18,7 @@ This configuration depends on a number of external system packages.
  - [[https://nodejs.org/][Node.js]] / NPM for [[https://github.com/yasuyk/web-beautify][web-beautify]], [[https://github.com/typescript-language-server/typescript-language-server][typescript-language-server]], and the Claude Code / Codex / Gemini CLI agents used by [[https://github.com/xenodium/agent-shell][agent-shell]]
  - [[https://github.com/ggreer/the_silver_searcher][The Silver Searcher]] for [[https://github.com/Wilfred/ag.el][ag]] and [[https://github.com/emacsorphanage/helm-ag][helm-ag]]
  - [[https://www.python.org/][Python]] / [[https://github.com/python-lsp/python-lsp-server][pylsp]] for [[https://gitlab.com/python-mode-devs/python-mode][python-mode]] and [[https://github.com/pythonic-emacs/anaconda-mode][anaconda-mode]]
- - [[https://daringfireball.net/projects/markdown/][Markdown]] for [[https://jblevins.org/projects/markdown-mode/][markdown-mode]] preview
+ - [[https://daringfireball.net/projects/markdown/][Markdown]] and [[https://pandoc.org/][Pandoc]] for [[https://jblevins.org/projects/markdown-mode/][markdown-mode]] preview
  - [[https://openjdk.org/][JRE]] + [[https://plantuml.com/][PlantUML]] for [[https://github.com/skuro/plantuml-mode][plantuml-mode]]
  - Ispell for flyspell
  - [[https://rustup.rs/][rustup]] for rust toolchain and rust-analyzer (Rust LSP)
@@ -352,6 +352,8 @@ Three commands live in =config/rust.el=:
 ** Markdown
 
 [[https://jblevins.org/projects/markdown-mode/][markdown-mode]] (=config/markdown.el=) beautifies =.md= buffers for reading. It hides markup characters near point. It reveals them again when point moves onto that line. As a result, raw asterisks and backticks do not show during normal reading. Heading faces use different colors and sizes per level, and switch palette automatically between light and dark themes. The concealment technique comes from [[https://www.reddit.com/r/emacs/comments/10h9jf0/beautify_markdown_on_emacs/][this r/emacs thread]].
+
+Preview renders through Pandoc instead of markdown-mode's bundled command. =markdown-command= runs Pandoc with a template and navbar from the [[https://github.com/Mushiyo/pandoc-toc-sidebar][pandoc-toc-sidebar]] submodule, for a table-of-contents sidebar. =--resource-path= points Pandoc at that submodule's directory, so =--embed-resources= can find and inline its CSS, JS, and font files into one self-contained output HTML file.
 
 * Build
 

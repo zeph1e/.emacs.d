@@ -145,5 +145,5 @@ This Emacs configuration has no top-level build step. For compilation inside Ema
 
 - **Trailing whitespace is removed automatically when you save an `.el` file**, through `.dir-locals.el`. Expect diffs that change only line endings.
 - **Projectile's project search root is `~/Workspace`.** `helm-projectile` starts its search there.
-- **The repository has no git submodules.** Earlier versions of this repository used submodules for `block-travel`, `magit-gerrit`, and `company-tern`. The project later dropped all of these, for `:vc`-installed packages. Do not add `.gitmodules` again.
+- **`pandoc/pandoc-toc-sidebar` is the one git submodule in this repository.** Earlier versions of this repository used submodules for `block-travel`, `magit-gerrit`, and `company-tern`. The project dropped all of those, for `:vc`-installed packages, but later reintroduced `.gitmodules` for `pandoc/pandoc-toc-sidebar`, the HTML template `config/markdown.el` uses for Pandoc-based markdown preview. Run `git submodule update --init` after cloning to fetch it.
 - **`rfcview` is a normal `:vc` package.** `config/rfcview.el` declares it. `init.el` fetches it from `https://github.com/zeph1e/rfcview.el`, the author's own fork. `rfcview` is no longer a developer-local block at the end of `init.el`.
