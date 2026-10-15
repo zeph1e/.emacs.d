@@ -4,12 +4,11 @@
 ;; You can use/modify/redistribute this freely.
 
 (use-package markdown-mode
-  :ensure-system-package (markdown . "sudo apt install -y markdown")
+  :ensure-system-package
+  (markdown . "sudo apt install -y markdown")
+  :config
   ;; Beautifying tip fetched from:
   ;; https://www.reddit.com/r/emacs/comments/10h9jf0/beautify_markdown_on_emacs/
-  :hook
-  (markdown-mode . nb/markdown-unhighlight)
-  :config
   (defvar nb/current-line '(0 . 0)
     "(start . end) of current line in current buffer")
   (make-variable-buffer-local 'nb/current-line)
@@ -79,7 +78,8 @@
                            :weight semi-bold :inherit markdown-header-face))
     (((background light)) (:height 1.05 :foreground "#9b59b6"
                            :weight semi-bold :inherit markdown-header-face))))
-
+  :hook
+  (markdown-mode . nb/markdown-unhighlight)
   :custom
   ((markdown-split-window-direction 'right)
    (markdown-coding-system 'utf-8)))
