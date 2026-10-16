@@ -41,8 +41,12 @@
       (when (< start end)
         (remove-text-properties start end
                                 '(invisible t display "" composition ""))
-        (goto-char limit)
-        t)))
+        (goto-char limit))
+      ;; Return nil: this is a side-effecting matcher with no highlight
+      ;; subexpressions, so it must not claim a match (a non-nil return makes
+      ;; font-lock drive its match-data machinery with positions we never set,
+      ;; yielding "wrong-type-argument number-or-marker-p nil").
+      nil))
 
   (defun nb/refontify-on-linemove ()
     "Post-command-hook"
@@ -59,6 +63,7 @@
     (markdown-toggle-markup-hiding 'toggle)
     (font-lock-add-keywords nil '((nb/unhide-current-line)) t)
     (add-hook 'post-command-hook #'nb/refontify-on-linemove nil t))
+
   :custom-face
   (markdown-header-delimiter-face
    ((((background dark))  (:foreground "#616161" :height 0.9))
