@@ -24,7 +24,7 @@
           (nav (concat template-dir "/nav")))
     (setq markdown-command
           (format (concat "pandoc -f markdown -t html --template=%s --toc "
-                          "-B %s --resource-path=%s"
+                          "-B %s --resource-path=%s "
                           "--embed-resources --standalone")
                   template nav template-dir))))
 
