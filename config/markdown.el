@@ -8,15 +8,26 @@
   (markdown . "sudo apt install -y markdown")
   (pandoc . "sudo apt install -y pandoc")
   :config
-  ;; Use pandoc as markdown preview
-  (let* ((dir (expand-file-name (concat user-emacs-directory
-                                        "pandoc/pandoc-toc-sidebar/")))
-         (template (concat dir "toc-sidebarL.html"))
-         (nav (concat dir "nav")))
+  ;; Use pandoc for markdown preview
+  (let* ((template-submodule "pandoc/pandoc-toc-sidebar")
+         (template-dir (expand-file-name (concat user-emacs-directory
+                                                 template-submodule))))
+    ;; populate pandoc template submodule if it is not
+    (unless (and (file-exists-p template-dir)
+                (not (directory-empty-p template-dir)))
+      (with-temp-buffer
+        (let ((default-directory user-emacs-directory))
+          (magit-submodule-populate "pandoc/pandoc-toc-sidebar" nil))))
+
+    ;; set convert command with pandoc
+    (let ((template (concat template-dir "toc-sidebarL.html"))
+          (nav (concat template-dir "nav")))
     (setq markdown-command
           (format (concat "pandoc -f markdown -t html --template=%s --toc "
-                          "-B %s --resource-path=%s --embed-resources --standalone")
-                  template nav dir)))
+                          "-B %s --resource-path=%s"
+                          "--embed-resources --standalone")
+                  template nav template-dir))))
+
   ;; Beautifying tip fetched from:
   ;; https://www.reddit.com/r/emacs/comments/10h9jf0/beautify_markdown_on_emacs/
   (defvar nb/current-line '(0 . 0)
