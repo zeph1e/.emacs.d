@@ -20,8 +20,8 @@
           (magit-submodule-populate "pandoc/pandoc-toc-sidebar" nil))))
 
     ;; set convert command with pandoc
-    (let ((template (concat template-dir "toc-sidebarL.html"))
-          (nav (concat template-dir "nav")))
+    (let ((template (concat template-dir "/toc-sidebarL.html"))
+          (nav (concat template-dir "/nav")))
     (setq markdown-command
           (format (concat "pandoc -f markdown -t html --template=%s --toc "
                           "-B %s --resource-path=%s"
