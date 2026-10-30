@@ -83,7 +83,7 @@ search falls back to `default-directory'."
      helm-source-bookmark-uncategorized))
   (helm-follow-mode-persistent t)
   (helm-source-names-using-follow
-   '("AG" "Git-Grep" "global-mark-ring" "mark-ring")))
+   '("AG" "Git-Grep" "global-mark-ring" "mark-ring" "Flycheck")))
 
 (use-package helm-ls-git
   :pin melpa
