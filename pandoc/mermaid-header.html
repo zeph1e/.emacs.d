@@ -1,0 +1,12 @@
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  // pandoc renders ```mermaid as <pre class="mermaid"><code>..</code></pre>;
+  // mermaid needs the diagram source as the bare text of the element.
+  document.querySelectorAll("pre.mermaid").forEach((pre) => {
+    const code = pre.querySelector("code");
+    if (code) pre.textContent = code.textContent;
+  });
+  const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  mermaid.initialize({ startOnLoad: false, theme: dark ? "dark" : "default" });
+  await mermaid.run({ querySelector: "pre.mermaid" });
+</script>

@@ -4,6 +4,7 @@
 ;; You can use/modify/redistribute this freely.
 
 (use-package markdown-mode
+  :pin melpa
   :ensure-system-package
   (markdown . "sudo apt install -y markdown")
   (pandoc . "sudo apt install -y pandoc")
@@ -21,12 +22,15 @@
 
     ;; set convert command with pandoc
     (let ((template (concat template-dir "/toc-sidebarL.html"))
-          (nav (concat template-dir "/nav")))
+          (nav (concat template-dir "/nav"))
+          ;; Loads mermaid from CDN at view time and renders ```mermaid blocks
+          (mermaid-header (expand-file-name "pandoc/mermaid-header.html"
+                                            user-emacs-directory)))
     (setq markdown-command
           (format (concat "pandoc -f markdown -t html --template=%s --toc "
-                          "-B %s --resource-path=%s "
+                          "-B %s -H %s --resource-path=%s "
                           "--embed-resources --standalone")
-                  template nav template-dir))))
+                  template nav mermaid-header template-dir))))
 
   ;; Beautifying tip fetched from:
   ;; https://www.reddit.com/r/emacs/comments/10h9jf0/beautify_markdown_on_emacs/
@@ -109,3 +113,11 @@
   :custom
   ((markdown-split-window-direction 'right)
    (markdown-coding-system 'utf-8)))
+
+(use-package markdown-mermaid
+  :pin melpa
+  :ensure-system-package
+  (mmdc . "npm install -g @mermaid-js/mermaid-cli")
+  :bind
+  (:map markdown-mode-map
+   ("C-c m" . markdown-mermaid-preview)))
