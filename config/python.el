@@ -56,7 +56,8 @@
    ("C-c C-v" . my:python-venv-new))
   :custom
   (python-indent-offset 2)
-  (python-shell-interpreter "python"))
+  (python-shell-interpreter "ipython")
+  (python-shell-interpreter-args "--simple-prompt --classic"))
 
 (use-package anaconda-mode
   :pin melpa
@@ -82,3 +83,9 @@
   :hook
   (dired-mode . pip-mode)
   (python-mode . pip-mode))
+
+(use-package comint-mime
+  :vc (:url "https://github.com/astoff/comint-mime")
+  :hook
+  (shell-mode . comint-mime-setup)
+  (inferior-python-mode . comint-mime-setup))
