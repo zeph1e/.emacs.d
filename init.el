@@ -39,39 +39,106 @@
 (menu-bar-mode -1)        ; do not shows menu
 (global-hl-line-mode t)   ; highlights the current cursor line
 
+;; Font Settings
+;; Korean: https://github.com/naver/nanumfont
+;; Han: Noto/Source Han (SIL OFL), WenQuanYi (GPL + font exception), all free
+;;   for commercial use.
+;; Japanese: https://fonts.google.com/specimen/M+PLUS+U
+;; Symbol: https://github.com/dejavu-fonts/dejavu-fonts
+(defvar my:font-reference-dpi 96
+  "DPI that `my:font-base-size' was tuned for.")
+(defvar my:font-base-size 10
+  "Default font size in points at `my:font-reference-dpi'.")
+(defvar my:font-preferred-families
+  '("Cousine" "Lucida Console" "PTMono" "SometypeMono" "Inconsolata"
+    "JetBrainsMono")
+  "Candidates for the default font, in order of preference.")
+(defvar my:font-override-set
+  '(("NanumGothicCoding" "한" 1.67 hangul cjk-misc)
+    ("WenQuanYi Zen Hei Mono" "漢" 1.67 han)
+    ("M PLUS U" "あ" 1.67 kana bopomofo)
+    ("DejaVu Sans Mono" "a" 1 symbol))
+  "Per-charset fonts: (FAMILY SAMPLE-CHAR CELLS CHARSET...).
+These replace the fontset entries for CHARSET, so they win over system fonts.
+Entries sharing a CHARSET are tried in order; uninstalled families are skipped.
+If CELLS is a number, a SAMPLE-CHAR glyph is fitted to that many cells of the
+default font.  If nil, the font gets the default font's pixel size, so CJK
+scripts look as large as Latin text and as Han glyphs from system fonts.")
+(defun my:frame-dpi (&optional frame)
+  "Return DPI of the monitor FRAME is on, or nil if unknown."
+  (let* ((attrs (frame-monitor-attributes frame))
+         (mm (car (alist-get 'mm-size attrs)))
+         (px (nth 2 (alist-get 'geometry attrs))))
+    (when (and (numberp mm) (numberp px) (> mm 0))
+      (/ px (/ mm 25.4)))))
+
+(defun my:frame-font-scale (&optional frame)
+  "Return font scale of FRAME relative to `my:font-reference-dpi'."
+  (let ((dpi (or (my:frame-dpi frame) my:font-reference-dpi)))
+    (/ (round (* 10 (min 3.0 (max 0.75 (/ dpi my:font-reference-dpi))))) 10.0)))
+
+(defun my:font-glyph-width (family px sample)
+  "Return pixel width of SAMPLE in FAMILY at PX pixels, or nil."
+  (let ((entity (find-font (font-spec :family family :size px))))
+    (when entity
+      (let ((glyph (aref (font-get-glyphs (open-font entity px) 0 1 sample) 0)))
+        (and glyph (aref glyph 4))))))
+
+(defun my:font-fit-pixelsize (family sample target)
+  "Return largest pixel size of FAMILY whose SAMPLE is at most TARGET px wide."
+  (let* ((target (floor target))
+         (px (max 6 (/ target 2))) best w)
+    (while (and (<= px (* 2 target))
+                (setq w (my:font-glyph-width family px sample))
+                (<= w target))
+      (setq best px
+            px (1+ px)))
+    best))
+
+(defun my:apply-font-settings (&optional frame)
+  "Size fonts of FRAME by its monitor DPI, keeping glyph cells consistent.
+Sizes are set in pixels, so the result does not depend on the DPI Emacs
+itself assumes.  Override fonts are sized per `my:font-override-set': fitted
+to a number of default-font cells, or the same pixel size as the default
+font.  Fontsets are global, so these fonts follow the most recently
+updated frame."
+  (let ((frame (or frame (selected-frame))))
+    (when (display-graphic-p frame)
+      (ignore-errors
+        (let ((px (round (* my:font-base-size (/ 4.0 3)
+                            (my:frame-font-scale frame))))
+              (family (seq-find
+                       (lambda (f) (find-font (font-spec :family f)))
+                       (append my:font-preferred-families
+                               (list (string-join
+                                      (butlast
+                                       (split-string (font-get-system-font)))
+                                      " "))))))
+          (when (and family (not (eq px (frame-parameter frame 'my-font-px))))
+            (set-face-attribute 'default frame
+                                :font (font-spec :family family :size px))
+            (let ((cell (my:font-glyph-width family px "a"))
+                  (seen nil))
+              (dolist (f my:font-override-set)
+                (let ((fpx (or (and cell (nth 2 f)
+                                    (my:font-fit-pixelsize
+                                     (nth 0 f) (nth 1 f) (* cell (nth 2 f))))
+                               px)))
+                  (dolist (c (nthcdr 3 f))
+                    (set-fontset-font t c
+                                      (font-spec :family (nth 0 f) :size fpx)
+                                      nil
+                                      (cond ((eq c 'symbol) 'prepend)
+                                            ((memq c seen) 'append)))
+                    (push c seen)))))
+            (set-frame-parameter frame 'my-font-px px)))))))
+
 (ignore-errors
+  (setq use-default-font-for-symbols nil)
+  (add-hook 'after-make-frame-functions #'my:apply-font-settings)
+  (add-hook 'move-frame-functions #'my:apply-font-settings)
   (when (display-graphic-p)
-    (setq use-default-font-for-symbols nil)
-    ;; Font Settings
-    ;; Korean: https://github.com/naver/nanumfont
-    ;; Japanese: https://fonts.google.com/specimen/M+PLUS+U
-    ;; Symbol: https://github.com/dejavu-fonts/dejavu-fonts
-    (let ((font-set '(("NanumGothicCoding-10" . (hangul han cjk-misc))
-                      ("M PLUS U-9" . (kana bopomofo))
-                      ("DejaVu Sans Mono-10" . (symbol))))
-          (preferred `("Cousine-10"
-                       "Lucida Console-10"
-                       "PTMono-10"
-                       "SometypeMono-10"
-                       "Inconsolata-10"
-                       "JetBrainsMono-10"
-                       ,(concat (string-join
-                                 (butlast (split-string (font-get-system-font)))
-                                 " ")
-                                "-10"))))
-      (catch 'found
-        (dolist (font preferred)
-          (when (find-font (font-spec :name font))
-            (set-face-font 'default font)
-            (throw 'found font))))
-      (mapc (lambda (f)
-              (let ((spec (car f))
-                    (charsets (cdr f)))
-                (mapc (lambda (c)
-                        (set-fontset-font t c spec nil
-                                          (when (eq c 'symbol) 'prepend)))
-                      charsets)))
-            font-set))
+    (my:apply-font-settings)
     ;; maximize frame on launch
     (add-to-list 'default-frame-alist '(fullscreen . maximized))))
 
