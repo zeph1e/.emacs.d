@@ -55,7 +55,7 @@
   "Candidates for the default font, in order of preference.")
 (defvar my:font-override-set
   '(("NanumGothicCoding" "한" 1.67 hangul cjk-misc)
-    ("WenQuanYi Zen Hei Mono" "漢" 1.67 han)
+    ("Noto Sans CJK KR" "漢" 1.67 han)
     ("M PLUS U" "あ" 1.67 kana bopomofo)
     ("DejaVu Sans Mono" "a" 1 symbol))
   "Per-charset fonts: (FAMILY SAMPLE-CHAR CELLS CHARSET...).
