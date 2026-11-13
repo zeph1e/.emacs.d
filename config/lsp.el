@@ -4,6 +4,7 @@
 ;; You can use/modify/redistribute this freely.
 
 (use-package lsp-mode
+  :pin melpa
   :commands (lsp lsp-deferred)
   :init
   (defun my:lsp-rust-setup-conditional-project ()
@@ -69,4 +70,6 @@
    (lsp-ui-sideline-show-diagnostics nil)
    (lsp-rust-analyzer-diagnostics-enable-experimental t)))
 
-(use-package lsp-ui)
+(use-package lsp-ui
+  :pin melpa
+  :after lsp-mode)
