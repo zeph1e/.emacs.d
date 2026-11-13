@@ -96,16 +96,59 @@ scripts look as large as Latin text and as Han glyphs from system fonts.")
             px (1+ px)))
     best))
 
+(defun my:font-family-for-frame (frame)
+  "Return the preferred default-font family available on FRAME, or nil."
+  (seq-find (lambda (f) (find-font (font-spec :family f) frame))
+            (append my:font-preferred-families
+                    (list (string-join
+                           (butlast (split-string (font-get-system-font)))
+                           " ")))))
+
+(defun my:apply-font-overrides (family px)
+  "Point `my:font-override-set' charsets at per-charset fonts sized off
+FAMILY at PX."
+  (let ((cell (my:font-glyph-width family px "a"))
+        (seen nil))
+    (dolist (f my:font-override-set)
+      (let ((fpx (or (and cell (nth 2 f)
+                          (my:font-fit-pixelsize
+                           (nth 0 f) (nth 1 f) (* cell (nth 2 f))))
+                     px)))
+        (dolist (c (nthcdr 3 f))
+          (set-fontset-font t c (font-spec :family (nth 0 f) :size fpx) nil
+                             (cond ((eq c 'symbol) 'prepend)
+                                   ((memq c seen) 'append)))
+          (push c seen))))))
+
+(defun my:set-frame-font-px (frame family px)
+  "Set FRAME's default face to FAMILY at PX pixels, and record PX."
+  (set-face-attribute 'default frame :font (font-spec :family family :size px))
+  (set-frame-parameter frame 'my:font-px px))
+
+(defun my:inherit-font-from-parent (frame parent)
+  "Copy PARENT's already-resolved font onto its child frame FRAME."
+  (let ((ppx (frame-parameter parent 'my:font-px)))
+    (when (and ppx (not (eq ppx (frame-parameter frame 'my:font-px))))
+      (set-face-attribute 'default frame
+                          :font (face-attribute 'default :font parent))
+      (set-frame-parameter frame 'my:font-px ppx))))
+
 (defun my:propagate-font-to-children (frame)
   "Copy FRAME's resolved font down to any live child frames of FRAME."
-  (let ((px (frame-parameter frame 'my-font-px))
-        (font (face-attribute 'default :font frame)))
-    (when px
-      (dolist (child (frame-list))
-        (when (and (eq (frame-parent child) frame)
-                   (not (eq (frame-parameter child 'my-font-px) px)))
-          (set-face-attribute 'default child :font font)
-          (set-frame-parameter child 'my-font-px px))))))
+  (dolist (child (frame-list))
+    (when (eq (frame-parent child) frame)
+      (my:inherit-font-from-parent child frame))))
+
+(defun my:apply-font-settings-top (frame)
+  "Resize FRAME's default and override fonts from its monitor DPI."
+  (when (frame-visible-p frame)
+    (let ((px (round (* my:font-base-size (/ 4.0 3) (my:frame-font-scale frame)))))
+      (unless (eq px (frame-parameter frame 'my:font-px))
+        (let ((family (my:font-family-for-frame frame)))
+          (when family
+            (my:set-frame-font-px frame family px)
+            (my:apply-font-overrides family px)
+            (my:propagate-font-to-children frame)))))))
 
 (defun my:apply-font-settings (&optional frame)
   "Size fonts of FRAME by its monitor DPI, keeping glyph cells consistent.
@@ -121,45 +164,17 @@ this also works while the child frame is still invisible."
     (when (display-graphic-p frame)
       (ignore-errors
         (if parent
-            (let ((ppx (frame-parameter parent 'my-font-px)))
-              (when (and ppx (not (eq ppx (frame-parameter frame 'my-font-px))))
-                (set-face-attribute 'default frame
-                                    :font (face-attribute 'default :font parent))
-                (set-frame-parameter frame 'my-font-px ppx)))
-          (when (frame-visible-p frame)
-            (let ((px (round (* my:font-base-size (/ 4.0 3)
-                                (my:frame-font-scale frame))))
-                  (family (seq-find
-                           (lambda (f) (find-font (font-spec :family f) frame))
-                           (append my:font-preferred-families
-                                   (list (string-join
-                                          (butlast
-                                           (split-string (font-get-system-font)))
-                                          " "))))))
-              (when (and family (not (eq px (frame-parameter frame 'my-font-px))))
-                (set-face-attribute 'default frame
-                                    :font (font-spec :family family :size px))
-                (let ((cell (my:font-glyph-width family px "a"))
-                      (seen nil))
-                  (dolist (f my:font-override-set)
-                    (let ((fpx (or (and cell (nth 2 f)
-                                        (my:font-fit-pixelsize
-                                         (nth 0 f) (nth 1 f) (* cell (nth 2 f))))
-                                   px)))
-                      (dolist (c (nthcdr 3 f))
-                        (set-fontset-font t c
-                                          (font-spec :family (nth 0 f) :size fpx)
-                                          nil
-                                          (cond ((eq c 'symbol) 'prepend)
-                                                ((memq c seen) 'append)))
-                        (push c seen)))))
-                (set-frame-parameter frame 'my-font-px px)
-                (my:propagate-font-to-children frame)))))))))
+            (my:inherit-font-from-parent frame parent)
+          (my:apply-font-settings-top frame))))))
 
 (ignore-errors
   (setq use-default-font-for-symbols nil)
   (add-hook 'after-make-frame-functions #'my:apply-font-settings)
   (add-hook 'move-frame-functions #'my:apply-font-settings)
+  (add-hook 'window-size-change-functions
+            (lambda (frame)
+              (when (frame-size-changed-p frame)
+                (my:apply-font-settings frame))))
   (when (display-graphic-p)
     (my:apply-font-settings)
     ;; maximize frame on launch
