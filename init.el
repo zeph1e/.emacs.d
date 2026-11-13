@@ -42,7 +42,8 @@
 ;; Font Settings
 ;; Korean: https://github.com/naver/nanumfont
 ;; Chinese: https://freefonts.cn/fonts/wenquanyi-micro-hei-mono-regular
-;; Japanese: https://fonts.google.com/specimen/M+PLUS+U
+;; Japanese: https://fonts.google.com/specimen/BIZ+UDGothic
+;;           https://fonts.google.com/specimen/M+PLUS+U
 ;; Symbol: https://github.com/dejavu-fonts/dejavu-fonts
 (defvar my:font-reference-dpi 96
   "DPI that `my:font-base-size' was tuned for.")
@@ -55,6 +56,7 @@
 (defvar my:font-override-set
   '(("NanumGothicCoding" "한" 1.67 hangul cjk-misc)
     ("WenQuanYi Micro Hei Mono" "漢" 1.67 han)
+    ("BIZ UDGothic" "あ" 1.67 kana bopomofo)
     ("M PLUS U" "あ" 1.67 kana bopomofo)
     ("DejaVu Sans Mono" "a" 1 symbol))
   "Per-charset fonts: (FAMILY SAMPLE-CHAR CELLS CHARSET...).
