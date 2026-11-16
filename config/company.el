@@ -192,6 +192,12 @@ They get inserted in front of `company-backends'.")
     (setq company-box-icons-images
           (append company-box-icons-images
                   `((SpellCheck . ,(funcall icon-image "SpellCheck.png"))))))
+
+  ;; Fix bug that only doc popup is visible
+  (advice-add 'company-box-show :after
+              (lambda (&rest _)
+                (when-let ((frame (company-box--get-frame)))
+                  (make-frame-visible frame))))
   :hook (company-mode . company-box-mode))
 
 (use-package company-statistics
