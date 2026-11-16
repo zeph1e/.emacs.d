@@ -115,7 +115,7 @@ FAMILY at PX."
                            (nth 0 f) (nth 1 f) (* cell (nth 2 f))))
                      px)))
         (dolist (c (nthcdr 3 f))
-          (set-fontset-font t c (font-spec :family (nth 0 f) :size fpx) nil
+          (set-fontset-font nil c (font-spec :family (nth 0 f) :size fpx) nil
                              (cond ((eq c 'symbol) 'prepend)
                                    ((memq c seen) 'append)))
           (push c seen))))))
