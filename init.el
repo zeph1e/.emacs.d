@@ -76,7 +76,7 @@ scripts look as large as Latin text and as Han glyphs from system fonts.")
 (defun my:frame-font-scale (&optional frame)
   "Return font scale of FRAME relative to `my:font-reference-dpi'."
   (let ((dpi (or (my:frame-dpi frame) my:font-reference-dpi)))
-    (/ (round (* 10 (min 3.0 (max 0.75 (/ dpi my:font-reference-dpi))))) 10.0)))
+    (/ (floor (* 10 (min 3.0 (max 0.75 (/ dpi my:font-reference-dpi))))) 10.0)))
 
 (defun my:font-glyph-width (family px sample)
   "Return pixel width of SAMPLE in FAMILY at PX pixels, or nil."
