@@ -35,6 +35,7 @@
  display-fill-column-indicator-character
  (if (fontp (char-displayable-p #x2502)) #x2502 #x7c)
  )
+(set-face-attribute 'fill-column-indicator nil :foreground "grey30")
 (tool-bar-mode -1)        ; do not shows toolbar
 (menu-bar-mode -1)        ; do not shows menu
 (global-hl-line-mode t)   ; highlights the current cursor line
