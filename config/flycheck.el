@@ -8,14 +8,5 @@
   :init
   (global-flycheck-mode)
   :custom
+  (global-flycheck-annotate-mode t)
   (flycheck-keymap-prefix (kbd "C-M-!")))
-
-
-(use-package flycheck-pos-tip
-  :ensure t
-  :commands flycheck-pos-tip-mode
-  :init
-  (with-eval-after-load 'flycheck
-    (flycheck-pos-tip-mode))
-  :custom
-  (flycheck-pos-tip-timeout -1))
