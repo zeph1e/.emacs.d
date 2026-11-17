@@ -43,6 +43,76 @@
 (menu-bar-mode -1)        ; do not shows menu
 (global-hl-line-mode t)   ; highlights the current cursor line
 
+(defconst my:wslp
+  (string-match "-[Mm]icrosoft" operating-system-release)
+  "Non-nil if running on WSL.")
+
+(defconst my:wsl-monitor-script
+  "Add-Type -AssemblyName System.Windows.Forms
+Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+public class MonDD {
+  [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]
+  public struct DEV {
+    public int cb;
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst=32)] public string Name;
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst=128)] public string Str;
+    public int Flags;
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst=128)] public string Id;
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst=128)] public string Key;
+  }
+  [DllImport(\"user32.dll\", CharSet=CharSet.Ansi)]
+  public static extern bool EnumDisplayDevices(string dev, uint n, ref DEV d, uint flags);
+}
+'@
+$w = Get-CimInstance -Namespace root/wmi -ClassName WmiMonitorBasicDisplayParams
+foreach ($s in [System.Windows.Forms.Screen]::AllScreens) {
+  $d = New-Object MonDD+DEV
+  $d.cb = [Runtime.InteropServices.Marshal]::SizeOf($d)
+  [void][MonDD]::EnumDisplayDevices($s.DeviceName, 0, [ref]$d, 0)
+  $c = $d.Id.Split([char]92)[1]
+  $m = $w | Where-Object { $_.InstanceName.Split([char]92)[1] -eq $c } | Select-Object -First 1
+  if ($m) { '{0} {1} {2} {3} {4}' -f $s.Bounds.X, $s.Bounds.Y, $s.Bounds.Width, $s.Bounds.Height, ($m.MaxHorizontalImageSize * 10) }
+}
+"
+  "PowerShell listing each Windows screen as \"X Y W H PHYSICAL-MM-WIDTH\".")
+
+(defun my:wsl-query-monitors ()
+  "Return a list of (X Y W H MM) for the Windows monitors, or nil."
+  (condition-case nil
+      (with-temp-buffer
+        (call-process
+         "powershell.exe" nil '(t nil) nil
+         "-NoProfile" "-NonInteractive" "-EncodedCommand"
+         (base64-encode-string
+          (encode-coding-string my:wsl-monitor-script 'utf-16le) t))
+        (goto-char (point-min))
+        (let (monitors)
+          (while (re-search-forward
+                  "^\\(-?[0-9]+\\) \\(-?[0-9]+\\) \\([0-9]+\\) \\([0-9]+\\) \\([0-9]+\\)[ \t\r]*$"
+                  nil t)
+            (push (mapcar #'string-to-number
+                          (mapcar (lambda (i) (match-string i)) '(1 2 3 4 5)))
+                  monitors))
+          (nreverse monitors)))
+    (error nil)))
+
+(defvar my:wsl-monitor-mm-cache nil
+  "Alist of (GEOMETRY . MM) for monitors seen so far.  MM is nil if unknown.")
+
+(defun my:wsl-monitor-mm-width (geometry)
+  "Return the physical width in mm of the Windows monitor at GEOMETRY, or nil.
+GEOMETRY is the (X Y W H) of an Emacs monitor.  Misses are cached too, so
+an unknown monitor does not trigger a PowerShell run on every call."
+  (unless (assoc geometry my:wsl-monitor-mm-cache)
+    (dolist (m (my:wsl-query-monitors))
+      (setf (alist-get (seq-take m 4) my:wsl-monitor-mm-cache nil nil #'equal)
+            (nth 4 m)))
+    (unless (assoc geometry my:wsl-monitor-mm-cache)
+      (push (cons geometry nil) my:wsl-monitor-mm-cache)))
+  (cdr (assoc geometry my:wsl-monitor-mm-cache)))
+
 ;; Font Settings
 ;; Korean: https://github.com/naver/nanumfont
 ;; Chinese: https://freefonts.cn/fonts/wenquanyi-micro-hei-mono-regular
@@ -71,11 +141,15 @@ default font.  If nil, the font gets the default font's pixel size, so CJK
 scripts look as large as Latin text and as Han glyphs from system fonts.")
 (defun my:frame-dpi (&optional frame)
   "Return DPI of the monitor FRAME is on, or nil if unknown."
-  (let* ((attrs (frame-monitor-attributes frame))
-         (mm (car (alist-get 'mm-size attrs)))
-         (px (nth 2 (alist-get 'geometry attrs))))
+  (let* ((max-dpi 130.0)
+         (attrs (frame-monitor-attributes frame))
+         (geometry (alist-get 'geometry attrs))
+         (px (nth 2 geometry))
+         (mm (if my:wslp
+                 (my:wsl-monitor-mm-width geometry)
+               (car (alist-get 'mm-size attrs)))))
     (when (and (numberp mm) (numberp px) (> mm 0))
-      (/ px (/ mm 25.4)))))
+      (min max-dpi (/ px (/ mm 25.4))))))
 
 (defun my:frame-font-scale (&optional frame)
   "Return font scale of FRAME relative to `my:font-reference-dpi'."
