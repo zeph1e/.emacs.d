@@ -103,12 +103,20 @@ foreach ($s in [System.Windows.Forms.Screen]::AllScreens) {
 
 (defun my:wsl-monitor-mm-width (geometry)
   "Return the physical width in mm of the Windows monitor at GEOMETRY, or nil.
-GEOMETRY is the (X Y W H) of an Emacs monitor.  Misses are cached too, so
-an unknown monitor does not trigger a PowerShell run on every call."
+GEOMETRY is the (X Y W H) of an Emacs monitor.  Windows and WSLg disagree on
+the coordinate origin when a monitor sits above or left of another, so
+monitors are translated to put their combined bounding box at (0 . 0)
+before matching.  Misses are cached too, so an unknown monitor does not
+trigger a PowerShell run on every call."
   (unless (assoc geometry my:wsl-monitor-mm-cache)
-    (dolist (m (my:wsl-query-monitors))
-      (setf (alist-get (seq-take m 4) my:wsl-monitor-mm-cache nil nil #'equal)
-            (nth 4 m)))
+    (let* ((monitors (my:wsl-query-monitors))
+           (min-x (apply #'min (mapcar #'car monitors)))
+           (min-y (apply #'min (mapcar #'cadr monitors))))
+      (dolist (m monitors)
+        (seq-let (x y w h mm) m
+          (setf (alist-get (list (- x min-x) (- y min-y) w h)
+                           my:wsl-monitor-mm-cache nil nil #'equal)
+                mm))))
     (unless (assoc geometry my:wsl-monitor-mm-cache)
       (push (cons geometry nil) my:wsl-monitor-mm-cache)))
   (cdr (assoc geometry my:wsl-monitor-mm-cache)))
@@ -141,20 +149,22 @@ default font.  If nil, the font gets the default font's pixel size, so CJK
 scripts look as large as Latin text and as Han glyphs from system fonts.")
 (defun my:frame-dpi (&optional frame)
   "Return DPI of the monitor FRAME is on, or nil if unknown."
-  (let* ((max-dpi 130.0)
+  (let* ((max-dpi 130.0) (min-dpi 96.0)
          (attrs (frame-monitor-attributes frame))
-         (geometry (alist-get 'geometry attrs))
-         (px (nth 2 geometry))
-         (mm (if my:wslp
-                 (my:wsl-monitor-mm-width geometry)
-               (car (alist-get 'mm-size attrs)))))
-    (when (and (numberp mm) (numberp px) (> mm 0))
-      (min max-dpi (/ px (/ mm 25.4))))))
+         (geometry (alist-get 'geometry attrs)))
+    (seq-let (_x _y width _height) geometry
+      (let ((mm (if my:wslp
+                    (my:wsl-monitor-mm-width geometry)
+                  (car (alist-get 'mm-size attrs)))))
+        (when (and (numberp mm) (numberp width) (> mm 0))
+          (max min-dpi (min max-dpi (/ width (/ mm 25.4)))))))))
 
 (defun my:frame-font-scale (&optional frame)
   "Return font scale of FRAME relative to `my:font-reference-dpi'."
-  (let ((dpi (or (my:frame-dpi frame) my:font-reference-dpi)))
-    (/ (floor (* 10 (min 3.0 (max 0.75 (/ dpi my:font-reference-dpi))))) 10.0)))
+  (let* ((dpi (or (my:frame-dpi frame) my:font-reference-dpi))
+         (ratio (/ (float dpi) my:font-reference-dpi))
+         (step (round (* 10 ratio))))
+    (max 0.75 (min 3.0 (/ step 10.0)))))
 
 (defun my:font-glyph-width (family px sample)
   "Return pixel width of SAMPLE in FAMILY at PX pixels, or nil."
@@ -187,16 +197,18 @@ scripts look as large as Latin text and as Han glyphs from system fonts.")
 FAMILY at PX."
   (let ((cell (my:font-glyph-width family px "a"))
         (seen nil))
-    (dolist (f my:font-override-set)
-      (let ((fpx (or (and cell (nth 2 f)
-                          (my:font-fit-pixelsize
-                           (nth 0 f) (nth 1 f) (* cell (nth 2 f))))
-                     px)))
-        (dolist (c (nthcdr 3 f))
-          (set-fontset-font nil c (font-spec :family (nth 0 f) :size fpx) nil
-                             (cond ((eq c 'symbol) 'prepend)
-                                   ((memq c seen) 'append)))
-          (push c seen))))))
+    (dolist (entry my:font-override-set)
+      (seq-let (family sample cells) entry
+        (let ((charsets (nthcdr 3 entry))
+              (fpx (or (and cell cells
+                           (my:font-fit-pixelsize family sample
+                                                  (* cell cells)))
+                      px)))
+          (dolist (c charsets)
+            (set-fontset-font nil c (font-spec :family family :size fpx) nil
+                              (cond ((eq c 'symbol) 'prepend)
+                                    ((memq c seen) 'append)))
+            (push c seen)))))))
 
 (defun my:set-frame-font-px (frame family px)
   "Set FRAME's default face to FAMILY at PX pixels, and record PX."
@@ -220,7 +232,9 @@ FAMILY at PX."
 (defun my:apply-font-settings-top (frame)
   "Resize FRAME's default and override fonts from its monitor DPI."
   (when (frame-visible-p frame)
-    (let ((px (round (* my:font-base-size (/ 4.0 3) (my:frame-font-scale frame)))))
+    (let* ((pt-to-px (/ 4.0 3))
+           (scale (my:frame-font-scale frame))
+           (px (round (* my:font-base-size pt-to-px scale))))
       (unless (eq px (frame-parameter frame 'my:font-px))
         (let ((family (my:font-family-for-frame frame)))
           (when family
