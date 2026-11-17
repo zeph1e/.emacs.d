@@ -56,3 +56,6 @@ Without this, a failed session shows up as a confusing
      (user-error "Failed to start monet server in %s; see *Messages* for details" directory))))
 
 (advice-add 'monet-start-server-function :around #'my:monet-signal-clear-error-on-nil-session)
+
+;; Disable annoying warnings in emacs v31
+(add-to-list 'warning-suppress-types '(files missing-lexbind-cookie))
