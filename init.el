@@ -17,6 +17,12 @@
 ;; language
 (set-language-environment "Korean")
 (setq default-korean-keyboard "3")
+(add-hook 'minibuffer-setup-hook
+          #'(lambda () (when (and (minibufferp nil t)
+                                  (boundp 'current-input-method)
+                                  current-input-method)
+                         (deactivate-input-method))))
+
 
 ;; coding system
 (when (string-match "UTF-8" (concat (getenv "LANG")))
@@ -305,24 +311,22 @@ it inherits the parent's already-resolved font instead of re-deriving DPI;
 this also works while the child frame is still invisible."
   (let* ((frame (or frame (selected-frame)))
          (parent (frame-parent frame)))
-    (when (display-graphic-p frame)
-      (ignore-errors
-        (if parent
-            (my:inherit-font-from-parent frame parent)
-          (my:apply-font-settings-top frame))))))
+    (when (and (frame-live-p frame) (display-graphic-p frame))
+      (if parent
+          (my:inherit-font-from-parent frame parent)
+        (my:apply-font-settings-top frame)))))
 
-(ignore-errors
-  (setq use-default-font-for-symbols nil)
-  (add-hook 'after-make-frame-functions #'my:apply-font-settings)
-  (add-hook 'move-frame-functions #'my:apply-font-settings)
-  (add-hook 'window-size-change-functions
-            (lambda (frame)
-              (when (frame-size-changed-p frame)
-                (my:apply-font-settings frame))))
-  (when (display-graphic-p)
-    (my:apply-font-settings)
-    ;; maximize frame on launch
-    (add-to-list 'default-frame-alist '(fullscreen . maximized))))
+(setq use-default-font-for-symbols nil)
+(add-hook 'after-make-frame-functions #'my:apply-font-settings)
+(add-hook 'move-frame-functions #'my:apply-font-settings)
+(add-hook 'window-size-change-functions
+          (lambda (frame)
+            (when (frame-size-changed-p frame)
+              (my:apply-font-settings frame))))
+(when (display-graphic-p)
+  (my:apply-font-settings)
+  ;; maximize frame on launch
+  (add-to-list 'default-frame-alist '(fullscreen . maximized)))
 
 ;; emacs server configuration
 (ignore-errors
