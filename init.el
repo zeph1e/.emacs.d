@@ -191,7 +191,7 @@ default font.  If nil, the font gets the default font's pixel size, so CJK
 scripts look as large as Latin text and as Han glyphs from system fonts.")
 (defun my:frame-dpi (&optional frame)
   "Return DPI of the monitor FRAME is on, or nil if unknown."
-  (let* ((max-dpi 130.0) (min-dpi 96.0)
+  (let* ((max-dpi 126.0) (min-dpi 96.0)
          (attrs (frame-monitor-attributes frame))
          (geometry (alist-get 'geometry attrs)))
     (seq-let (_x _y width _height) geometry
