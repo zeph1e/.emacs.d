@@ -79,7 +79,74 @@
    ("M-<down>"  . fm-down-frame))
   :init
   (framemove-default-keybindings 'meta)
-  (setq framemove-hook-into-windmove t))
+  (setq framemove-hook-into-windmove t)
+  :config
+  ;; Under WSLg, real keyboard focus is decided by Windows' own window
+  ;; manager over the RDP channel, which ignores the X11-level
+  ;; `_NET_ACTIVE_WINDOW' request that `select-frame-set-input-focus' (and
+  ;; so framemove) sends. Emacs's own `selected-frame' still flips, which
+  ;; makes it look like the switch worked, but keystrokes keep going to the
+  ;; previously focused frame. Ask Windows directly instead.
+  (defconst my:wsl-activate-window-script
+    "Add-Type -TypeDefinition @'
+using System;
+using System.Text;
+using System.Runtime.InteropServices;
+public class My_WinActivate {
+  public delegate bool EnumProc(IntPtr hWnd, IntPtr lParam);
+  [DllImport(\"user32.dll\")] public static extern bool EnumWindows(EnumProc proc, IntPtr lParam);
+  [DllImport(\"user32.dll\")] public static extern int GetWindowText(IntPtr hWnd, StringBuilder sb, int n);
+  [DllImport(\"user32.dll\")] public static extern bool IsWindowVisible(IntPtr hWnd);
+  [DllImport(\"user32.dll\")] public static extern bool SetForegroundWindow(IntPtr hWnd);
+  [DllImport(\"user32.dll\")] public static extern bool BringWindowToTop(IntPtr hWnd);
+}
+'@
+$target = \"%s\"
+$cb = {
+  param($h, $l)
+  if ([My_WinActivate]::IsWindowVisible($h)) {
+    $sb = New-Object System.Text.StringBuilder 256
+    [void][My_WinActivate]::GetWindowText($h, $sb, 256)
+    $t = $sb.ToString()
+    if ($t -eq $target -or $t -like \"$target (*\") {
+      [void][My_WinActivate]::BringWindowToTop($h)
+      [void][My_WinActivate]::SetForegroundWindow($h)
+    }
+  }
+  return $true
+}
+[void][My_WinActivate]::EnumWindows($cb, [IntPtr]::Zero)
+"
+    "PowerShell template that gives Win32 focus to the window titled, or
+titled with a \" (DISTRO)\" suffix added by WSLg, the formatted-in target.")
+
+  (defun my:wsl-escape-powershell-string (s)
+    "Escape S for interpolation inside a double-quoted PowerShell string."
+    (replace-regexp-in-string "[`$\"]" "`\\&" s))
+
+  (defun my:wsl-activate-window (title)
+    "Ask Windows to give real input focus to the WSLg window titled TITLE."
+    (when (and my:wslp (executable-find "powershell.exe"))
+      (condition-case nil
+          (let ((proc (make-process
+                       :name "wsl-activate-window" :buffer nil :noquery t
+                       :connection-type 'pipe
+                       :command (list "powershell.exe" "-NoProfile"
+                                      "-NonInteractive" "-EncodedCommand"
+                                      (base64-encode-string
+                                       (encode-coding-string
+                                        (format my:wsl-activate-window-script
+                                                (my:wsl-escape-powershell-string
+                                                 title))
+                                        'utf-16le)
+                                       t)))))
+            (process-send-eof proc))
+        (error nil))))
+
+  (advice-add 'fm-next-frame :after
+              (lambda (&rest _)
+                (my:wsl-activate-window (frame-parameter (selected-frame)
+                                                           'name)))))
 
 (use-package windsplit
   :ensure nil
