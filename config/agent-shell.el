@@ -14,7 +14,9 @@
    (claude-agent-acp . "npm install -g @agentclientprotocol/claude-agent-acp"))
   :bind
   (:map my:global-key-map
-   ("C-\"" . agent-shell)))
+   ("C-\"" . agent-shell))
+  :custom
+  (agent-shell-session-restore-verbosity 'last))
 
 (use-package agent-shell-tramp
   :vc (:url "https://github.com/junyi-hou/agent-shell-tramp" :rev :newest)
