@@ -48,7 +48,11 @@
 (tool-bar-mode -1)        ; do not shows toolbar
 (menu-bar-mode -1)        ; do not shows menu
 (global-hl-line-mode t)   ; highlights the current cursor line
+;; maximize frame on launch
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
 
+
+;; Font Composition & Scaling
 (defconst my:wslp
   (string-match "-[Mm]icrosoft" operating-system-release)
   "Non-nil if running on WSL.")
@@ -324,10 +328,9 @@ this also works while the child frame is still invisible."
             (when (frame-size-changed-p frame)
               (my:apply-font-settings frame))))
 (when (display-graphic-p)
-  (my:apply-font-settings)
-  ;; maximize frame on launch
-  (add-to-list 'default-frame-alist '(fullscreen . maximized)))
+  (my:apply-font-settings))
 
+
 ;; emacs server configuration
 (ignore-errors
   ;; a kinda tricky way to suppress warning
