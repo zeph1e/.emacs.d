@@ -78,48 +78,90 @@ foreach ($s in [System.Windows.Forms.Screen]::AllScreens) {
 "
   "PowerShell listing each Windows screen as \"X Y W H PHYSICAL-MM-WIDTH\".")
 
-(defun my:wsl-query-monitors ()
-  "Return a list of (X Y W H MM) for the Windows monitors, or nil."
+(defun my:wsl-parse-monitors (output)
+  "Parse OUTPUT of `my:wsl-monitor-script'.
+Return a list of (X Y W H MM)."
+  (let (monitors)
+    (dolist (line (split-string output "[\r\n]+" t))
+      (when (string-match
+             "\\`\\(-?[0-9]+\\) \\(-?[0-9]+\\) \\([0-9]+\\) \\([0-9]+\\) \\([0-9]+\\)[ \t]*\\'"
+             line)
+        (push (mapcar (lambda (i) (string-to-number (match-string i line)))
+                      '(1 2 3 4 5))
+              monitors)))
+    (nreverse monitors)))
+
+(defun my:wsl-query-monitors-async (callback)
+  "Run `my:wsl-monitor-script' in the background and call CALLBACK.
+CALLBACK gets the list of (X Y W H MM) the script printed, or nil if it
+failed.  Return the process."
   (condition-case nil
-      (with-temp-buffer
-        (call-process
-         "powershell.exe" nil '(t nil) nil
-         "-NoProfile" "-NonInteractive" "-EncodedCommand"
-         (base64-encode-string
-          (encode-coding-string my:wsl-monitor-script 'utf-16le) t))
-        (goto-char (point-min))
-        (let (monitors)
-          (while (re-search-forward
-                  "^\\(-?[0-9]+\\) \\(-?[0-9]+\\) \\([0-9]+\\) \\([0-9]+\\) \\([0-9]+\\)[ \t\r]*$"
-                  nil t)
-            (push (mapcar #'string-to-number
-                          (mapcar (lambda (i) (match-string i)) '(1 2 3 4 5)))
-                  monitors))
-          (nreverse monitors)))
-    (error nil)))
+      (let* ((output "")
+             (proc (make-process
+                    :name "wsl-monitors" :buffer nil :noquery t
+                    :connection-type 'pipe
+                    :command (list "powershell.exe" "-NoProfile"
+                                   "-NonInteractive" "-EncodedCommand"
+                                   (base64-encode-string
+                                    (encode-coding-string
+                                     my:wsl-monitor-script 'utf-16le)
+                                    t))
+                    :filter (lambda (_p chunk)
+                              (setq output (concat output chunk)))
+                    :sentinel
+                    (lambda (p _event)
+                      (unless (process-live-p p)
+                        (funcall callback (my:wsl-parse-monitors output)))))))
+        (process-send-eof proc)
+        proc)
+    (error (funcall callback nil) nil)))
 
 (defvar my:wsl-monitor-mm-cache nil
-  "Alist of (GEOMETRY . MM) for monitors seen so far.  MM is nil if unknown.")
+  "Alist of (GEOMETRY . MM) for the monitors found by the last query.")
+
+(defvar my:wsl-monitor-cache-time nil
+  "When `my:wsl-monitor-mm-cache' was filled, or nil if it needs a query.")
+
+(defvar my:wsl-monitor-cache-ttl 30
+  "Seconds until the monitor cache expires and is queried again.")
+
+(defvar my:wsl-monitor-query-process nil
+  "The running PowerShell query, if any.")
+
+(defun my:wsl-monitor-set-cache (monitors)
+  "Fill the monitor cache from MONITORS, then re-apply fonts to every frame.
+Windows and WSLg disagree on the coordinate origin when a monitor sits above
+or left of another, so monitors are translated to put their combined bounding
+box at (0 . 0), as WSLg reports them."
+  (setq my:wsl-monitor-query-process nil
+        my:wsl-monitor-mm-cache
+        (when monitors
+          (let ((min-x (apply #'min (mapcar #'car monitors)))
+                (min-y (apply #'min (mapcar #'cadr monitors))))
+            (mapcar (lambda (m)
+                      (seq-let (x y w h mm) m
+                        (cons (list (- x min-x) (- y min-y) w h) mm)))
+                    monitors)))
+        my:wsl-monitor-cache-time (float-time))
+  (mapc #'my:apply-font-settings (frame-list)))
 
 (defun my:wsl-monitor-mm-width (geometry)
-  "Return the physical width in mm of the Windows monitor at GEOMETRY, or nil.
-GEOMETRY is the (X Y W H) of an Emacs monitor.  Windows and WSLg disagree on
-the coordinate origin when a monitor sits above or left of another, so
-monitors are translated to put their combined bounding box at (0 . 0)
-before matching.  Misses are cached too, so an unknown monitor does not
-trigger a PowerShell run on every call."
-  (unless (assoc geometry my:wsl-monitor-mm-cache)
-    (let* ((monitors (my:wsl-query-monitors))
-           (min-x (apply #'min (mapcar #'car monitors)))
-           (min-y (apply #'min (mapcar #'cadr monitors))))
-      (dolist (m monitors)
-        (seq-let (x y w h mm) m
-          (setf (alist-get (list (- x min-x) (- y min-y) w h)
-                           my:wsl-monitor-mm-cache nil nil #'equal)
-                mm))))
-    (unless (assoc geometry my:wsl-monitor-mm-cache)
-      (push (cons geometry nil) my:wsl-monitor-mm-cache)))
-  (cdr (assoc geometry my:wsl-monitor-mm-cache)))
+  "Return the physical width in mm of the Windows monitor at GEOMETRY.
+GEOMETRY is the (X Y W H) of an Emacs monitor.  Return nil if that monitor
+is unknown, or `pending' while the PowerShell query is still running.  An
+expired cache is emptied here, so the next lookup queries again without
+blocking Emacs."
+  (when (and my:wsl-monitor-cache-time
+             (> (- (float-time) my:wsl-monitor-cache-time)
+                my:wsl-monitor-cache-ttl))
+    (setq my:wsl-monitor-mm-cache nil
+          my:wsl-monitor-cache-time nil))
+  (if my:wsl-monitor-cache-time
+      (cdr (assoc geometry my:wsl-monitor-mm-cache))
+    (unless (process-live-p my:wsl-monitor-query-process)
+      (setq my:wsl-monitor-query-process
+            (my:wsl-query-monitors-async #'my:wsl-monitor-set-cache)))
+    'pending))
 
 ;; Font Settings
 ;; Korean: https://github.com/naver/nanumfont
@@ -158,6 +200,13 @@ scripts look as large as Latin text and as Han glyphs from system fonts.")
                   (car (alist-get 'mm-size attrs)))))
         (when (and (numberp mm) (numberp width) (> mm 0))
           (max min-dpi (min max-dpi (/ width (/ mm 25.4)))))))))
+
+(defun my:frame-dpi-pending-p (&optional frame)
+  "Non-nil if the DPI of FRAME's monitor is still being queried."
+  (and my:wslp
+       (eq (my:wsl-monitor-mm-width
+            (alist-get 'geometry (frame-monitor-attributes frame)))
+           'pending)))
 
 (defun my:frame-font-scale (&optional frame)
   "Return font scale of FRAME relative to `my:font-reference-dpi'."
@@ -230,8 +279,11 @@ FAMILY at PX."
       (my:inherit-font-from-parent child frame))))
 
 (defun my:apply-font-settings-top (frame)
-  "Resize FRAME's default and override fonts from its monitor DPI."
-  (when (frame-visible-p frame)
+  "Resize FRAME's default and override fonts from its monitor DPI.
+Leave the fonts alone while the DPI is still being queried; the query
+re-applies them once it finishes."
+  (when (and (frame-visible-p frame)
+             (not (my:frame-dpi-pending-p frame)))
     (let* ((pt-to-px (/ 4.0 3))
            (scale (my:frame-font-scale frame))
            (px (round (* my:font-base-size pt-to-px scale))))
