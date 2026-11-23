@@ -68,7 +68,9 @@
    (lsp-completion-provider :capf)
    (lsp-auto-guess-root nil)
    (lsp-ui-sideline-show-diagnostics nil)
-   (lsp-rust-analyzer-diagnostics-enable-experimental t)))
+   (lsp-rust-analyzer-diagnostics-enable-experimental t)
+   (lsp-clients-clangd-args '("--background-index"
+                              "--query-driver=/usr/bin/gcc,/usr/bin/g++"))))
 
 (use-package lsp-ui
   :pin melpa
