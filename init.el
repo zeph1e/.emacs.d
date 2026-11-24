@@ -7,13 +7,11 @@
 (require 'server)
 (require 'tramp)
 (require 'warnings)
-
+(let ((load-path (cons user-emacs-directory load-path)))
+  (require 'workaround)
+  (require 'wsl))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; basic option
-
-;; load workaround first
-(load (locate-user-emacs-file "workaround.el"))
-
 ;; language
 (set-language-environment "Korean")
 (setq default-korean-keyboard "3")
@@ -53,114 +51,6 @@
 
 
 ;; Font Composition & Scaling
-(defconst my:wslp
-  (string-match "-[Mm]icrosoft" operating-system-release)
-  "Non-nil if running on WSL.")
-
-(defvar my:wsl-powershell-script-cache (make-hash-table :test #'equal)
-  "Source text of the misc/*.ps1 scripts already read, by file name.")
-
-(defun my:wsl-powershell-script (script-name)
-  "Return the source of misc/SCRIPT-NAME, reading it only once."
-  (or (gethash script-name my:wsl-powershell-script-cache)
-      (puthash script-name
-               (with-temp-buffer
-                 (insert-file-contents
-                  (expand-file-name (concat "misc/" script-name)
-                                    user-emacs-directory))
-                 (buffer-string))
-               my:wsl-powershell-script-cache)))
-
-(defun my:wsl-powershell-args (script-name &optional prelude)
-  "Return powershell.exe arguments that run misc/SCRIPT-NAME.
-PRELUDE, if non-nil, is PowerShell source put before the script."
-  (list "powershell.exe" "-NoProfile" "-NonInteractive" "-EncodedCommand"
-        (base64-encode-string
-         (encode-coding-string
-          (concat prelude (my:wsl-powershell-script script-name))
-          'utf-16le)
-         t)))
-
-(defun my:wsl-parse-monitors (output)
-  "Parse OUTPUT of misc/wsl-monitors.ps1.
-Return a list of (X Y W H MM)."
-  (let (monitors)
-    (dolist (line (split-string output "[\r\n]+" t))
-      (when (string-match
-             "\\`\\(-?[0-9]+\\) \\(-?[0-9]+\\) \\([0-9]+\\) \\([0-9]+\\) \\([0-9]+\\)[ \t]*\\'"
-             line)
-        (push (mapcar (lambda (i) (string-to-number (match-string i line)))
-                      '(1 2 3 4 5))
-              monitors)))
-    (nreverse monitors)))
-
-(defun my:wsl-query-monitors-async (callback)
-  "Run misc/wsl-monitors.ps1 in the background and call CALLBACK.
-CALLBACK gets the list of (X Y W H MM) the script printed, or nil if it
-failed.  Return the process."
-  (condition-case nil
-      (let* ((output "")
-             (proc (make-process
-                    :name "wsl-monitors" :buffer nil :noquery t
-                    :connection-type 'pipe
-                    :command (my:wsl-powershell-args "wsl-monitors.ps1")
-                    :filter (lambda (_p chunk)
-                              (setq output (concat output chunk)))
-                    :sentinel
-                    (lambda (p _event)
-                      (unless (process-live-p p)
-                        (funcall callback (my:wsl-parse-monitors output)))))))
-        (process-send-eof proc)
-        proc)
-    (error (funcall callback nil) nil)))
-
-(defvar my:wsl-monitor-mm-cache nil
-  "Alist of (GEOMETRY . MM) for the monitors found by the last query.")
-
-(defvar my:wsl-monitor-cache-time nil
-  "When `my:wsl-monitor-mm-cache' was filled, or nil if it needs a query.")
-
-(defvar my:wsl-monitor-cache-ttl 30
-  "Seconds until the monitor cache expires and is queried again.")
-
-(defvar my:wsl-monitor-query-process nil
-  "The running PowerShell query, if any.")
-
-(defun my:wsl-monitor-set-cache (monitors)
-  "Fill the monitor cache from MONITORS, then re-apply fonts to every frame.
-Windows and WSLg disagree on the coordinate origin when a monitor sits above
-or left of another, so monitors are translated to put their combined bounding
-box at (0 . 0), as WSLg reports them."
-  (setq my:wsl-monitor-query-process nil
-        my:wsl-monitor-mm-cache
-        (when monitors
-          (let ((min-x (apply #'min (mapcar #'car monitors)))
-                (min-y (apply #'min (mapcar #'cadr monitors))))
-            (mapcar (lambda (m)
-                      (seq-let (x y w h mm) m
-                        (cons (list (- x min-x) (- y min-y) w h) mm)))
-                    monitors)))
-        my:wsl-monitor-cache-time (float-time))
-  (mapc #'my:apply-font-settings (frame-list)))
-
-(defun my:wsl-monitor-mm-width (geometry)
-  "Return the physical width in mm of the Windows monitor at GEOMETRY.
-GEOMETRY is the (X Y W H) of an Emacs monitor.  Return nil if that monitor
-is unknown, or `pending' while the PowerShell query is still running.  An
-expired cache is emptied here, so the next lookup queries again without
-blocking Emacs."
-  (when (and my:wsl-monitor-cache-time
-             (> (- (float-time) my:wsl-monitor-cache-time)
-                my:wsl-monitor-cache-ttl))
-    (setq my:wsl-monitor-mm-cache nil
-          my:wsl-monitor-cache-time nil))
-  (if my:wsl-monitor-cache-time
-      (cdr (assoc geometry my:wsl-monitor-mm-cache))
-    (unless (process-live-p my:wsl-monitor-query-process)
-      (setq my:wsl-monitor-query-process
-            (my:wsl-query-monitors-async #'my:wsl-monitor-set-cache)))
-    'pending))
-
 ;; Font Settings
 ;; Korean: https://github.com/naver/nanumfont
 ;; Chinese: https://freefonts.cn/fonts/wenquanyi-micro-hei-mono-regular
@@ -317,6 +207,8 @@ this also works while the child frame is still invisible."
               (my:apply-font-settings frame))))
 (when (display-graphic-p)
   (my:apply-font-settings))
+(add-hook 'my:wsl-monitor-cache-updated-hook
+          (lambda () (mapc #'my:apply-font-settings (frame-list))))
 
 
 ;; emacs server configuration

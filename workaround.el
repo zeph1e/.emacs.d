@@ -1,4 +1,14 @@
-;;-*- mode: emacs-lisp; -*-
+;;; workaround.el --- Workaround fixes  -*- lexical-binding: t; -*-
+
+;; Written by Yunsik Jang <z3ph1e@gmail.com>
+;; You can use/modify/redistribute this freely.
+
+;;; Commentary:
+
+;; Temporal workarounds to deal with bugs in Emacs or lisp packages
+
+;;; Code:
+
 ;; To fix issue in dictionaries-common:
 ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=968955
 (setq ispell-menu-map-needed t)
@@ -53,9 +63,14 @@ Without this, a failed session shows up as a confusing
   (condition-case _err
       (funcall orig-fun key directory)
     (wrong-type-argument
-     (user-error "Failed to start monet server in %s; see *Messages* for details" directory))))
+     (user-error "Failed to start monet server in %s; see *Messages* for details"
+                 directory))))
 
-(advice-add 'monet-start-server-function :around #'my:monet-signal-clear-error-on-nil-session)
+(advice-add 'monet-start-server-function
+            :around #'my:monet-signal-clear-error-on-nil-session)
 
 ;; Disable annoying warnings in emacs v31
 (add-to-list 'warning-suppress-types '(files missing-lexbind-cookie))
+
+(provide 'workaround)
+;;; workaround.el ends here

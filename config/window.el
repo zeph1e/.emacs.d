@@ -81,31 +81,6 @@
   (framemove-default-keybindings 'meta)
   (setq framemove-hook-into-windmove t)
   :config
-  ;; Under WSLg, real keyboard focus is decided by Windows' own window
-  ;; manager over the RDP channel, which ignores the X11-level
-  ;; `_NET_ACTIVE_WINDOW' request that `select-frame-set-input-focus' (and
-  ;; so framemove) sends. Emacs's own `selected-frame' still flips, which
-  ;; makes it look like the switch worked, but keystrokes keep going to the
-  ;; previously focused frame. Ask Windows directly instead.
-  (defun my:wsl-escape-powershell-string (s)
-    "Escape S for interpolation inside a double-quoted PowerShell string."
-    (replace-regexp-in-string "[`$\"]" "`\\&" s))
-
-  (defun my:wsl-activate-window (title)
-    "Ask Windows to give real input focus to the WSLg window titled TITLE."
-    (when (and my:wslp (executable-find "powershell.exe"))
-      (condition-case nil
-          (let ((proc (make-process
-                       :name "wsl-activate-window" :buffer nil :noquery t
-                       :connection-type 'pipe
-                       :command (my:wsl-powershell-args
-                                 "wsl-activate-window.ps1"
-                                 (format "$target = \"%s\"\n"
-                                         (my:wsl-escape-powershell-string
-                                          title))))))
-            (process-send-eof proc))
-        (error nil))))
-
   (advice-add 'fm-next-frame :after
               (lambda (&rest _)
                 (my:wsl-activate-window (frame-parameter (selected-frame)

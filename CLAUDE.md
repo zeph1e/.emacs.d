@@ -127,6 +127,7 @@ This Emacs configuration has no top-level build step. For compilation inside Ema
 |------|---------|
 | `init.el` | Entry point. It manages the whole load order. |
 | `workaround.el` | Early-loaded fixes for upstream bugs. |
+| `wsl.el` | `(provide 'wsl)`. WSL/WSLg helpers: `my:wslp`, Windows monitor size query, WSLg window focus. It runs `misc/*.ps1` through `powershell.exe`. `init.el` requires it before the font settings. |
 | `config/theme.el` | Mode line settings. |
 | `config/lsp.el` | LSP settings. It also holds hooks that install language servers. |
 | `config/vterm.el` | vterm setup. It stops module compilation until system dependencies install, through `upesp+:command-executed-hook`. |
