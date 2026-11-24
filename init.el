@@ -405,12 +405,16 @@ Key bindings:
   ;; install hook to byte-compile updated on quit
   (add-hook 'kill-emacs-hook
             `(lambda ()
-               (mapc (lambda (file)
-                       (let* ((source (concat ,dir "/" file ".el"))
-                              (target (byte-compile-dest-file source)))
+               (mapc (lambda (source)
+                       (let* ((target (byte-compile-dest-file source)))
                          (when (file-newer-than-file-p source target)
                            (byte-compile-file source))))
-                     (list ,@configs)))))
+                     (append (mapcar (lambda (c)
+                                       (concat ,dir "/" c ".el"))
+                                     (list ,@configs))
+                             (mapcar (lambda (c)
+                                       (concat user-emacs-directory c))
+                                     '("init.el" "workaround.el" "wsl.el")))))))
 
 
 
