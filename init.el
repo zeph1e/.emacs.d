@@ -57,39 +57,32 @@
   (string-match "-[Mm]icrosoft" operating-system-release)
   "Non-nil if running on WSL.")
 
-(defconst my:wsl-monitor-script
-  "Add-Type -AssemblyName System.Windows.Forms
-Add-Type -TypeDefinition @'
-using System;
-using System.Runtime.InteropServices;
-public class MonDD {
-  [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]
-  public struct DEV {
-    public int cb;
-    [MarshalAs(UnmanagedType.ByValTStr, SizeConst=32)] public string Name;
-    [MarshalAs(UnmanagedType.ByValTStr, SizeConst=128)] public string Str;
-    public int Flags;
-    [MarshalAs(UnmanagedType.ByValTStr, SizeConst=128)] public string Id;
-    [MarshalAs(UnmanagedType.ByValTStr, SizeConst=128)] public string Key;
-  }
-  [DllImport(\"user32.dll\", CharSet=CharSet.Ansi)]
-  public static extern bool EnumDisplayDevices(string dev, uint n, ref DEV d, uint flags);
-}
-'@
-$w = Get-CimInstance -Namespace root/wmi -ClassName WmiMonitorBasicDisplayParams
-foreach ($s in [System.Windows.Forms.Screen]::AllScreens) {
-  $d = New-Object MonDD+DEV
-  $d.cb = [Runtime.InteropServices.Marshal]::SizeOf($d)
-  [void][MonDD]::EnumDisplayDevices($s.DeviceName, 0, [ref]$d, 0)
-  $c = $d.Id.Split([char]92)[1]
-  $m = $w | Where-Object { $_.InstanceName.Split([char]92)[1] -eq $c } | Select-Object -First 1
-  if ($m) { '{0} {1} {2} {3} {4}' -f $s.Bounds.X, $s.Bounds.Y, $s.Bounds.Width, $s.Bounds.Height, ($m.MaxHorizontalImageSize * 10) }
-}
-"
-  "PowerShell listing each Windows screen as \"X Y W H PHYSICAL-MM-WIDTH\".")
+(defvar my:wsl-powershell-script-cache (make-hash-table :test #'equal)
+  "Source text of the misc/*.ps1 scripts already read, by file name.")
+
+(defun my:wsl-powershell-script (script-name)
+  "Return the source of misc/SCRIPT-NAME, reading it only once."
+  (or (gethash script-name my:wsl-powershell-script-cache)
+      (puthash script-name
+               (with-temp-buffer
+                 (insert-file-contents
+                  (expand-file-name (concat "misc/" script-name)
+                                    user-emacs-directory))
+                 (buffer-string))
+               my:wsl-powershell-script-cache)))
+
+(defun my:wsl-powershell-args (script-name &optional prelude)
+  "Return powershell.exe arguments that run misc/SCRIPT-NAME.
+PRELUDE, if non-nil, is PowerShell source put before the script."
+  (list "powershell.exe" "-NoProfile" "-NonInteractive" "-EncodedCommand"
+        (base64-encode-string
+         (encode-coding-string
+          (concat prelude (my:wsl-powershell-script script-name))
+          'utf-16le)
+         t)))
 
 (defun my:wsl-parse-monitors (output)
-  "Parse OUTPUT of `my:wsl-monitor-script'.
+  "Parse OUTPUT of misc/wsl-monitors.ps1.
 Return a list of (X Y W H MM)."
   (let (monitors)
     (dolist (line (split-string output "[\r\n]+" t))
@@ -102,7 +95,7 @@ Return a list of (X Y W H MM)."
     (nreverse monitors)))
 
 (defun my:wsl-query-monitors-async (callback)
-  "Run `my:wsl-monitor-script' in the background and call CALLBACK.
+  "Run misc/wsl-monitors.ps1 in the background and call CALLBACK.
 CALLBACK gets the list of (X Y W H MM) the script printed, or nil if it
 failed.  Return the process."
   (condition-case nil
@@ -110,12 +103,7 @@ failed.  Return the process."
              (proc (make-process
                     :name "wsl-monitors" :buffer nil :noquery t
                     :connection-type 'pipe
-                    :command (list "powershell.exe" "-NoProfile"
-                                   "-NonInteractive" "-EncodedCommand"
-                                   (base64-encode-string
-                                    (encode-coding-string
-                                     my:wsl-monitor-script 'utf-16le)
-                                    t))
+                    :command (my:wsl-powershell-args "wsl-monitors.ps1")
                     :filter (lambda (_p chunk)
                               (setq output (concat output chunk)))
                     :sentinel
