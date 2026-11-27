@@ -414,7 +414,7 @@ Key bindings:
                                      (list ,@configs))
                              (mapcar (lambda (c)
                                        (concat user-emacs-directory c))
-                                     '("init.el" "workaround.el" "wsl.el")))))))
+                                     '("workaround.el" "wsl.el")))))))
 
 
 
