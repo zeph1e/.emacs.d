@@ -16,10 +16,7 @@
 
 (defconst my:view-file-viewer-candidates
   `((wsl . ,(executable-find "wslview"))
-    (remote . ,(when-let* ((default-directory
-                            (concat "/ssh:" my:remote-host ":/"))
-                           (opener (executable-find "xdg-open" t)))
-                 (list (executable-find "ssh") my:remote-host opener)))
+    (remote . (,(executable-find "ssh") ,my:remote-host "xdg-open"))
     (nil . ,(executable-find "xdg-open")))
   "The candidates of executable which opens file in external viewer")
 
